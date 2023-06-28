@@ -34,6 +34,7 @@ public class MemberInfo {
     @Column(name = "study_method")
     private String studyMethod;
 
+
     //프로필 이미지
     //private ProfileImage profileImage;
 
