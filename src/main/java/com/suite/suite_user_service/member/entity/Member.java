@@ -15,7 +15,7 @@ import java.util.Collection;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "auth_user")
+@Table(name = "member")
 public class Member implements UserDetails {
 
     @Id
@@ -31,6 +31,9 @@ public class Member implements UserDetails {
 
     @Column(name = "role")
     private String role;
+
+    @OneToOne(mappedBy = "memberId")
+    private MemberInfo memberInfo;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
