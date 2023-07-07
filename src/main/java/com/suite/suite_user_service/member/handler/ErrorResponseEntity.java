@@ -12,7 +12,7 @@ public class ErrorResponseEntity {
     private String message;
     private HttpStatus status;
 
-    public static ResponseEntity<ErrorResponseEntity> toResponseEntity(ErrorCode e) {
+    public static ResponseEntity<ErrorResponseEntity> toResponseEntity(StatusCode e) {
         return ResponseEntity
                 .status(e.getStatus())
                 .body(ErrorResponseEntity.builder()

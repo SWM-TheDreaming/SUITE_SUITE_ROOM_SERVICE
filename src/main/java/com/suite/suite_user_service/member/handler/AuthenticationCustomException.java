@@ -12,7 +12,7 @@ public class AuthenticationCustomException extends AuthenticationException {
         super(msg);
     }
 
-    public AuthenticationCustomException(ErrorCode errorCode) {
-        super(errorCode.toString());
+    public AuthenticationCustomException(StatusCode statusCode) {
+        super(statusCode.toString());
     }
 }

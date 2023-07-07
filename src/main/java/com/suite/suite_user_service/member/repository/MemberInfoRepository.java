@@ -1,0 +1,8 @@
+package com.suite.suite_user_service.member.repository;
+
+import com.suite.suite_user_service.member.entity.Member;
+import com.suite.suite_user_service.member.entity.MemberInfo;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface MemberInfoRepository extends JpaRepository<MemberInfo, Long> {
+}

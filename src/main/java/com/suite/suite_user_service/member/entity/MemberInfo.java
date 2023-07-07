@@ -1,5 +1,7 @@
 package com.suite.suite_user_service.member.entity;
 
+import com.suite.suite_user_service.member.dto.ReqMemberDto;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,12 +14,11 @@ import javax.persistence.*;
 public class MemberInfo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_info_id")
     private Long memberInfoId;
 
-    @OneToOne
-    @JoinColumn(name = "member_id")
+    @MapsId
+    @OneToOne(fetch = FetchType.LAZY)
     private Member memberId;
 
     private String name;
@@ -42,6 +43,31 @@ public class MemberInfo {
     //프로필 이미지
     //private ProfileImage profileImage;
 
+    @Builder
+    public MemberInfo(Long memberInfoId, Member memberId, String name, String nickname, String phone, String securityNum, String preferStudy, String location, String studyMethod) {
+        this.memberInfoId = memberInfoId;
+        this.memberId = memberId;
+        this.name = name;
+        this.nickname = nickname;
+        this.phone = phone;
+        this.securityNum = securityNum;
+        this.preferStudy = preferStudy;
+        this.location = location;
+        this.studyMethod = studyMethod;
+    }
 
+    public ReqMemberDto entityToDto() {
+        return ReqMemberDto.builder()
+                .name(name)
+                .nickName(nickname)
+                .phone(phone)
+                .securityNum(securityNum)
+                .preferStudy(preferStudy)
+                .location(location)
+                .studyMethod(studyMethod).build();
+    }
 
+    public void setMemberId(Member memberId) {
+        this.memberId = memberId;
+    }
 }

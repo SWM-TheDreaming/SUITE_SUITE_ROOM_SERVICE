@@ -18,9 +18,6 @@ repositories {
     mavenCentral()
 }
 
-ext {
-    set('springCloudVersion', "2021.0.0")
-}
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -28,7 +25,6 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.7.8'
     //json
     implementation 'com.google.code.gson:gson:2.7'
@@ -39,20 +35,11 @@ dependencies {
     //security && JWT
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
-    //config
-    implementation 'org.springframework.cloud:spring-cloud-starter-config'
-    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
     //actuator
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    //openfeign
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
 }
 
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-    }
-}
 
 tasks.named('test') {
     useJUnitPlatform()

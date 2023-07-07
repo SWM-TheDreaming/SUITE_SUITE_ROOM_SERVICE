@@ -1,6 +1,6 @@
 package com.suite.suite_user_service.member.entity;
 
-import com.suite.suite_user_service.member.dto.MemberDto;
+import com.suite.suite_user_service.member.dto.ResMemberDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,7 +32,7 @@ public class Member implements UserDetails {
     @Column(name = "role")
     private String role;
 
-    @OneToOne(mappedBy = "memberId")
+    @OneToOne(mappedBy = "memberId", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private MemberInfo memberInfo;
 
     @Override
@@ -75,11 +75,22 @@ public class Member implements UserDetails {
         this.role = role;
     }
 
-    public MemberDto toDto() {
-        return MemberDto.builder()
+    public ResMemberDto entityToDto(MemberInfo memberInfo) {
+        return ResMemberDto.builder()
+                .memberId(memberId)
                 .email(email)
-                .password(password)
-                .role(role).build();
+                .name(memberInfo.getName())
+                .nickName(memberInfo.getNickname())
+                .phone(memberInfo.getPhone())
+                .securityNum(memberInfo.getSecurityNum())
+                .preferStudy(memberInfo.getPreferStudy())
+                .location(memberInfo.getLocation())
+                .studyMethod(memberInfo.getStudyMethod()).build();
+    }
+
+    public void addMemberInfo(MemberInfo memberInfo) {
+        this.memberInfo = memberInfo;
+        memberInfo.setMemberId(this);
     }
 
 

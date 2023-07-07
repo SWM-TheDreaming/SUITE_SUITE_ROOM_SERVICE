@@ -14,15 +14,15 @@ import java.io.IOException;
 public class WebAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        ErrorCode errorCode = ErrorCode.ForbiddenException;
+        StatusCode statusCode = StatusCode.ForbiddenException;
 
         response.setContentType("application/json;charset=UTF-8");
         response.setCharacterEncoding("utf-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
         JSONObject json = new JSONObject();
-        json.put("code", errorCode.getCode());
-        json.put("message", errorCode.getMessage());
+        json.put("code", statusCode.getCode());
+        json.put("message", statusCode.getMessage());
         response.getWriter().print(json);
     }
 }

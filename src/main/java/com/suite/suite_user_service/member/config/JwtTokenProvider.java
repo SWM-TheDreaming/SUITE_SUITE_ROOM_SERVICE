@@ -4,9 +4,10 @@ package com.suite.suite_user_service.member.config;
 import com.suite.suite_user_service.member.dto.Token;
 import com.suite.suite_user_service.member.entity.RefreshToken;
 import com.suite.suite_user_service.member.handler.AuthenticationCustomException;
-import com.suite.suite_user_service.member.handler.ErrorCode;
+import com.suite.suite_user_service.member.handler.StatusCode;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,11 +23,9 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
-
-    private String accessSecretKey = "test";
-
-    private String refreshSecretKey = "test";
-
+    private final ConfigUtil configUtil;
+    private String accessSecretKey;
+    private String refreshSecretKey;
     //유효시간 7일
     private long accessTokenValidTime = 7 * 24 * 60 * 60 * 1000L;
     //유효시간 31일
@@ -37,8 +36,8 @@ public class JwtTokenProvider {
     // 객체 초기화, secretKey를 Base64로 인코딩
     @PostConstruct
     protected void init() {
-        accessSecretKey = Base64.getEncoder().encodeToString(accessSecretKey.getBytes());
-        refreshSecretKey = Base64.getEncoder().encodeToString(refreshSecretKey.getBytes());
+        accessSecretKey = Base64.getEncoder().encodeToString(configUtil.getProperty("jwt.access.key").getBytes());
+        refreshSecretKey = Base64.getEncoder().encodeToString(configUtil.getProperty("jwt.refresh.key").getBytes());
     }
 
     // 토큰 생성
@@ -130,7 +129,7 @@ public class JwtTokenProvider {
             return recreationAccessToken(claims.getBody().get("sub").toString(), claims.getBody().get("roles"));
         }catch (Exception e) {
             e.printStackTrace();
-            throw new AuthenticationCustomException(ErrorCode.ExpiredJwtException);
+            throw new AuthenticationCustomException(StatusCode.ExpiredJwtException);
         }
         //토큰 만료시 login페이지 reDirect
     }
