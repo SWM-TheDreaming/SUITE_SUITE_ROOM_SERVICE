@@ -53,9 +53,7 @@ public class JwtService {
         }else {
             //refreshToken이 있으면, 업데이트
             refreshToken.update(tokenOptional.get().getRefreshToken(), tokenOptional.get().getUserAgent());
-
         }
-
 
         return token;
     }
@@ -64,6 +62,6 @@ public class JwtService {
         if(refreshToken.getRefreshToken() != null)
             return jwtTokenProvider.validateRefreshToken(refreshToken);
         else
-            throw new CustomException(StatusCode.ReLogin);
+            throw new CustomException(StatusCode.RE_LOGIN);
     }
 }

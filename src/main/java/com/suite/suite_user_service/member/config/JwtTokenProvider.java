@@ -129,7 +129,7 @@ public class JwtTokenProvider {
             return recreationAccessToken(claims.getBody().get("sub").toString(), claims.getBody().get("roles"));
         }catch (Exception e) {
             e.printStackTrace();
-            throw new AuthenticationCustomException(StatusCode.ExpiredJwtException);
+            throw new AuthenticationCustomException(StatusCode.EXPIRED_JWT);
         }
         //토큰 만료시 login페이지 reDirect
     }

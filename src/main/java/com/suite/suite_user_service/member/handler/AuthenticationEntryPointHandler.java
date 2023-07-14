@@ -19,41 +19,36 @@ public class AuthenticationEntryPointHandler implements AuthenticationEntryPoint
         String exception = (String) request.getAttribute("exception");
         StatusCode statusCode;
 
-        if(exception == null) {
-            statusCode = StatusCode.UNAUTHORIZEDException;
-            setResponse(response, statusCode);
-            return;
-        }
 
-        if(exception.equals("NullPointerException")) {
-            statusCode = StatusCode.UNAUTHORIZEDException;
+        if(exception == null || exception.equals("NullPointerException")) {
+            statusCode = StatusCode.UNAUTHORIZED;
             setResponse(response, statusCode);
             return;
         }
 
 
         if(exception.equals("PasswordNotFoundException")) {
-            statusCode = StatusCode.PasswordNotFoundException;
+            statusCode = StatusCode.PASSWORD_NOT_FOUND;
             setResponse(response, statusCode);
             return;
         }
 
         if(exception.equals("ForbiddenException")) {
-            statusCode = StatusCode.ForbiddenException;
+            statusCode = StatusCode.FORBIDDEN;
             setResponse(response, statusCode);
             return;
         }
 
         //토큰이 만료된 경우
         if(exception.equals("ExpiredJwtException")) {
-            statusCode = StatusCode.ExpiredJwtException;
+            statusCode = StatusCode.EXPIRED_JWT;
             setResponse(response, statusCode);
             return;
         }
 
         //아이디 비밀번호가 다를 경우
         if(exception.equals("UsernameOrPasswordNotFoundException")) {
-            statusCode = StatusCode.UsernameOrPasswordNotFoundException;
+            statusCode = StatusCode.USERNAME_OR_PASSWORD_NOT_FOUND;
             setResponse(response, statusCode);
             return;
         }

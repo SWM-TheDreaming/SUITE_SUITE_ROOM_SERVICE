@@ -23,14 +23,11 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return memberRepository.findByEmail(username).orElseThrow(
-                () -> new RuntimeException());
+                () -> new CustomException(StatusCode.USERNAME_OR_PASSWORD_NOT_FOUND));
     }
 
     @Override
     public Message saveMemberInfo(ReqMemberDto reqMemberDto) {
-        memberRepository.findByEmail(reqMemberDto.getEmail()).ifPresent(
-                e -> {throw new CustomException(StatusCode.REGISTEREDEMAIL);});
-
         Member member = reqMemberDto.toMemberEntity();
         MemberInfo memberInfo = reqMemberDto.toMemberInfoEntity();
         member.addMemberInfo(memberInfo);
