@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class ResMemberDto {
+public class ResSignUpMemberDto {
     private Long memberId;
     private String email;
     private String name;
@@ -20,7 +20,7 @@ public class ResMemberDto {
     private String studyMethod;
 
     @Builder
-    public ResMemberDto(Long memberId, String email, String name, String nickName, String phone, String securityNum, String preferStudy, String location, String studyMethod) {
+    public ResSignUpMemberDto(Long memberId, String email, String name, String nickName, String phone, String securityNum, String preferStudy, String location, String studyMethod) {
         this.memberId = memberId;
         this.email = email;
         this.name = name;

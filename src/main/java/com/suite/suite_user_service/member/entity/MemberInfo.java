@@ -1,6 +1,6 @@
 package com.suite.suite_user_service.member.entity;
 
-import com.suite.suite_user_service.member.dto.ReqMemberDto;
+import com.suite.suite_user_service.member.dto.ReqSignUpMemberDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,8 +56,8 @@ public class MemberInfo {
         this.studyMethod = studyMethod;
     }
 
-    public ReqMemberDto entityToDto() {
-        return ReqMemberDto.builder()
+    public ReqSignUpMemberDto entityToDto() {
+        return ReqSignUpMemberDto.builder()
                 .name(name)
                 .nickName(nickname)
                 .phone(phone)

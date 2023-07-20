@@ -1,7 +1,7 @@
 package com.suite.suite_user_service.member.service;
 
 import com.suite.suite_user_service.member.dto.Message;
-import com.suite.suite_user_service.member.dto.ReqMemberDto;
+import com.suite.suite_user_service.member.dto.ReqSignUpMemberDto;
 import com.suite.suite_user_service.member.entity.Member;
 import com.suite.suite_user_service.member.entity.MemberInfo;
 import com.suite.suite_user_service.member.handler.CustomException;
@@ -27,9 +27,9 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
     }
 
     @Override
-    public Message saveMemberInfo(ReqMemberDto reqMemberDto) {
-        Member member = reqMemberDto.toMemberEntity();
-        MemberInfo memberInfo = reqMemberDto.toMemberInfoEntity();
+    public Message saveMemberInfo(ReqSignUpMemberDto reqSignUpMemberDto) {
+        Member member = reqSignUpMemberDto.toMemberEntity();
+        MemberInfo memberInfo = reqSignUpMemberDto.toMemberInfoEntity();
         member.addMemberInfo(memberInfo);
         memberRepository.save(member);
         memberInfoRepository.save(memberInfo);

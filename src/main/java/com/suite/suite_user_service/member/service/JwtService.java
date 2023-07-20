@@ -1,7 +1,9 @@
 package com.suite.suite_user_service.member.service;
 
 import com.suite.suite_user_service.member.config.JwtTokenProvider;
-import com.suite.suite_user_service.member.dto.ReqMemberDto;
+import com.suite.suite_user_service.member.dto.Message;
+import com.suite.suite_user_service.member.dto.ReqSignInMemberDto;
+import com.suite.suite_user_service.member.dto.ReqSignUpMemberDto;
 import com.suite.suite_user_service.member.dto.Token;
 import com.suite.suite_user_service.member.entity.RefreshToken;
 import com.suite.suite_user_service.member.handler.CustomException;
@@ -24,12 +26,12 @@ public class JwtService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public Token login(HttpServletRequest request, ReqMemberDto reqMemberDto, String userAgent) {
+    public Message login(ReqSignInMemberDto reqSignInMemberDto, String userAgent) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(reqMemberDto.getEmail(), reqMemberDto.getPassword())
+                new UsernamePasswordAuthenticationToken(reqSignInMemberDto.getEmail(), reqSignInMemberDto.getPassword())
         );
 
-        return getLoginToken(reqMemberDto.getEmail(), userAgent);
+        return new Message(StatusCode.OK, getLoginToken(reqSignInMemberDto.getEmail(), userAgent));
 
     }
 

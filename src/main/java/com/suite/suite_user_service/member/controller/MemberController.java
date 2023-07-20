@@ -2,20 +2,20 @@ package com.suite.suite_user_service.member.controller;
 
 import com.suite.suite_user_service.member.dto.EmailDto;
 import com.suite.suite_user_service.member.dto.Message;
-import com.suite.suite_user_service.member.dto.ReqMemberDto;
+import com.suite.suite_user_service.member.dto.ReqSignInMemberDto;
+import com.suite.suite_user_service.member.dto.ReqSignUpMemberDto;
 import com.suite.suite_user_service.member.handler.CustomException;
 import com.suite.suite_user_service.member.handler.StatusCode;
 import com.suite.suite_user_service.member.service.EmailService;
+import com.suite.suite_user_service.member.service.JwtService;
 import com.suite.suite_user_service.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RequiredArgsConstructor
@@ -25,19 +25,51 @@ public class MemberController {
 
     private final MemberService memberService;
     private final EmailService emailService;
+    private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/signup")
-    public ResponseEntity<Message> signupSuite(@RequestBody ReqMemberDto reqMemberDto) {
-        reqMemberDto.encodePassword(passwordEncoder);
-
-        return ResponseEntity.ok(memberService.saveMemberInfo(reqMemberDto));
+    public ResponseEntity<Message> signupSuite(@Valid @RequestBody ReqSignUpMemberDto reqSignUpMemberDto, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()) throw new CustomException(StatusCode.INVALID_DATA_FORMAT);
+        reqSignUpMemberDto.encodePassword(passwordEncoder);
+        return ResponseEntity.ok(memberService.saveMemberInfo(reqSignUpMemberDto));
     }
 
-    @PostMapping("/mail")
+    @PostMapping("/auth/mail")
     public ResponseEntity<Message> verifyEmail(@Valid @RequestBody EmailDto emailDto, BindingResult bindingResult) {
         if(bindingResult.hasErrors()) throw new CustomException(StatusCode.INVALID_DATA_FORMAT);
         return ResponseEntity.ok(emailService.sendEmailCode(emailDto));
+    }
+
+    @PostMapping("/signin")
+    public ResponseEntity<Message> loginSuite(@Valid @RequestBody ReqSignInMemberDto reqSignInMemberDto, BindingResult bindingResult, @RequestHeader("User-Agent") String userAgent) {
+        if(bindingResult.hasErrors()) throw new CustomException(StatusCode.INVALID_DATA_FORMAT);
+        return ResponseEntity.ok(jwtService.login(reqSignInMemberDto, userAgent));
+    }
+
+    @PostMapping("/id")
+    public ResponseEntity<Message> findSuiteId() {
+        return null;
+    }
+
+    @PostMapping("/pw")
+    public ResponseEntity<Message> findSuitePw() {
+        return null;
+    }
+
+    @GetMapping("/m/profile")
+    public ResponseEntity<Message> getSuiteProfile() {
+        return null;
+    }
+
+    @PostMapping("/m/update")
+    public ResponseEntity<Message> updateSuiteProfile() {
+        return null;
+    }
+
+    @PostMapping("/m/delete")
+    public ResponseEntity<Message> deleteSuiteMember() {
+        return null;
     }
 
 }
