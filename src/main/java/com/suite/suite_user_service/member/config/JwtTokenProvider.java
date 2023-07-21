@@ -97,20 +97,14 @@ public class JwtTokenProvider {
             Jws<Claims> claims = Jwts.parser().setSigningKey(accessSecretKey).parseClaimsJws(token);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (SignatureException e) {
-            e.printStackTrace();
             request.setAttribute("exception", "ForbiddenException");
         } catch (MalformedJwtException e) {
-            e.printStackTrace();
             request.setAttribute("exception", "MalformedJwtException");
         } catch (ExpiredJwtException e) {
-            //토큰 만료시
-            e.printStackTrace();
             request.setAttribute("exception", "ExpiredJwtException");
         } catch (UnsupportedJwtException e) {
-            e.printStackTrace();
             request.setAttribute("exception", "UnsupportedJwtException");
         } catch (IllegalArgumentException e) {
-            e.printStackTrace();
             request.setAttribute("exception", "IllegalArgumentException");
         }
         return false;

@@ -28,6 +28,9 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
 
     @Override
     public Message saveMemberInfo(ReqSignUpMemberDto reqSignUpMemberDto) {
+        memberInfoRepository.findByMemberId_Email(reqSignUpMemberDto.getEmail()).ifPresent(
+                memberInfo -> { throw new CustomException(StatusCode.REGISTERED_EMAIL); });
+
         Member member = reqSignUpMemberDto.toMemberEntity();
         MemberInfo memberInfo = reqSignUpMemberDto.toMemberInfoEntity();
         member.addMemberInfo(memberInfo);
@@ -35,5 +38,12 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
         memberInfoRepository.save(memberInfo);
 
         return new Message(StatusCode.OK);
+    }
+
+    @Override
+    public Message getMemberInfo(String email) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new CustomException(StatusCode.NOT_FOUND));
+
+        return new Message(StatusCode.OK, member.entityToDto());
     }
 }

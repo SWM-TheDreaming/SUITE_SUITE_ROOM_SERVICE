@@ -32,7 +32,7 @@ public class Member implements UserDetails {
     @Column(name = "role")
     private String role;
 
-    @OneToOne(mappedBy = "memberId", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "memberId", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private MemberInfo memberInfo;
 
     @Override
@@ -75,7 +75,7 @@ public class Member implements UserDetails {
         this.role = role;
     }
 
-    public ResMemberInfoDto entityToDto(MemberInfo memberInfo) {
+    public ResMemberInfoDto entityToDto() {
         return ResMemberInfoDto.builder()
                 .memberId(memberId)
                 .email(email)
@@ -87,6 +87,7 @@ public class Member implements UserDetails {
                 .location(memberInfo.getLocation())
                 .studyMethod(memberInfo.getStudyMethod()).build();
     }
+
 
     public void addMemberInfo(MemberInfo memberInfo) {
         this.memberInfo = memberInfo;

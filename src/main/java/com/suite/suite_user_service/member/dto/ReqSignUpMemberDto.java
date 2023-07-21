@@ -2,6 +2,7 @@ package com.suite.suite_user_service.member.dto;
 
 import com.suite.suite_user_service.member.entity.Member;
 import com.suite.suite_user_service.member.entity.MemberInfo;
+import com.suite.suite_user_service.member.handler.CustomException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -62,7 +63,7 @@ public class ReqSignUpMemberDto {
         return Member.builder()
                 .email(email)
                 .password(password)
-                .role(role).build();
+                .role(Role.from(role).getValue()).build();
     }
 
     public MemberInfo toMemberInfoEntity() {

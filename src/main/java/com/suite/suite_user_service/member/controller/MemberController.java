@@ -15,8 +15,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+
 import javax.validation.Valid;
+
+import static com.suite.suite_user_service.member.config.SecurityUtil.getSuiteAuthorizer;
 
 @RequiredArgsConstructor
 @RestController
@@ -59,7 +61,7 @@ public class MemberController {
 
     @GetMapping("/m/profile")
     public ResponseEntity<Message> getSuiteProfile() {
-        return null;
+        return ResponseEntity.ok(memberService.getMemberInfo(getSuiteAuthorizer()));
     }
 
     @PostMapping("/m/update")
