@@ -2,6 +2,7 @@ package com.suite.suite_user_service.member.config;
 
 
 import com.suite.suite_user_service.member.dto.Token;
+import com.suite.suite_user_service.member.entity.Member;
 import com.suite.suite_user_service.member.entity.RefreshToken;
 import com.suite.suite_user_service.member.handler.CustomException;
 import com.suite.suite_user_service.member.handler.StatusCode;
@@ -41,20 +42,24 @@ public class JwtTokenProvider {
     }
 
     // 토큰 생성
-    public Token createToken(String userPk) {  // userPK = email
-        Claims claims = Jwts.claims().setSubject(userPk); // JWT payload 에 저장되는 정보단위
+    public Token createToken(Member member) {  // userPK = email
+        Claims claims = Jwts.claims().setSubject(member.getEmail()); // JWT payload 에 저장되는 정보단위
         Date now = new Date();
-        String accessToken = getToken(claims, now, accessTokenValidTime, accessSecretKey);
-        String refreshToken = getToken(claims, now, refreshTokenValidTime, refreshSecretKey);
+        String accessToken = getToken(member, claims, now, accessTokenValidTime, accessSecretKey);
+        String refreshToken = getToken(member, claims, now, refreshTokenValidTime, refreshSecretKey);
         return Token.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .key(userPk).build();
+                .key(member.getEmail()).build();
     }
 
-    private String getToken(Claims claims, Date currentTime, long tokenValidTime, String secretKey) {
+    private String getToken(Member member, Claims claims, Date currentTime, long tokenValidTime, String secretKey) {
         return Jwts.builder()
                 .setClaims(claims) //정보 저장
+                .claim("id", member.getMemberId())
+                .claim("name", member.getMemberInfo().getName())
+                .claim("nickname", member.getMemberInfo().getNickname())
+                .claim("accountStatus", member.getAccountStatus())
                 .setIssuedAt(currentTime)  //토큰 발행시간 정보
                 .setExpiration(new Date(currentTime.getTime() + tokenValidTime)) //Expire Time
                 .signWith(SignatureAlgorithm.HS256, secretKey)  //암호화 알고리즘
@@ -65,7 +70,7 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(ServletRequest request, String token) {
         String available_token = extractToken(token);
         try {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserPk(available_token));
+            UserDetails userDetails = userDetailsService.loadUserByUsername(getUserPk(available_token));
             return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
         } catch (NullPointerException e) {
             request.setAttribute("exception", "ForbiddenException");
@@ -115,27 +120,27 @@ public class JwtTokenProvider {
     }
 
     // RefreshToken 유효성 검증 메소드
-    public String validateRefreshToken(RefreshToken refreshTokenObj) {
-        String refreshToken = refreshTokenObj.getRefreshToken();
-
-        try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(refreshSecretKey).parseClaimsJws(refreshToken);
-            //AccessToken이 만료되지않았을떄만
-            /*if(!claims.getBody().getExpiration().before(new Date())) {
-                return recreationAccessToken(claims.getBody().get("sub").toString(), claims.getBody().get("roles"));
-            }*/
-            return recreationAccessToken(claims.getBody().get("sub").toString(), claims.getBody().get("roles"));
-        }catch (Exception e) {
-            e.printStackTrace();
-            throw new CustomException(StatusCode.EXPIRED_JWT);
-        }
-    }
-
-    //AccessToken 새로 발급
-    private String recreationAccessToken(String email, Object roles) {
-        Claims claims = Jwts.claims().setSubject(email);
-        claims.put("roles", roles);
-        Date currentTime = new Date();
-        return getToken(claims, currentTime, accessTokenValidTime, accessSecretKey);
-    }
+//    public String validateRefreshToken(RefreshToken refreshTokenObj) {
+//        String refreshToken = refreshTokenObj.getRefreshToken();
+//
+//        try {
+//            Jws<Claims> claims = Jwts.parser().setSigningKey(refreshSecretKey).parseClaimsJws(refreshToken);
+//            //AccessToken이 만료되지않았을떄만
+//            /*if(!claims.getBody().getExpiration().before(new Date())) {
+//                return recreationAccessToken(claims.getBody().get("sub").toString(), claims.getBody().get("roles"));
+//            }*/
+//            return recreationAccessToken(claims.getBody().get("sub").toString(), claims.getBody().get("roles"));
+//        }catch (Exception e) {
+//            e.printStackTrace();
+//            throw new CustomException(StatusCode.EXPIRED_JWT);
+//        }
+//    }
+//
+//    //AccessToken 새로 발급
+//    private String recreationAccessToken(String email, Object roles) {
+//        Claims claims = Jwts.claims().setSubject(email);
+//        claims.put("roles", roles);
+//        Date currentTime = new Date();
+//        return getToken(claims, currentTime, accessTokenValidTime, accessSecretKey);
+//    }
 }

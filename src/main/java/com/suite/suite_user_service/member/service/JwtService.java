@@ -5,9 +5,11 @@ import com.suite.suite_user_service.member.dto.Message;
 import com.suite.suite_user_service.member.dto.ReqSignInMemberDto;
 import com.suite.suite_user_service.member.dto.ReqSignUpMemberDto;
 import com.suite.suite_user_service.member.dto.Token;
+import com.suite.suite_user_service.member.entity.Member;
 import com.suite.suite_user_service.member.entity.RefreshToken;
 import com.suite.suite_user_service.member.handler.CustomException;
 import com.suite.suite_user_service.member.handler.StatusCode;
+import com.suite.suite_user_service.member.repository.MemberRepository;
 import com.suite.suite_user_service.member.repository.RefreshTokenRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +24,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @Service
 public class JwtService {
+    private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
@@ -43,7 +46,8 @@ public class JwtService {
     }
 
     private Token getLoginToken(String email, String userAgent) {
-        Token token = jwtTokenProvider.createToken(email);
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new CustomException(StatusCode.USERNAME_OR_PASSWORD_NOT_FOUND));
+        Token token = jwtTokenProvider.createToken(member);
         //RefreshToken을 DB에 저장
         RefreshToken refreshToken = RefreshToken.builder()
                 .keyId(token.getKey())
@@ -67,10 +71,10 @@ public class JwtService {
         return token;
     }
 
-    public String getNewAccessToken(RefreshToken refreshToken) {
-        if(refreshToken.getRefreshToken() != null)
-            return jwtTokenProvider.validateRefreshToken(refreshToken);
-        else
-            throw new CustomException(StatusCode.RE_LOGIN);
-    }
+//    public String getNewAccessToken(RefreshToken refreshToken) {
+//        if(refreshToken.getRefreshToken() != null)
+//            return jwtTokenProvider.validateRefreshToken(refreshToken);
+//        else
+//            throw new CustomException(StatusCode.RE_LOGIN);
+//    }
 }

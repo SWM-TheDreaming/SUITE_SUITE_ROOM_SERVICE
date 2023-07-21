@@ -10,6 +10,7 @@ public class SecurityUtil {
         if (authentication == null || !authentication.isAuthenticated()) {
             return null;
         }
+
         return authentication.getName();
     }
 }
