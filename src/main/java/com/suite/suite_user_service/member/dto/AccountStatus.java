@@ -1,6 +1,5 @@
 package com.suite.suite_user_service.member.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.suite.suite_user_service.member.handler.CustomException;
 import com.suite.suite_user_service.member.handler.StatusCode;
 import lombok.AllArgsConstructor;
@@ -8,15 +7,15 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum Role {
-    ADMIN("ROLE_ADMIN"),
-    USER("ROLE_USER");
-    private final String value;
+public enum AccountStatus {
+    DORMANT("DORMANT"),
+    ACTIVATE("ACTIVATE"),
+    DISABLED("DISABLED");
+    private final String status;
 
-    @JsonCreator
-    public static String from(String s) {
+    public static String from(String status) {
         try {
-            return Role.valueOf(s.toUpperCase()).getValue();
+            return AccountStatus.valueOf(status.toUpperCase()).status;
         } catch (IllegalArgumentException e) {
             throw new CustomException(StatusCode.INVALID_DATA_FORMAT);
         }

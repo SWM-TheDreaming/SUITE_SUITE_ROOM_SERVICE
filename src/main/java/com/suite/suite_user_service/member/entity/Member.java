@@ -32,6 +32,9 @@ public class Member implements UserDetails {
     @Column(name = "role")
     private String role;
 
+    @Column(name = "account_status")
+    private String accountStatus;
+
     @OneToOne(mappedBy = "memberId", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private MemberInfo memberInfo;
 
@@ -69,10 +72,11 @@ public class Member implements UserDetails {
     }
 
     @Builder
-    public Member(String email, String password, String role) {
+    public Member(String email, String password, String role, String accountStatus) {
         this.email = email;
         this.password = password;
         this.role = role;
+        this.accountStatus = accountStatus;
     }
 
     public ResMemberInfoDto entityToDto() {
@@ -85,7 +89,8 @@ public class Member implements UserDetails {
                 .securityNum(memberInfo.getSecurityNum())
                 .preferStudy(memberInfo.getPreferStudy())
                 .location(memberInfo.getLocation())
-                .studyMethod(memberInfo.getStudyMethod()).build();
+                .studyMethod(memberInfo.getStudyMethod())
+                .accountStatus(accountStatus).build();
     }
 
 

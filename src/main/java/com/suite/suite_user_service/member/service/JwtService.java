@@ -11,6 +11,7 @@ import com.suite.suite_user_service.member.handler.StatusCode;
 import com.suite.suite_user_service.member.repository.RefreshTokenRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +28,15 @@ public class JwtService {
 
     @Transactional
     public Message login(ReqSignInMemberDto reqSignInMemberDto, String userAgent) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(reqSignInMemberDto.getEmail(), reqSignInMemberDto.getPassword())
-        );
+
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(reqSignInMemberDto.getEmail(), reqSignInMemberDto.getPassword())
+            );
+        } catch (BadCredentialsException e) {
+            throw new CustomException(StatusCode.USERNAME_OR_PASSWORD_NOT_FOUND);
+        }
+
 
         return new Message(StatusCode.OK, getLoginToken(reqSignInMemberDto.getEmail(), userAgent));
 

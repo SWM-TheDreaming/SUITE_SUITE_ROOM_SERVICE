@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class Message {
+    public static final String DEFAULT_RESPONSE = "Request processed successfully";
     private int statusCode;
     private String message;
     private Object data;
@@ -18,5 +19,6 @@ public class Message {
     public Message(StatusCode statusCode) {
         this.statusCode = statusCode.getCode();
         this.message = statusCode.getMessage();
+        this.data = DEFAULT_RESPONSE;
     }
 }

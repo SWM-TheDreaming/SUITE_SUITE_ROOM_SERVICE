@@ -26,7 +26,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
         //토큰 유효성 검사
         if(AccessToken != null && jwtTokenProvider.validateToken(request, AccessToken)) {
-            Authentication authentication = jwtTokenProvider.getAuthentication(AccessToken);
+            Authentication authentication = jwtTokenProvider.getAuthentication(request, AccessToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 

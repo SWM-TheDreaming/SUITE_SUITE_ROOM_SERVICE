@@ -4,6 +4,7 @@ package com.suite.suite_user_service.member.config;
 import com.suite.suite_user_service.member.dto.Token;
 import com.suite.suite_user_service.member.entity.RefreshToken;
 import com.suite.suite_user_service.member.handler.AuthenticationCustomException;
+import com.suite.suite_user_service.member.handler.CustomException;
 import com.suite.suite_user_service.member.handler.StatusCode;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
@@ -12,11 +13,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Null;
 import java.util.Base64;
 import java.util.Date;
 
@@ -62,14 +65,19 @@ public class JwtTokenProvider {
     }
 
     // 인증 정보 조회
-    public Authentication getAuthentication(String token) {
+    public Authentication getAuthentication(ServletRequest request, String token) {
         String available_token = extractToken(token);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserPk(available_token));
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        try {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserPk(available_token));
+            return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        } catch (NullPointerException e) {
+            request.setAttribute("exception", "ForbiddenException");
+        }
+        return null;
     }
 
     // 토큰에서 회원 정보 추출
-    public String getUserPk(String token) {
+    public String getUserPk(String token) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException {
         return Jwts.parser().setSigningKey(accessSecretKey).parseClaimsJws(token).getBody().getSubject();
     }
 
@@ -93,7 +101,6 @@ public class JwtTokenProvider {
         try {
             validationAuthorizationHeader(jwtToken);
             String token = extractToken(jwtToken);
-            userDetailsService.loadUserByUsername(this.getUserPk(token));
             Jws<Claims> claims = Jwts.parser().setSigningKey(accessSecretKey).parseClaimsJws(token);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (SignatureException e) {

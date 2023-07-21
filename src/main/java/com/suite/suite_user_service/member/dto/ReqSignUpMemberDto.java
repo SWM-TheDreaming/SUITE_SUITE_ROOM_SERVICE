@@ -63,7 +63,8 @@ public class ReqSignUpMemberDto {
         return Member.builder()
                 .email(email)
                 .password(password)
-                .role(Role.from(role).getValue()).build();
+                .role(Role.from(role))
+                .accountStatus(AccountStatus.ACTIVATE.getStatus()).build();
     }
 
     public MemberInfo toMemberInfoEntity() {
