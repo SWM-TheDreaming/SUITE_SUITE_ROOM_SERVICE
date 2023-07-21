@@ -3,7 +3,6 @@ package com.suite.suite_user_service.member.config;
 
 import com.suite.suite_user_service.member.dto.Token;
 import com.suite.suite_user_service.member.entity.RefreshToken;
-import com.suite.suite_user_service.member.handler.AuthenticationCustomException;
 import com.suite.suite_user_service.member.handler.CustomException;
 import com.suite.suite_user_service.member.handler.StatusCode;
 import io.jsonwebtoken.*;
@@ -13,13 +12,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.Null;
 import java.util.Base64;
 import java.util.Date;
 
@@ -130,9 +127,8 @@ public class JwtTokenProvider {
             return recreationAccessToken(claims.getBody().get("sub").toString(), claims.getBody().get("roles"));
         }catch (Exception e) {
             e.printStackTrace();
-            throw new AuthenticationCustomException(StatusCode.EXPIRED_JWT);
+            throw new CustomException(StatusCode.EXPIRED_JWT);
         }
-        //토큰 만료시 login페이지 reDirect
     }
 
     //AccessToken 새로 발급
