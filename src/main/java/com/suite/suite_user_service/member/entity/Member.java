@@ -1,6 +1,6 @@
 package com.suite.suite_user_service.member.entity;
 
-import com.suite.suite_user_service.member.dto.ResSignUpMemberDto;
+import com.suite.suite_user_service.member.dto.ResMemberInfoDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -75,8 +75,8 @@ public class Member implements UserDetails {
         this.role = role;
     }
 
-    public ResSignUpMemberDto entityToDto(MemberInfo memberInfo) {
-        return ResSignUpMemberDto.builder()
+    public ResMemberInfoDto entityToDto(MemberInfo memberInfo) {
+        return ResMemberInfoDto.builder()
                 .memberId(memberId)
                 .email(email)
                 .name(memberInfo.getName())

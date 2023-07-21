@@ -34,6 +34,6 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
         memberRepository.save(member);
         memberInfoRepository.save(memberInfo);
 
-        return new Message(StatusCode.OK, member.entityToDto(memberInfo));
+        return new Message(StatusCode.OK);
     }
 }

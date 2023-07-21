@@ -14,4 +14,9 @@ public class Message {
         this.message = statusCode.getMessage();
         this.data = data;
     }
+
+    public Message(StatusCode statusCode) {
+        this.statusCode = statusCode.getCode();
+        this.message = statusCode.getMessage();
+    }
 }
