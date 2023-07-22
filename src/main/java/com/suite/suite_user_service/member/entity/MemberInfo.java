@@ -1,6 +1,7 @@
 package com.suite.suite_user_service.member.entity;
 
 import com.suite.suite_user_service.member.dto.ReqSignUpMemberDto;
+import com.suite.suite_user_service.member.dto.ReqUpdateMemberDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -69,5 +70,13 @@ public class MemberInfo {
 
     public void setMemberId(Member memberId) {
         this.memberId = memberId;
+    }
+
+    public void updateProfile(ReqUpdateMemberDto reqUpdateMemberDto) {
+        this.nickname = reqUpdateMemberDto.getNickName();
+        this.phone = reqUpdateMemberDto.getPhone();
+        this.preferStudy = reqUpdateMemberDto.getPreferStudy();
+        this.location = reqUpdateMemberDto.getLocation();
+        this.studyMethod = reqUpdateMemberDto.getStudyMethod();
     }
 }

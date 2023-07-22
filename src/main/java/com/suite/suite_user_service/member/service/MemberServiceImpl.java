@@ -3,6 +3,7 @@ package com.suite.suite_user_service.member.service;
 import com.suite.suite_user_service.member.dto.AuthorizerDto;
 import com.suite.suite_user_service.member.dto.Message;
 import com.suite.suite_user_service.member.dto.ReqSignUpMemberDto;
+import com.suite.suite_user_service.member.dto.ReqUpdateMemberDto;
 import com.suite.suite_user_service.member.entity.Member;
 import com.suite.suite_user_service.member.entity.MemberInfo;
 import com.suite.suite_user_service.member.handler.CustomException;
@@ -14,6 +15,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -45,5 +48,15 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
         Member member = memberRepository.findByEmail(authorizerDto.getEmail()).orElseThrow(() -> new CustomException(StatusCode.NOT_FOUND));
 
         return new Message(StatusCode.OK, member.entityToDto());
+    }
+
+
+    @Override
+    @Transactional
+    public Message updateMemberInfo(AuthorizerDto authorizerDto, ReqUpdateMemberDto reqUpdateMemberDto) {
+        MemberInfo memberInfo = memberInfoRepository.findByMemberId_Email(authorizerDto.getEmail()).orElseThrow(() -> new CustomException(StatusCode.NOT_FOUND));
+
+        memberInfo.updateProfile(reqUpdateMemberDto);
+        return new Message(StatusCode.OK);
     }
 }

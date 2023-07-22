@@ -96,9 +96,6 @@ public class Member implements UserDetails {
                 .accountStatus(accountStatus).build();
     }
 
-
-
-
     public void addMemberInfo(MemberInfo memberInfo) {
         this.memberInfo = memberInfo;
         memberInfo.setMemberId(this);

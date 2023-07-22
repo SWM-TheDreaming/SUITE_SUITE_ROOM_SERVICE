@@ -1,9 +1,6 @@
 package com.suite.suite_user_service.member.controller;
 
-import com.suite.suite_user_service.member.dto.EmailDto;
-import com.suite.suite_user_service.member.dto.Message;
-import com.suite.suite_user_service.member.dto.ReqSignInMemberDto;
-import com.suite.suite_user_service.member.dto.ReqSignUpMemberDto;
+import com.suite.suite_user_service.member.dto.*;
 import com.suite.suite_user_service.member.handler.CustomException;
 import com.suite.suite_user_service.member.handler.StatusCode;
 import com.suite.suite_user_service.member.service.EmailService;
@@ -64,9 +61,9 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getMemberInfo(getSuiteAuthorizer()));
     }
 
-    @PostMapping("/m/update")
-    public ResponseEntity<Message> updateSuiteProfile() {
-        return null;
+    @PatchMapping("/m/update")
+    public ResponseEntity<Message> updateSuiteProfile(@Valid @RequestBody ReqUpdateMemberDto reqUpdateMemberDto) {
+        return ResponseEntity.ok(memberService.updateMemberInfo(getSuiteAuthorizer(), reqUpdateMemberDto));
     }
 
     @PostMapping("/m/delete")
