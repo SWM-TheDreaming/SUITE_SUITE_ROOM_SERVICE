@@ -1,9 +1,8 @@
 package com.suite.suite_user_service.member.service;
 
-import com.suite.suite_user_service.member.config.JwtTokenProvider;
+import com.suite.suite_user_service.member.security.JwtTokenProvider;
 import com.suite.suite_user_service.member.dto.Message;
 import com.suite.suite_user_service.member.dto.ReqSignInMemberDto;
-import com.suite.suite_user_service.member.dto.ReqSignUpMemberDto;
 import com.suite.suite_user_service.member.dto.Token;
 import com.suite.suite_user_service.member.entity.Member;
 import com.suite.suite_user_service.member.entity.RefreshToken;
@@ -18,7 +17,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 @AllArgsConstructor

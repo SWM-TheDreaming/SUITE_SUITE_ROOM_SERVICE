@@ -1,5 +1,6 @@
 package com.suite.suite_user_service.member.service;
 
+import com.suite.suite_user_service.member.dto.AuthorizerDto;
 import com.suite.suite_user_service.member.dto.Message;
 import com.suite.suite_user_service.member.dto.ReqSignUpMemberDto;
 import com.suite.suite_user_service.member.entity.Member;
@@ -40,8 +41,8 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
     }
 
     @Override
-    public Message getMemberInfo(String email) {
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new CustomException(StatusCode.NOT_FOUND));
+    public Message getMemberInfo(AuthorizerDto authorizerDto) {
+        Member member = memberRepository.findByEmail(authorizerDto.getEmail()).orElseThrow(() -> new CustomException(StatusCode.NOT_FOUND));
 
         return new Message(StatusCode.OK, member.entityToDto());
     }

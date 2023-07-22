@@ -1,8 +1,9 @@
-package com.suite.suite_user_service.member.config;
+package com.suite.suite_user_service.member.security.config;
 
-import com.suite.suite_user_service.member.filter.JwtAuthenticationFilter;
-import com.suite.suite_user_service.member.handler.AuthenticationEntryPointHandler;
-import com.suite.suite_user_service.member.handler.WebAccessDeniedHandler;
+import com.suite.suite_user_service.member.security.JwtTokenProvider;
+import com.suite.suite_user_service.member.security.filter.JwtAuthenticationFilter;
+import com.suite.suite_user_service.member.security.handler.AuthenticationEntryPointHandler;
+import com.suite.suite_user_service.member.security.handler.WebAccessDeniedHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;

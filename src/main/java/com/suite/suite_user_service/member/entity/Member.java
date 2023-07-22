@@ -11,12 +11,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @Table(name = "member")
 public class Member implements UserDetails {
+
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -92,6 +95,8 @@ public class Member implements UserDetails {
                 .studyMethod(memberInfo.getStudyMethod())
                 .accountStatus(accountStatus).build();
     }
+
+
 
 
     public void addMemberInfo(MemberInfo memberInfo) {

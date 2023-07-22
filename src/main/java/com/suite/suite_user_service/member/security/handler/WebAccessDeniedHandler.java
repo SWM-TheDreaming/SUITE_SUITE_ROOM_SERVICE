@@ -1,5 +1,6 @@
-package com.suite.suite_user_service.member.handler;
+package com.suite.suite_user_service.member.security.handler;
 
+import com.suite.suite_user_service.member.handler.StatusCode;
 import org.json.simple.JSONObject;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;

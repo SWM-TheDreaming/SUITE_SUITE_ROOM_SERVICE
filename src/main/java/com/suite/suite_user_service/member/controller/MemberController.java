@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-import static com.suite.suite_user_service.member.config.SecurityUtil.getSuiteAuthorizer;
+import static com.suite.suite_user_service.member.security.config.SecurityUtil.getSuiteAuthorizer;
 
 @RequiredArgsConstructor
 @RestController
