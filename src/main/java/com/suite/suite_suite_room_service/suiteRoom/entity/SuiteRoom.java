@@ -63,7 +63,7 @@ public class SuiteRoom {
     @Column(name = "contract_address")
     private String contractAddress;
 
-    @OneToMany(mappedBy = "suite_room", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "suiteRoom", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Participant> participants = new ArrayList<>();
 
