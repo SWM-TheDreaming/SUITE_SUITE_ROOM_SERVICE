@@ -2,13 +2,14 @@ package com.suite.suite_suite_room_service.suiteRoom.controller;
 
 import com.suite.suite_suite_room_service.suiteRoom.config.ConfigUtil;
 import com.suite.suite_suite_room_service.suiteRoom.dto.Message;
-import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
-import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
+import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import com.suite.suite_suite_room_service.suiteRoom.service.SuiteRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import static com.suite.suite_suite_room_service.suiteRoom.security.JwtInfoExtractor.getSuiteAuthorizer;
+
 
 @RequiredArgsConstructor
 @RestController
@@ -17,6 +18,12 @@ public class SuiteRoomController {
 
     private final SuiteRoomService suiteRoomService;
     private final ConfigUtil configUtil;
+
+    @GetMapping("/test")
+    public AuthorizerDto test() {
+        return getSuiteAuthorizer();
+    }
+
     @GetMapping("/suiteroom")
     public ResponseEntity<Message> listUpRooms() {
         return null;
