@@ -2,6 +2,7 @@ package com.suite.suite_suite_room_service.suiteRoom.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,12 +29,18 @@ public class Participant {
     @Column(name = "is_host")
     private Boolean isHost;
 
-//    @ManyToOne
-//    @JoinColumn(name = "suite_room_id")
-//    @JsonBackReference
-//    private SuiteRoom suiteRoom;
+    @ManyToOne
+    @JoinColumn(name = "suite_room_id")
+    @JsonBackReference
+    private SuiteRoom suiteRoom;
 
 
-
-
+    @Builder
+    public Participant(Long participantId, Long memberId, String status, Boolean isHost, SuiteRoom suiteRoom) {
+        this.participantId = participantId;
+        this.memberId = memberId;
+        this.status = status;
+        this.isHost = isHost;
+        this.suiteRoom = suiteRoom;
+    }
 }
