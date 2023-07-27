@@ -2,7 +2,10 @@ package com.suite.suite_suite_room_service.suiteRoom.service;
 
 import com.suite.suite_suite_room_service.suiteRoom.dto.StudyCategory;
 import com.suite.suite_suite_room_service.suiteRoom.dto.StudyType;
+import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
+import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
+import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,21 +26,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 class SuiteRoomServiceTest {
 
-    @Autowired
-    private SuiteRoomRepository suiteRoomRepository;
+    @Autowired private SuiteRoomRepository suiteRoomRepository;
+    @Autowired private ParticipantRepository participantRepository;
 
     @Test
     @DisplayName("스위트룸 생성")
     public void createSuiteRoom() {
         //given
         SuiteRoom suiteRoom = getMockSuiteRoom(true);
-
+        Participant participant = getMockParticipant(true, suiteRoom);
         //when
-        SuiteRoom result = suiteRoomRepository.save(suiteRoom);
-
+        suiteRoom.addParticipant(participant);
+        SuiteRoom result_suiteRoom = suiteRoomRepository.save(suiteRoom);
+        Participant result_participant = participantRepository.save(participant);
         //then
-        assertThat(result.getTitle()).isEqualTo(suiteRoom.getTitle());
-        assertThat(result.getStudyMethod()).isEqualTo(StudyType.ONLINE);
+        assertThat(result_suiteRoom.getTitle()).isEqualTo(suiteRoom.getTitle());
+        assertThat(result_suiteRoom).isEqualTo(result_participant.getSuiteRoom());
     }
 
     @Test
@@ -54,6 +58,14 @@ class SuiteRoomServiceTest {
     }
 
 
+
+    private Participant getMockParticipant(boolean ishost, SuiteRoom suiteRoom) {
+        return Participant.builder()
+                .memberId(Long.valueOf("1"))
+                .status(SuiteStatus.PLAIN)
+                .isHost(ishost)
+                .suiteRoom(suiteRoom).build();
+    }
 
     private SuiteRoom getMockSuiteRoom(boolean secret) {
         return SuiteRoom.builder()
