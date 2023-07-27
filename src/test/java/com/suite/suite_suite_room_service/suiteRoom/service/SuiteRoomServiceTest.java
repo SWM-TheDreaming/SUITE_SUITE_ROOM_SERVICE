@@ -70,7 +70,7 @@ class SuiteRoomServiceTest {
         when(suiteRoomRepository.findAll()).thenReturn(expectedList);
 
         //then
-        List<SuiteRoom> result = suiteRoomServiceImpl.getAllSuiteRooms();
+        List<SuiteRoomDto> result = suiteRoomServiceImpl.getAllSuiteRooms();
         assertThat(result.toArray().length).isEqualTo(2);
     }
 

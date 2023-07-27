@@ -14,6 +14,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     private final SuiteRoomRepository suiteRoomRepository;
 
 
+
     @Override
     public Optional<SuiteRoom> getSuiteRoom() {
         return Optional.empty();
