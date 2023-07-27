@@ -1,12 +1,13 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
+import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface SuiteRoomService {
-
+    List<SuiteRoomDto> getAllSuiteRooms();
 
     Optional<SuiteRoom> getSuiteRoom();
     Optional<List<SuiteRoom>> getAllProgressRooms();

@@ -1,6 +1,7 @@
 package com.suite.suite_suite_room_service.suiteRoom.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteRoomDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -88,6 +89,26 @@ public class SuiteRoom {
         this.studyMethod = studyMethod;
         this.studyLocation = studyLocation;
         this.contractAddress = contractAddress;
+    }
+
+    public SuiteRoomDto entityToDto() {
+        return SuiteRoomDto.builder()
+                .title(this.title)
+                .content(this.content)
+                .subject(this.subject)
+                .recruitmentDeadline(this.recruitmentDeadline)
+                .studyDeadline(this.studyDeadline)
+                .recruitmentLimit(this.recruitmentLimit)
+                .depositAmount(this.depositAmount)
+                .minAttendanceRate(this.minAttendanceRate)
+                .minMissionCompleteRate(this.minMissionCompleteRate)
+                .isPublic(this.isPublic)
+                .password(this.password)
+                .channelLink(this.channelLink)
+                .studyMethod(this.studyMethod)
+                .studyLocation(this.studyLocation)
+                .contractAddress(this.contractAddress)
+                .build();
     }
 
 

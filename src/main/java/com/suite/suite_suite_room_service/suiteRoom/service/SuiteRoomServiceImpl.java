@@ -1,10 +1,12 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
+import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +16,15 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     private final SuiteRoomRepository suiteRoomRepository;
 
 
+    @Override
+    public List<SuiteRoomDto> getAllSuiteRooms() {
+        List<SuiteRoom> suiteRooms = suiteRoomRepository.findAll();
+        List<SuiteRoomDto> suiteRoomDtos = new ArrayList<>();
+
+        suiteRooms.stream().forEach((SuiteRoom suiteRoom) -> suiteRoomDtos.add(suiteRoom.entityToDto()));
+
+        return suiteRoomDtos;
+    }
 
     @Override
     public Optional<SuiteRoom> getSuiteRoom() {
