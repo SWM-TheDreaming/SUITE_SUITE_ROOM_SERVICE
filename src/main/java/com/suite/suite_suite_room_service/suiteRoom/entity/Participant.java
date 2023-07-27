@@ -2,6 +2,7 @@ package com.suite.suite_suite_room_service.suiteRoom.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +25,8 @@ public class Participant {
     private Long memberId;
 
     @Column(name = "status")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private SuiteStatus status;
 
     @Column(name = "is_host")
     private Boolean isHost;
@@ -36,7 +38,7 @@ public class Participant {
 
 
     @Builder
-    public Participant(Long participantId, Long memberId, String status, Boolean isHost, SuiteRoom suiteRoom) {
+    public Participant(Long participantId, Long memberId, SuiteStatus status, Boolean isHost, SuiteRoom suiteRoom) {
         this.participantId = participantId;
         this.memberId = memberId;
         this.status = status;

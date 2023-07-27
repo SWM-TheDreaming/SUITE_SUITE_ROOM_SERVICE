@@ -2,6 +2,7 @@ package com.suite.suite_suite_room_service.suiteRoom.repository;
 
 import com.suite.suite_suite_room_service.suiteRoom.dto.StudyCategory;
 import com.suite.suite_suite_room_service.suiteRoom.dto.StudyType;
+import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +31,10 @@ class ParticipantRepositoryTest {
     @DisplayName("스위트룸 참가")
     public void ParticipateSuiteRoom() {
         //given
-        Participant participant = getMockParticipant(true, getMockSuiteRoom(true));
+        SuiteRoom suiteRoom = getMockSuiteRoom(true);
+        suiteRoomRepository.save(suiteRoom);
+
+        Participant participant = getMockParticipant(true, suiteRoom);
         //when
         Participant result = participantRepository.save(participant);
         //then
