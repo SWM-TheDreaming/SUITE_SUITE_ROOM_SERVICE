@@ -4,6 +4,7 @@ import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
 import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,10 +22,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,7 +40,7 @@ class SuiteRoomServiceTest {
     @DisplayName("스위트룸 생성")
     void createSuiteRoom() {
         //given
-        SuiteRoom suiteRoom = getMockSuiteRoom();
+        SuiteRoom suiteRoom = getMockSuiteRoom("test1");
 
         //when
         when(suiteRoomRepository.save(suiteRoom)).thenReturn(suiteRoom);
@@ -50,9 +52,31 @@ class SuiteRoomServiceTest {
         assertThat(result.getTitle()).isEqualTo("Test Title");
     }
 
-    SuiteRoom getMockSuiteRoom() {
+    @Test
+    @DisplayName("스위트룸 그룹 목록 확인")
+    void listUpAllSuiteRooms() {
+        //given
+        SuiteRoom suiteRoom1 = getMockSuiteRoom("test1");
+        SuiteRoom suiteRoom2 = getMockSuiteRoom("test2");
+
+        List<SuiteRoom> expectedList = new ArrayList<>();
+        expectedList.add(suiteRoom1);
+        expectedList.add(suiteRoom2);
+
+        suiteRoomRepository.save(suiteRoom1);
+        suiteRoomRepository.save(suiteRoom2);
+
+        //when
+        when(suiteRoomRepository.findAll()).thenReturn(expectedList);
+
+        //then
+        List<SuiteRoom> result = suiteRoomServiceImpl.getAllSuiteRooms();
+        assertThat(result.toArray().length).isEqualTo(2);
+    }
+
+    SuiteRoom getMockSuiteRoom(String title) {
         return SuiteRoom.builder()
-                .title("Test Title")
+                .title(title)
                 .content("Test Content")
                 .subject("")
                 .recruitmentDeadline(getTimeStamp("2023-08-23 12:57:23"))
