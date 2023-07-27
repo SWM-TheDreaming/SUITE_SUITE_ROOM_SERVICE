@@ -13,10 +13,6 @@ import java.util.Optional;
 public class SuiteRoomServiceImpl implements SuiteRoomService{
     private final SuiteRoomRepository suiteRoomRepository;
 
-//    @Override
-//    public Optional<List<SuiteRoom>> getAllSuiteRooms() {
-//        return Optional.empty();
-//    }
 
     @Override
     public Optional<SuiteRoom> getSuiteRoom() {

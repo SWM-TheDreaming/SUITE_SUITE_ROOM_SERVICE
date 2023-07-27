@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SuiteRoomService {
-//    Optional<List<SuiteRoom>> getAllSuiteRooms();
+
 
     Optional<SuiteRoom> getSuiteRoom();
     Optional<List<SuiteRoom>> getAllProgressRooms();
