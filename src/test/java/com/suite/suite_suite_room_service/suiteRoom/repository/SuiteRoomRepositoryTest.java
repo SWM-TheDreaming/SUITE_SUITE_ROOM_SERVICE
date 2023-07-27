@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.sql.Timestamp;
@@ -14,6 +15,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @ExtendWith(SpringExtension.class)
@@ -25,8 +28,25 @@ class SuiteRoomRepositoryTest {
     @Test
     @DisplayName("스위트룸 생성")
     void saveSuiteRoom() {
+        //given
+        SuiteRoom suiteRoom = SuiteRoom.builder()
+                .title("Test Title")
+                .content("Test Content")
+                .subject("")
+                .recruitmentDeadline(getTimeStamp("2023-08-23 12:57:23"))
+                .studyDeadline(getTimeStamp("2023-10-23 12:57:23"))
+                .depositAmount(20000)
+                .minAttendanceRate(80)
+                .minMissionCompleteRate(80)
+                .isPublic(true)
+                .channelLink("https://open.kakao.com/o/gshpRksf")
+                .studyMethod("ONLINE")
+                .studyLocation("SEOUL").build();
 
-
+        //when
+            suiteRoomRepository.save(suiteRoom);
+        //then
+        assertEquals(suiteRoom.getTitle(), suiteRoom.getTitle());
     }
 
     private Timestamp getTimeStamp(String time) {
