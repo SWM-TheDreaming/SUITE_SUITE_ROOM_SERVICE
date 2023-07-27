@@ -5,6 +5,7 @@ import com.suite.suite_suite_room_service.suiteRoom.dto.StudyType;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
+import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +35,7 @@ class ParticipantRepositoryTest {
         SuiteRoom suiteRoom = getMockSuiteRoom(true);
         suiteRoomRepository.save(suiteRoom);
 
-        Participant participant = getMockParticipant(true, suiteRoom);
+        Participant participant = getMockParticipant(true, getMockAuthorizer());
         //when
         Participant result = participantRepository.save(participant);
         //then
@@ -42,12 +43,21 @@ class ParticipantRepositoryTest {
         assertThat(result.getSuiteRoom()).isEqualTo(participant.getSuiteRoom());
     }
 
-    private Participant getMockParticipant(boolean ishost, SuiteRoom suiteRoom) {
+    private AuthorizerDto getMockAuthorizer() {
+        return AuthorizerDto.builder()
+                .memberId(Long.parseLong("1"))
+                .accountStatus("ACTIVIATE")
+                .name("김대현")
+                .nickName("Darren")
+                .email("zxz4641@gmail.com")
+                .role("ROLE_USER").build();
+    }
+
+    private Participant getMockParticipant(boolean ishost, AuthorizerDto authorizerDto) {
         return Participant.builder()
-                .memberId(Long.valueOf("1"))
+                .authorizerDto(authorizerDto)
                 .status(SuiteStatus.PLAIN)
-                .isHost(ishost)
-                .suiteRoom(suiteRoom).build();
+                .isHost(ishost).build();
     }
 
     private SuiteRoom getMockSuiteRoom(boolean secret) {

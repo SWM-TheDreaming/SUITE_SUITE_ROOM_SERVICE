@@ -1,5 +1,6 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
+import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.dto.StudyCategory;
 import com.suite.suite_suite_room_service.suiteRoom.dto.StudyType;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
@@ -7,6 +8,7 @@ import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
+import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,8 +35,8 @@ class SuiteRoomServiceTest {
     @DisplayName("스위트룸 생성")
     public void createSuiteRoom() {
         //given
-        SuiteRoom suiteRoom = getMockSuiteRoom(true);
-        Participant participant = getMockParticipant(true, suiteRoom);
+        SuiteRoom suiteRoom = getMockSuiteRoom(true).toSuiteRoomEntity();
+        Participant participant = getMockParticipant(true, getMockAuthorizer());
         //when
         suiteRoom.addParticipant(participant);
         SuiteRoom result_suiteRoom = suiteRoomRepository.save(suiteRoom);
@@ -48,27 +50,39 @@ class SuiteRoomServiceTest {
     @DisplayName("스위트룸 비공개생성")
     public void createSecretSuiteRoom() {
         //given
-        SuiteRoom suiteRoom = getMockSuiteRoom(false);
+        SuiteRoom suiteRoom = getMockSuiteRoom(false).toSuiteRoomEntity();
+        Participant participant = getMockParticipant(true, getMockAuthorizer());
         //when
-        SuiteRoom result = suiteRoomRepository.save(suiteRoom);
+        suiteRoom.addParticipant(participant);
+        SuiteRoom result_suiteRoom = suiteRoomRepository.save(suiteRoom);
+        Participant result_participant = participantRepository.save(participant);
 
         //then
-        assertThat(result.getIsPublic()).isEqualTo(suiteRoom.getIsPublic());
-        assertThat(result.getPassword()).isEqualTo(suiteRoom.getPassword());
+        assertThat(result_suiteRoom.getIsPublic()).isEqualTo(suiteRoom.getIsPublic());
+        assertThat(result_suiteRoom.getPassword()).isEqualTo(suiteRoom.getPassword());
+        assertThat(result_suiteRoom).isEqualTo(result_participant.getSuiteRoom());
     }
 
 
+    private AuthorizerDto getMockAuthorizer() {
+        return AuthorizerDto.builder()
+                .memberId(Long.parseLong("1"))
+                .accountStatus("ACTIVIATE")
+                .name("김대현")
+                .nickName("Darren")
+                .email("zxz4641@gmail.com")
+                .role("ROLE_USER").build();
+    }
 
-    private Participant getMockParticipant(boolean ishost, SuiteRoom suiteRoom) {
+    private Participant getMockParticipant(boolean ishost, AuthorizerDto authorizerDto) {
         return Participant.builder()
-                .memberId(Long.valueOf("1"))
+                .authorizerDto(authorizerDto)
                 .status(SuiteStatus.PLAIN)
-                .isHost(ishost)
-                .suiteRoom(suiteRoom).build();
+                .isHost(ishost).build();
     }
 
-    private SuiteRoom getMockSuiteRoom(boolean secret) {
-        return SuiteRoom.builder()
+    private ReqSuiteRoom getMockSuiteRoom(boolean secret) {
+        return ReqSuiteRoom.builder()
                 .title("Test Title")
                 .content("Test Content")
                 .subject(StudyCategory.TOEIC)

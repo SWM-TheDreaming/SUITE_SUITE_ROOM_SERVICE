@@ -89,5 +89,9 @@ public class SuiteRoom {
         this.contractAddress = contractAddress;
     }
 
+    public void addParticipant(Participant participant) {
+        this.participants.add(participant);
+        participant.addSuiteRoom(this);
+    }
 
 }

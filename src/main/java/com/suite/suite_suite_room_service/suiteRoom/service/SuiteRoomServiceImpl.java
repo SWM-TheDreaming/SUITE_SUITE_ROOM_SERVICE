@@ -1,7 +1,14 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
+import com.suite.suite_suite_room_service.suiteRoom.dto.Message;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoom;
+import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
+import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
+import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
+import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
+import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SuiteRoomServiceImpl implements SuiteRoomService{
     private final SuiteRoomRepository suiteRoomRepository;
+    private final ParticipantRepository participantRepository;
 
     @Override
     public Optional<List<SuiteRoom>> getAllSuiteRooms() {
@@ -34,8 +42,18 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     }
 
     @Override
-    public SuiteRoom createSuiteRoom(SuiteRoom suiteRoom) {
-        return suiteRoomRepository.save(suiteRoom);
+    public Message createSuiteRoom(ReqSuiteRoom reqSuiteRoom, AuthorizerDto authorizerDto) {
+        SuiteRoom suiteRoom = reqSuiteRoom.toSuiteRoomEntity();
+        Participant participant = Participant.builder()
+                                        .authorizerDto(authorizerDto)
+                                        .status(SuiteStatus.PLAIN)
+                                        .isHost(true).build();
+        suiteRoom.addParticipant(participant);
+
+        suiteRoomRepository.save(suiteRoom);
+        participantRepository.save(participant);
+
+        return new Message(StatusCode.OK);
     }
 
     @Override

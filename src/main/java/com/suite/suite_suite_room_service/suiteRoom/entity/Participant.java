@@ -3,6 +3,8 @@ package com.suite.suite_suite_room_service.suiteRoom.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
+import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
+import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +26,13 @@ public class Participant {
     @Column(name = "member_id")
     private Long memberId;
 
+    @Column(name = "email", unique = true)
+    private String email;
+
+    private String name;
+
+    private String nickname;
+
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private SuiteStatus status;
@@ -38,11 +47,18 @@ public class Participant {
 
 
     @Builder
-    public Participant(Long participantId, Long memberId, SuiteStatus status, Boolean isHost, SuiteRoom suiteRoom) {
+    public Participant(Long participantId, AuthorizerDto authorizerDto, SuiteStatus status, Boolean isHost) {
         this.participantId = participantId;
-        this.memberId = memberId;
+        this.memberId = authorizerDto.getMemberId();
+        this.email = authorizerDto.getEmail();
+        this.name = authorizerDto.getName();
+        this.nickname = authorizerDto.getNickName();
         this.status = status;
         this.isHost = isHost;
+    }
+
+
+    public void addSuiteRoom(SuiteRoom suiteRoom) {
         this.suiteRoom = suiteRoom;
     }
 }
