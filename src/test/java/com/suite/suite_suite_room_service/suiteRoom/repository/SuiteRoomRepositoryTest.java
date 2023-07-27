@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,6 +36,23 @@ class SuiteRoomRepositoryTest {
         suiteRoomRepository.save(suiteRoom);
         //then
         assertEquals(suiteRoom.getTitle(), suiteRoom.getTitle());
+    }
+
+    @Test
+    @DisplayName("스위트룸 그룹 목록 확인")
+    void getAllSuiteRooms() {
+        //given
+        SuiteRoom suiteRoom = getMockSuiteRoom();
+        SuiteRoom suiteRoom2 = getMockSuiteRoom();
+        SuiteRoom suiteRoom3 = getMockSuiteRoom();
+        //when
+        suiteRoomRepository.save(suiteRoom);
+        suiteRoomRepository.save(suiteRoom2);
+        suiteRoomRepository.save(suiteRoom3);
+
+        List<SuiteRoom> result = suiteRoomRepository.findAll();
+        //then
+        assertEquals(result.toArray().length, 3);
     }
 
     SuiteRoom getMockSuiteRoom() {
