@@ -24,6 +24,9 @@ public class SuiteRoom {
     @Column(name = "title", unique = true)
     private String title;
 
+    @Column(name = "content", columnDefinition= "TEXT")
+    private String content;
+
     @Column(name = "subject")
     private String subject;
 
@@ -63,14 +66,15 @@ public class SuiteRoom {
     @Column(name = "contract_address")
     private String contractAddress;
 
-    @OneToMany(mappedBy = "suiteRoom", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<Participant> participants = new ArrayList<>();
+//    @OneToMany(mappedBy = "suiteRoom", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+//    @JsonManagedReference
+//    private List<Participant> participants = new ArrayList<>();
 
     @Builder
-    public SuiteRoom(Long suiteRoomId, String title, String subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, String channelLink, String studyMethod, String studyLocation, String contractAddress, Long participantId) {
+    public SuiteRoom(Long suiteRoomId, String title, String content, String subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, String channelLink, String studyMethod, String studyLocation, String contractAddress, Long participantId) {
         this.suiteRoomId = suiteRoomId;
         this.title = title;
+        this.content = content;
         this.subject = subject;
         this.recruitmentDeadline = recruitmentDeadline;
         this.studyDeadline = studyDeadline;

@@ -28,10 +28,10 @@ public class Participant {
     @Column(name = "is_host")
     private Boolean isHost;
 
-    @ManyToOne
-    @JoinColumn(name = "suite_room_id")
-    @JsonBackReference
-    private SuiteRoom suiteRoom;
+//    @ManyToOne
+//    @JoinColumn(name = "suite_room_id")
+//    @JsonBackReference
+//    private SuiteRoom suiteRoom;
 
 
 

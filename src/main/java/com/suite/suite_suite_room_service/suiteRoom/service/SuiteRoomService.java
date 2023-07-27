@@ -11,7 +11,7 @@ public interface SuiteRoomService {
     Optional<SuiteRoom> getSuiteRoom();
     Optional<List<SuiteRoom>> getAllProgressRooms();
     Optional<List<SuiteRoom>> getAllCompletionRooms();
-    Optional<SuiteRoom> createRoom();
+    SuiteRoom createSuiteRoom(SuiteRoom suiteRoom);
     Optional<SuiteRoom> joinRoom();
     Optional<SuiteRoom> deleteRoom();
     Optional<SuiteRoom> renewalRoom();

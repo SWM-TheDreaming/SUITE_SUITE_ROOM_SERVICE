@@ -1,6 +1,7 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
+import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +11,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class SuiteRoomServiceImpl implements SuiteRoomService{
-
+    private final SuiteRoomRepository suiteRoomRepository;
 
     @Override
     public Optional<List<SuiteRoom>> getAllSuiteRooms() {
@@ -33,8 +34,8 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     }
 
     @Override
-    public Optional<SuiteRoom> createRoom() {
-        return Optional.empty();
+    public SuiteRoom createSuiteRoom(SuiteRoom suiteRoom) {
+        return suiteRoomRepository.save(suiteRoom);
     }
 
     @Override
