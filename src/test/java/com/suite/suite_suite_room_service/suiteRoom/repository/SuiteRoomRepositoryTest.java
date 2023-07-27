@@ -1,5 +1,7 @@
 package com.suite.suite_suite_room_service.suiteRoom.repository;
 
+import com.suite.suite_suite_room_service.suiteRoom.dto.StudyCategory;
+import com.suite.suite_suite_room_service.suiteRoom.dto.StudyType;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,7 +43,7 @@ class SuiteRoomRepositoryTest {
         return SuiteRoom.builder()
                 .title("Test Title")
                 .content("Test Content")
-                .subject("")
+                .subject(StudyCategory.TOEIC)
                 .recruitmentDeadline(getTimeStamp("2023-08-23 12:57:23"))
                 .studyDeadline(getTimeStamp("2023-10-23 12:57:23"))
                 .depositAmount(20000)
@@ -49,8 +51,7 @@ class SuiteRoomRepositoryTest {
                 .minMissionCompleteRate(80)
                 .isPublic(true)
                 .channelLink("https://open.kakao.com/o/gshpRksf")
-                .studyMethod("ONLINE")
-                .studyLocation("SEOUL").build();
+                .studyMethod(StudyType.ONLINE).build();
     }
 
     private Timestamp getTimeStamp(String time) {
