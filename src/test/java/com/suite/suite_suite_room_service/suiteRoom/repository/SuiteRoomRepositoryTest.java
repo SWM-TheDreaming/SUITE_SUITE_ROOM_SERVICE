@@ -39,7 +39,7 @@ class SuiteRoomRepositoryTest {
         assertEquals(suiteRoom.getTitle(), suiteRoom.getTitle());
     }
 
-    SuiteRoom getMockSuiteRoom(boolean secret) {
+    private SuiteRoom getMockSuiteRoom(boolean secret) {
         return SuiteRoom.builder()
                 .title("Test Title")
                 .content("Test Content")
