@@ -30,7 +30,7 @@ class SuiteRoomRepositoryTest {
     @DisplayName("스위트룸 생성")
     void saveSuiteRoom() {
         //given
-        SuiteRoom suiteRoom = getMockSuiteRoom();
+        SuiteRoom suiteRoom = getMockSuiteRoom("test");
 
         //when
         suiteRoomRepository.save(suiteRoom);
@@ -42,9 +42,9 @@ class SuiteRoomRepositoryTest {
     @DisplayName("스위트룸 그룹 목록 확인")
     void getAllSuiteRooms() {
         //given
-        SuiteRoom suiteRoom = getMockSuiteRoom();
-        SuiteRoom suiteRoom2 = getMockSuiteRoom();
-        SuiteRoom suiteRoom3 = getMockSuiteRoom();
+        SuiteRoom suiteRoom = getMockSuiteRoom("test1");
+        SuiteRoom suiteRoom2 = getMockSuiteRoom("test2");
+        SuiteRoom suiteRoom3 = getMockSuiteRoom("test3");
         //when
         suiteRoomRepository.save(suiteRoom);
         suiteRoomRepository.save(suiteRoom2);
@@ -55,9 +55,9 @@ class SuiteRoomRepositoryTest {
         assertEquals(result.toArray().length, 3);
     }
 
-    SuiteRoom getMockSuiteRoom() {
+    SuiteRoom getMockSuiteRoom(String title) {
         return SuiteRoom.builder()
-                .title("Test Title")
+                .title(title)
                 .content("Test Content")
                 .subject("")
                 .recruitmentDeadline(getTimeStamp("2023-08-23 12:57:23"))
