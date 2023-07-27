@@ -36,21 +36,18 @@ class SuiteRoomServiceTest {
 
     @Test
     @DisplayName("스위트룸 생성")
-    void createSuiteRoom() {
+    public void createSuiteRoom() {
         //given
         SuiteRoom suiteRoom = getMockSuiteRoom();
 
         //when
-        when(suiteRoomRepository.save(suiteRoom)).thenReturn(suiteRoom);
+        SuiteRoom result = suiteRoomRepository.save(suiteRoom);
 
         //then
-        SuiteRoom result = suiteRoomServiceImpl.createSuiteRoom(suiteRoom);
-        verify(suiteRoomRepository).save(suiteRoom);
-
         assertThat(result.getTitle()).isEqualTo("Test Title");
     }
 
-    SuiteRoom getMockSuiteRoom() {
+    public SuiteRoom getMockSuiteRoom() {
         return SuiteRoom.builder()
                 .title("Test Title")
                 .content("Test Content")
@@ -62,8 +59,7 @@ class SuiteRoomServiceTest {
                 .minMissionCompleteRate(80)
                 .isPublic(true)
                 .channelLink("https://open.kakao.com/o/gshpRksf")
-                .studyMethod("ONLINE")
-                .studyLocation("SEOUL").build();
+                .studyMethod(StudyType.ONLINE).build();
     }
 
     private Timestamp getTimeStamp(String time) {
