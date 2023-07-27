@@ -31,7 +31,7 @@ class SuiteRoomRepositoryTest {
     @DisplayName("스위트룸 생성")
     void saveSuiteRoom() {
         //given
-        SuiteRoom suiteRoom = getMockSuiteRoom();
+        SuiteRoom suiteRoom = getMockSuiteRoom(true);
 
         //when
         suiteRoomRepository.save(suiteRoom);
@@ -39,7 +39,7 @@ class SuiteRoomRepositoryTest {
         assertEquals(suiteRoom.getTitle(), suiteRoom.getTitle());
     }
 
-    SuiteRoom getMockSuiteRoom() {
+    SuiteRoom getMockSuiteRoom(boolean secret) {
         return SuiteRoom.builder()
                 .title("Test Title")
                 .content("Test Content")
@@ -49,7 +49,8 @@ class SuiteRoomRepositoryTest {
                 .depositAmount(20000)
                 .minAttendanceRate(80)
                 .minMissionCompleteRate(80)
-                .isPublic(true)
+                .isPublic(secret)
+                .password(secret ? null : 3249)
                 .channelLink("https://open.kakao.com/o/gshpRksf")
                 .studyMethod(StudyType.ONLINE).build();
     }

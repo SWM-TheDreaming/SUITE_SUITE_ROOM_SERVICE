@@ -32,7 +32,7 @@ class SuiteRoomServiceTest {
     @DisplayName("스위트룸 생성")
     public void createSuiteRoom() {
         //given
-        SuiteRoom suiteRoom = getMockSuiteRoom();
+        SuiteRoom suiteRoom = getMockSuiteRoom(true);
 
         //when
         SuiteRoom result = suiteRoomRepository.save(suiteRoom);
@@ -42,11 +42,22 @@ class SuiteRoomServiceTest {
         assertThat(result.getStudyMethod()).isEqualTo(StudyType.ONLINE);
     }
 
+    @Test
+    @DisplayName("스위트룸 비공개생성")
+    public void createSecretSuiteRoom() {
+        //given
+        SuiteRoom suiteRoom = getMockSuiteRoom(false);
+        //when
+        SuiteRoom result = suiteRoomRepository.save(suiteRoom);
+
+        //then
+        assertThat(result.getIsPublic()).isEqualTo(suiteRoom.getIsPublic());
+        assertThat(result.getPassword()).isEqualTo(suiteRoom.getPassword());
+    }
 
 
 
-
-    public SuiteRoom getMockSuiteRoom() {
+    public SuiteRoom getMockSuiteRoom(boolean secret) {
         return SuiteRoom.builder()
                 .title("Test Title")
                 .content("Test Content")
@@ -56,7 +67,8 @@ class SuiteRoomServiceTest {
                 .depositAmount(20000)
                 .minAttendanceRate(80)
                 .minMissionCompleteRate(80)
-                .isPublic(true)
+                .isPublic(secret)
+                .password(secret ? null : 3249)
                 .channelLink("https://open.kakao.com/o/gshpRksf")
                 .studyMethod(StudyType.ONLINE).build();
     }
