@@ -7,10 +7,14 @@ import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomReposito
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -19,30 +23,35 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@ExtendWith(SpringExtension.class)
 class SuiteRoomServiceTest {
 
-    @InjectMocks
-    private SuiteRoomServiceImpl suiteRoomService;
+    @InjectMocks private SuiteRoomServiceImpl suiteRoomServiceImpl;
+    @Mock private SuiteRoomRepository suiteRoomRepository;
 
-    @Mock
-    private SuiteRoomRepository suiteRoomRepository;
+    @Test
+    @DisplayName("스위트룸 생성")
+    void createSuiteRoom() {
+        //given
+        SuiteRoom suiteRoom = getMockSuiteRoom();
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
+        //when
+        when(suiteRoomRepository.save(suiteRoom)).thenReturn(suiteRoom);
+
+        //then
+        SuiteRoom result = suiteRoomServiceImpl.createSuiteRoom(suiteRoom);
+        verify(suiteRoomRepository).save(suiteRoom);
+
+        assertThat(result.getTitle()).isEqualTo("Test Title");
     }
 
-    @DisplayName("공개방 생성 테스트")
-    @Test
-    public void testCreateSuiteRoomWithoutPassword() {
-
-
-        SuiteRoom suiteRoom = SuiteRoom.builder()
+    SuiteRoom getMockSuiteRoom() {
+        return SuiteRoom.builder()
                 .title("Test Title")
                 .content("Test Content")
                 .subject("")
@@ -55,16 +64,6 @@ class SuiteRoomServiceTest {
                 .channelLink("https://open.kakao.com/o/gshpRksf")
                 .studyMethod("ONLINE")
                 .studyLocation("SEOUL").build();
-
-        //suiteRoomRepository.save() 호출 시 SuiteRoom 객체를 반환 하도록 설정
-        when(suiteRoomRepository.save(suiteRoom)).thenReturn(suiteRoom);
-
-        SuiteRoom createdSuiteRoom = suiteRoomService.createSuiteRoom(suiteRoom);
-
-        verify(suiteRoomRepository).save(suiteRoom);
-        System.out.println(createdSuiteRoom.getSuiteRoomId());
-        //assertEquals(createdSuiteRoom.getSuiteRoomId(), 1);
-        assertEquals(createdSuiteRoom.getTitle(), suiteRoom.getTitle());
     }
 
     private Timestamp getTimeStamp(String time) {

@@ -29,7 +29,16 @@ class SuiteRoomRepositoryTest {
     @DisplayName("스위트룸 생성")
     void saveSuiteRoom() {
         //given
-        SuiteRoom suiteRoom = SuiteRoom.builder()
+        SuiteRoom suiteRoom = getMockSuiteRoom();
+
+        //when
+        suiteRoomRepository.save(suiteRoom);
+        //then
+        assertEquals(suiteRoom.getTitle(), suiteRoom.getTitle());
+    }
+
+    SuiteRoom getMockSuiteRoom() {
+        return SuiteRoom.builder()
                 .title("Test Title")
                 .content("Test Content")
                 .subject("")
@@ -42,11 +51,6 @@ class SuiteRoomRepositoryTest {
                 .channelLink("https://open.kakao.com/o/gshpRksf")
                 .studyMethod("ONLINE")
                 .studyLocation("SEOUL").build();
-
-        //when
-            suiteRoomRepository.save(suiteRoom);
-        //then
-        assertEquals(suiteRoom.getTitle(), suiteRoom.getTitle());
     }
 
     private Timestamp getTimeStamp(String time) {
