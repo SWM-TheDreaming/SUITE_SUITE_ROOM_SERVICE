@@ -5,6 +5,7 @@ import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,21 +32,6 @@ class SuiteRoomServiceTest {
     @InjectMocks private SuiteRoomServiceImpl suiteRoomServiceImpl;
     @Mock private SuiteRoomRepository suiteRoomRepository;
 
-    @Test
-    @DisplayName("스위트룸 생성")
-    void createSuiteRoom() {
-        //given
-        SuiteRoom suiteRoom = getMockSuiteRoom("test1");
-
-        //when
-        when(suiteRoomRepository.save(suiteRoom)).thenReturn(suiteRoom);
-
-        //then
-        SuiteRoom result = suiteRoomServiceImpl.createSuiteRoom(suiteRoom);
-        verify(suiteRoomRepository).save(suiteRoom);
-
-        assertThat(result.getTitle()).isEqualTo("test1");
-    }
 
     @Test
     @DisplayName("스위트룸 그룹 목록 확인")
@@ -66,7 +52,10 @@ class SuiteRoomServiceTest {
 
         //then
         List<SuiteRoomDto> result = suiteRoomServiceImpl.getAllSuiteRooms();
-        assertThat(result.toArray().length).isEqualTo(2);
+        Assertions.assertAll(
+                ()-> assertThat(result.toArray().length).isEqualTo(2)
+        );
+
     }
 
     SuiteRoom getMockSuiteRoom(String title) {

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,11 +20,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     @Override
     public List<SuiteRoomDto> getAllSuiteRooms() {
         List<SuiteRoom> suiteRooms = suiteRoomRepository.findAll();
-        List<SuiteRoomDto> suiteRoomDtos = new ArrayList<>();
-
-        suiteRooms.stream().forEach((SuiteRoom suiteRoom) -> suiteRoomDtos.add(suiteRoom.entityToDto()));
-
-        return suiteRoomDtos;
+        return suiteRooms.stream().map(suiteRoom -> suiteRoom.entityToDto()).collect(Collectors.toList());
     }
 
     @Override
