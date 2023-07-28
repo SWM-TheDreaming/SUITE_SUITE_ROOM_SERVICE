@@ -1,69 +1,103 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
+import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
+import com.suite.suite_suite_room_service.suiteRoom.dto.StudyCategory;
+import com.suite.suite_suite_room_service.suiteRoom.dto.StudyType;
+import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
+import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
-import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
-import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
+import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
-import org.junit.jupiter.api.BeforeEach;
+import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
+@DataJpaTest
 class SuiteRoomServiceTest {
 
-    @InjectMocks private SuiteRoomServiceImpl suiteRoomServiceImpl;
-    @Mock private SuiteRoomRepository suiteRoomRepository;
+    @Autowired private SuiteRoomRepository suiteRoomRepository;
+    @Autowired private ParticipantRepository participantRepository;
 
     @Test
     @DisplayName("스위트룸 생성")
-    void createSuiteRoom() {
+    public void createSuiteRoom() {
         //given
-        SuiteRoom suiteRoom = getMockSuiteRoom();
-
+        SuiteRoom suiteRoom = getMockSuiteRoom(true).toSuiteRoomEntity();
+        Participant participant = getMockParticipant(true, getMockAuthorizer());
         //when
-        when(suiteRoomRepository.save(suiteRoom)).thenReturn(suiteRoom);
-
+        suiteRoom.addParticipant(participant);
+        SuiteRoom result_suiteRoom = suiteRoomRepository.save(suiteRoom);
+        Participant result_participant = participantRepository.save(participant);
         //then
-        SuiteRoom result = suiteRoomServiceImpl.createSuiteRoom(suiteRoom);
-        verify(suiteRoomRepository).save(suiteRoom);
-
-        assertThat(result.getTitle()).isEqualTo("Test Title");
+        Assertions.assertAll(
+                () -> assertThat(result_suiteRoom.getTitle()).isEqualTo(suiteRoom.getTitle()),
+                () -> assertThat(result_suiteRoom).isEqualTo(result_participant.getSuiteRoom())
+                );
     }
 
-    SuiteRoom getMockSuiteRoom() {
-        return SuiteRoom.builder()
+    @Test
+    @DisplayName("스위트룸 비공개생성")
+    public void createSecretSuiteRoom() {
+        //given
+        SuiteRoom suiteRoom = getMockSuiteRoom(false).toSuiteRoomEntity();
+        Participant participant = getMockParticipant(true, getMockAuthorizer());
+        //when
+        suiteRoom.addParticipant(participant);
+        SuiteRoom result_suiteRoom = suiteRoomRepository.save(suiteRoom);
+        Participant result_participant = participantRepository.save(participant);
+
+        //then
+        Assertions.assertAll(
+                () -> assertThat(result_suiteRoom.getIsPublic()).isEqualTo(suiteRoom.getIsPublic()),
+                () -> assertThat(result_suiteRoom.getPassword()).isEqualTo(suiteRoom.getPassword()),
+                () -> assertThat(result_suiteRoom).isEqualTo(result_participant.getSuiteRoom())
+        );
+
+    }
+
+
+    private AuthorizerDto getMockAuthorizer() {
+        return AuthorizerDto.builder()
+                .memberId(Long.parseLong("1"))
+                .accountStatus("ACTIVIATE")
+                .name("김대현")
+                .nickName("Darren")
+                .email("zxz4641@gmail.com")
+                .role("ROLE_USER").build();
+    }
+
+    private Participant getMockParticipant(boolean ishost, AuthorizerDto authorizerDto) {
+        return Participant.builder()
+                .authorizerDto(authorizerDto)
+                .status(SuiteStatus.PLAIN)
+                .isHost(ishost).build();
+    }
+
+    private ReqSuiteRoomDto getMockSuiteRoom(boolean isPublic) {
+        return ReqSuiteRoomDto.builder()
                 .title("Test Title")
                 .content("Test Content")
-                .subject("")
+                .subject(StudyCategory.TOEIC)
                 .recruitmentDeadline(getTimeStamp("2023-08-23 12:57:23"))
                 .studyDeadline(getTimeStamp("2023-10-23 12:57:23"))
                 .depositAmount(20000)
                 .minAttendanceRate(80)
                 .minMissionCompleteRate(80)
-                .isPublic(true)
+                .isPublic(isPublic)
+                .password(isPublic ? null : 3249)
                 .channelLink("https://open.kakao.com/o/gshpRksf")
-                .studyMethod("ONLINE")
-                .studyLocation("SEOUL").build();
+                .studyMethod(StudyType.ONLINE).build();
     }
 
     private Timestamp getTimeStamp(String time) {
