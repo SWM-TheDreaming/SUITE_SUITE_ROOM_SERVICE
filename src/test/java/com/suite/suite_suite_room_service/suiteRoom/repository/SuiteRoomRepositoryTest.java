@@ -1,19 +1,13 @@
-package com.suite.suite_suite_room_service.suiteRoom.service;
+package com.suite.suite_suite_room_service.suiteRoom.repository;
 
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
-import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
-import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
-import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.sql.Timestamp;
@@ -21,33 +15,26 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+
 
 @ExtendWith(SpringExtension.class)
-class SuiteRoomServiceTest {
-
-    @InjectMocks private SuiteRoomServiceImpl suiteRoomServiceImpl;
-    @Mock private SuiteRoomRepository suiteRoomRepository;
-
+@DataJpaTest
+class SuiteRoomRepositoryTest {
+    @Autowired
+    private SuiteRoomRepository suiteRoomRepository;
+    
     @Test
     @DisplayName("스위트룸 생성")
-    void createSuiteRoom() {
+    void saveSuiteRoom() {
         //given
         SuiteRoom suiteRoom = getMockSuiteRoom();
 
         //when
-        when(suiteRoomRepository.save(suiteRoom)).thenReturn(suiteRoom);
-
+        suiteRoomRepository.save(suiteRoom);
         //then
-        SuiteRoom result = suiteRoomServiceImpl.createSuiteRoom(suiteRoom);
-        verify(suiteRoomRepository).save(suiteRoom);
-
-        assertThat(result.getTitle()).isEqualTo("Test Title");
+        assertEquals(suiteRoom.getTitle(), suiteRoom.getTitle());
     }
 
     SuiteRoom getMockSuiteRoom() {

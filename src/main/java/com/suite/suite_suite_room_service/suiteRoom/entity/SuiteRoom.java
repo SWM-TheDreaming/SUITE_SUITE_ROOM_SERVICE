@@ -1,8 +1,6 @@
 package com.suite.suite_suite_room_service.suiteRoom.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.suite.suite_suite_room_service.suiteRoom.dto.StudyCategory;
-import com.suite.suite_suite_room_service.suiteRoom.dto.StudyType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +28,7 @@ public class SuiteRoom {
     private String content;
 
     @Column(name = "subject")
-    private StudyCategory subject;
+    private String subject;
 
     @Column(name = "recruitment_deadline")
     private Timestamp recruitmentDeadline;
@@ -59,19 +57,21 @@ public class SuiteRoom {
     @Column(name = "channel_link")
     private String channelLink;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "study_method")
-    private StudyType studyMethod;
+    private String studyMethod;
+
+    @Column(name = "study_location")
+    private String studyLocation;
 
     @Column(name = "contract_address")
     private String contractAddress;
 
-    @OneToMany(mappedBy = "suiteRoom", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<Participant> participants = new ArrayList<>();
+//    @OneToMany(mappedBy = "suiteRoom", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+//    @JsonManagedReference
+//    private List<Participant> participants = new ArrayList<>();
 
     @Builder
-    public SuiteRoom(Long suiteRoomId, String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, String channelLink, StudyType studyMethod, String contractAddress, Long participantId) {
+    public SuiteRoom(Long suiteRoomId, String title, String content, String subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, String channelLink, String studyMethod, String studyLocation, String contractAddress, Long participantId) {
         this.suiteRoomId = suiteRoomId;
         this.title = title;
         this.content = content;
@@ -86,12 +86,9 @@ public class SuiteRoom {
         this.password = password;
         this.channelLink = channelLink;
         this.studyMethod = studyMethod;
+        this.studyLocation = studyLocation;
         this.contractAddress = contractAddress;
     }
 
-    public void addParticipant(Participant participant) {
-        this.participants.add(participant);
-        participant.addSuiteRoom(this);
-    }
 
 }
