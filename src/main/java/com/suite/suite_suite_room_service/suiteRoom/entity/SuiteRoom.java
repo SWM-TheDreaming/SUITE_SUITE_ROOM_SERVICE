@@ -1,9 +1,9 @@
 package com.suite.suite_suite_room_service.suiteRoom.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.StudyCategory;
 import com.suite.suite_suite_room_service.suiteRoom.dto.StudyType;
-import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteRoomDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -94,8 +94,8 @@ public class SuiteRoom {
         this.participants.add(participant);
         participant.addSuiteRoom(this);
     }
-    public SuiteRoomDto entityToDto() {
-        return SuiteRoomDto.builder()
+    public ResSuiteRoomDto toResSuiteRoomDto() {
+        return ResSuiteRoomDto.builder()
                 .title(this.title)
                 .content(this.content)
                 .subject(this.subject)

@@ -1,8 +1,8 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
-import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.Message;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
@@ -13,7 +13,6 @@ import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,9 +25,9 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
 
 
     @Override
-    public List<SuiteRoomDto> getAllSuiteRooms() {
+    public List<ResSuiteRoomDto> getAllSuiteRooms() {
         List<SuiteRoom> suiteRooms = suiteRoomRepository.findAll();
-        return suiteRooms.stream().map(suiteRoom -> suiteRoom.entityToDto()).collect(Collectors.toList());
+        return suiteRooms.stream().map(suiteRoom -> suiteRoom.toResSuiteRoomDto()).collect(Collectors.toList());
     }
 
     @Override

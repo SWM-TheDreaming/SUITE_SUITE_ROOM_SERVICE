@@ -1,17 +1,13 @@
 package com.suite.suite_suite_room_service.suiteRoom.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
-import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -56,7 +52,6 @@ public class Participant {
         this.status = status;
         this.isHost = isHost;
     }
-
 
     public void addSuiteRoom(SuiteRoom suiteRoom) {
         this.suiteRoom = suiteRoom;

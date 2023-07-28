@@ -1,16 +1,12 @@
 package com.suite.suite_suite_room_service.suiteRoom.dto;
 
-
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
 import java.sql.Timestamp;
 
 @Getter
-@NoArgsConstructor
-public class SuiteRoomDto {
+public class ResSuiteRoomDto {
     private String title;
     private String content;
     private StudyCategory subject;
@@ -24,11 +20,10 @@ public class SuiteRoomDto {
     private Integer password;
     private String channelLink;
     private StudyType studyMethod;
-    private String studyLocation;
     private String contractAddress;
 
     @Builder
-    public SuiteRoomDto(String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, String channelLink, StudyType studyMethod, String studyLocation, String contractAddress) {
+    public ResSuiteRoomDto(String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, String channelLink, StudyType studyMethod, String contractAddress) {
         this.title = title;
         this.content = content;
         this.subject = subject;
@@ -42,7 +37,6 @@ public class SuiteRoomDto {
         this.password = password;
         this.channelLink = channelLink;
         this.studyMethod = studyMethod;
-        this.studyLocation = studyLocation;
         this.contractAddress = contractAddress;
     }
 }

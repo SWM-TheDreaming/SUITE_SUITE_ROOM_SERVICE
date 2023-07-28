@@ -85,7 +85,7 @@ class SuiteRoomServiceTest {
 
         //when
         List<SuiteRoom> suiteRooms = suiteRoomRepository.findAll();
-        suiteRooms.stream().map(suiteRoom -> suiteRoom.entityToDto()).collect(Collectors.toList());
+        suiteRooms.stream().map(suiteRoom -> suiteRoom.toResSuiteRoomDto()).collect(Collectors.toList());
 
         //then
         Assertions.assertAll(
