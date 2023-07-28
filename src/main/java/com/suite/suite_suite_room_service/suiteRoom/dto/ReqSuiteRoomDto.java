@@ -1,16 +1,15 @@
 package com.suite.suite_suite_room_service.suiteRoom.dto;
 
 
+import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
 import java.sql.Timestamp;
 
+
 @Getter
-@NoArgsConstructor
-public class SuiteRoomDto {
+public class ReqSuiteRoomDto {
     private String title;
     private String content;
     private StudyCategory subject;
@@ -24,11 +23,10 @@ public class SuiteRoomDto {
     private Integer password;
     private String channelLink;
     private StudyType studyMethod;
-    private String studyLocation;
     private String contractAddress;
 
     @Builder
-    public SuiteRoomDto(String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, String channelLink, StudyType studyMethod, String studyLocation, String contractAddress) {
+    public ReqSuiteRoomDto(String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, String channelLink, StudyType studyMethod, String contractAddress) {
         this.title = title;
         this.content = content;
         this.subject = subject;
@@ -42,7 +40,24 @@ public class SuiteRoomDto {
         this.password = password;
         this.channelLink = channelLink;
         this.studyMethod = studyMethod;
-        this.studyLocation = studyLocation;
         this.contractAddress = contractAddress;
+    }
+
+    public SuiteRoom toSuiteRoomEntity() {
+        return SuiteRoom.builder()
+                .title(title)
+                .content(content)
+                .subject(subject)
+                .recruitmentDeadline(recruitmentDeadline)
+                .studyDeadline(studyDeadline)
+                .recruitmentLimit(recruitmentLimit)
+                .depositAmount(depositAmount)
+                .minAttendanceRate(minAttendanceRate)
+                .minMissionCompleteRate(minMissionCompleteRate)
+                .isPublic(isPublic)
+                .password(password)
+                .channelLink(channelLink)
+                .studyMethod(studyMethod)
+                .contractAddress(contractAddress).build();
     }
 }

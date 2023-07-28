@@ -1,44 +1,80 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
-import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteRoomDto;
+
+import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
+
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
+import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockParticipant;
+import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockSuiteRoom;
+import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
-
+import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import org.junit.jupiter.api.Assertions;
+
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
+
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
+@DataJpaTest
 class SuiteRoomServiceTest {
 
-    @InjectMocks private SuiteRoomServiceImpl suiteRoomServiceImpl;
-    @Mock private SuiteRoomRepository suiteRoomRepository;
+    @Autowired private SuiteRoomRepository suiteRoomRepository;
+    @Autowired private ParticipantRepository participantRepository;
 
+    @Test
+    @DisplayName("스위트룸 생성")
+    public void createSuiteRoom() {
+        //given
+        SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("test",true).toSuiteRoomEntity();
+        Participant participant = MockParticipant.getMockParticipant(true, getMockAuthorizer());
+        //when
+        suiteRoom.addParticipant(participant);
+        SuiteRoom result_suiteRoom = suiteRoomRepository.save(suiteRoom);
+        Participant result_participant = participantRepository.save(participant);
+        //then
+        Assertions.assertAll(
+                () -> assertThat(result_suiteRoom.getTitle()).isEqualTo(suiteRoom.getTitle()),
+                () -> assertThat(result_suiteRoom).isEqualTo(result_participant.getSuiteRoom())
+                );
+    }
+
+    @Test
+    @DisplayName("스위트룸 비공개생성")
+    public void createSecretSuiteRoom() {
+        //given
+        SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("test",false).toSuiteRoomEntity();
+        Participant participant = MockParticipant.getMockParticipant(true, getMockAuthorizer());
+        //when
+        suiteRoom.addParticipant(participant);
+        SuiteRoom result_suiteRoom = suiteRoomRepository.save(suiteRoom);
+        Participant result_participant = participantRepository.save(participant);
+
+        //then
+        Assertions.assertAll(
+                () -> assertThat(result_suiteRoom.getIsPublic()).isEqualTo(suiteRoom.getIsPublic()),
+                () -> assertThat(result_suiteRoom.getPassword()).isEqualTo(suiteRoom.getPassword()),
+                () -> assertThat(result_suiteRoom).isEqualTo(result_participant.getSuiteRoom())
+        );
+
+    }
 
     @Test
     @DisplayName("스위트룸 그룹 목록 확인")
-    void listUpAllSuiteRooms() {
+    void getAllSuiteRooms() {
         //given
-        SuiteRoom suiteRoom1 = getMockSuiteRoom("test1");
-        SuiteRoom suiteRoom2 = getMockSuiteRoom("test2");
+        SuiteRoom suiteRoom1 = MockSuiteRoom.getMockSuiteRoom("test",true).toSuiteRoomEntity();
+        SuiteRoom suiteRoom2 = MockSuiteRoom.getMockSuiteRoom("test2",true).toSuiteRoomEntity();
 
         List<SuiteRoom> expectedList = new ArrayList<>();
         expectedList.add(suiteRoom1);
@@ -48,37 +84,31 @@ class SuiteRoomServiceTest {
         suiteRoomRepository.save(suiteRoom2);
 
         //when
-        when(suiteRoomRepository.findAll()).thenReturn(expectedList);
+        List<SuiteRoom> suiteRooms = suiteRoomRepository.findAll();
+        suiteRooms.stream().map(suiteRoom -> suiteRoom.entityToDto()).collect(Collectors.toList());
 
         //then
-        List<SuiteRoomDto> result = suiteRoomServiceImpl.getAllSuiteRooms();
         Assertions.assertAll(
-                ()-> assertThat(result.toArray().length).isEqualTo(2)
+                ()-> assertThat(suiteRooms.toArray().length).isEqualTo(2)
         );
 
     }
 
-    SuiteRoom getMockSuiteRoom(String title) {
-        return SuiteRoom.builder()
-                .title(title)
-                .content("Test Content")
-                .subject("")
-                .recruitmentDeadline(getTimeStamp("2023-08-23 12:57:23"))
-                .studyDeadline(getTimeStamp("2023-10-23 12:57:23"))
-                .depositAmount(20000)
-                .minAttendanceRate(80)
-                .minMissionCompleteRate(80)
-                .isPublic(true)
-                .channelLink("https://open.kakao.com/o/gshpRksf")
-                .studyMethod("ONLINE")
-                .studyLocation("SEOUL").build();
+
+    private AuthorizerDto getMockAuthorizer() {
+        return AuthorizerDto.builder()
+                .memberId(Long.parseLong("1"))
+                .accountStatus("ACTIVIATE")
+                .name("김대현")
+                .nickName("Darren")
+                .email("zxz4641@gmail.com")
+                .role("ROLE_USER").build();
     }
 
-    private Timestamp getTimeStamp(String time) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime localDateTime = LocalDateTime.parse("2023-08-23 12:57:23", formatter);
-        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Asia/Seoul"));
-        return Timestamp.from(zonedDateTime.toInstant());
-    }
+
+
+
+
+
 
 }
