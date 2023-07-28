@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 
 
 @Getter
-public class ReqSuiteRoom {
+public class ReqSuiteRoomDto {
     private String title;
     private String content;
     private StudyCategory subject;
@@ -26,7 +26,7 @@ public class ReqSuiteRoom {
     private String contractAddress;
 
     @Builder
-    public ReqSuiteRoom(String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, String channelLink, StudyType studyMethod, String contractAddress) {
+    public ReqSuiteRoomDto(String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, String channelLink, StudyType studyMethod, String contractAddress) {
         this.title = title;
         this.content = content;
         this.subject = subject;

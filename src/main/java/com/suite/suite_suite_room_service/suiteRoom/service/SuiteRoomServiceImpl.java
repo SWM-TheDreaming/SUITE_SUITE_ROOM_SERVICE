@@ -1,7 +1,7 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
 import com.suite.suite_suite_room_service.suiteRoom.dto.Message;
-import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoom;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
@@ -42,8 +42,8 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     }
 
     @Override
-    public Message createSuiteRoom(ReqSuiteRoom reqSuiteRoom, AuthorizerDto authorizerDto) {
-        SuiteRoom suiteRoom = reqSuiteRoom.toSuiteRoomEntity();
+    public Message createSuiteRoom(ReqSuiteRoomDto reqSuiteRoomDto, AuthorizerDto authorizerDto) {
+        SuiteRoom suiteRoom = reqSuiteRoomDto.toSuiteRoomEntity();
         Participant participant = Participant.builder()
                                         .authorizerDto(authorizerDto)
                                         .status(SuiteStatus.PLAIN)

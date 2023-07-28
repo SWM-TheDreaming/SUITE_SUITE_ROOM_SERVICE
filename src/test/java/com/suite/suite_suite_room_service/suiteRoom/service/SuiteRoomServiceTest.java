@@ -1,6 +1,6 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
-import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoom;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.StudyCategory;
 import com.suite.suite_suite_room_service.suiteRoom.dto.StudyType;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
@@ -9,12 +9,11 @@ import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -25,7 +24,6 @@ import java.time.format.DateTimeFormatter;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@ExtendWith(SpringExtension.class)
 class SuiteRoomServiceTest {
 
     @Autowired private SuiteRoomRepository suiteRoomRepository;
@@ -42,8 +40,10 @@ class SuiteRoomServiceTest {
         SuiteRoom result_suiteRoom = suiteRoomRepository.save(suiteRoom);
         Participant result_participant = participantRepository.save(participant);
         //then
-        assertThat(result_suiteRoom.getTitle()).isEqualTo(suiteRoom.getTitle());
-        assertThat(result_suiteRoom).isEqualTo(result_participant.getSuiteRoom());
+        Assertions.assertAll(
+                () -> assertThat(result_suiteRoom.getTitle()).isEqualTo(suiteRoom.getTitle()),
+                () -> assertThat(result_suiteRoom).isEqualTo(result_participant.getSuiteRoom())
+                );
     }
 
     @Test
@@ -58,9 +58,12 @@ class SuiteRoomServiceTest {
         Participant result_participant = participantRepository.save(participant);
 
         //then
-        assertThat(result_suiteRoom.getIsPublic()).isEqualTo(suiteRoom.getIsPublic());
-        assertThat(result_suiteRoom.getPassword()).isEqualTo(suiteRoom.getPassword());
-        assertThat(result_suiteRoom).isEqualTo(result_participant.getSuiteRoom());
+        Assertions.assertAll(
+                () -> assertThat(result_suiteRoom.getIsPublic()).isEqualTo(suiteRoom.getIsPublic()),
+                () -> assertThat(result_suiteRoom.getPassword()).isEqualTo(suiteRoom.getPassword()),
+                () -> assertThat(result_suiteRoom).isEqualTo(result_participant.getSuiteRoom())
+        );
+
     }
 
 
@@ -81,8 +84,8 @@ class SuiteRoomServiceTest {
                 .isHost(ishost).build();
     }
 
-    private ReqSuiteRoom getMockSuiteRoom(boolean secret) {
-        return ReqSuiteRoom.builder()
+    private ReqSuiteRoomDto getMockSuiteRoom(boolean isPublic) {
+        return ReqSuiteRoomDto.builder()
                 .title("Test Title")
                 .content("Test Content")
                 .subject(StudyCategory.TOEIC)
@@ -91,8 +94,8 @@ class SuiteRoomServiceTest {
                 .depositAmount(20000)
                 .minAttendanceRate(80)
                 .minMissionCompleteRate(80)
-                .isPublic(secret)
-                .password(secret ? null : 3249)
+                .isPublic(isPublic)
+                .password(isPublic ? null : 3249)
                 .channelLink("https://open.kakao.com/o/gshpRksf")
                 .studyMethod(StudyType.ONLINE).build();
     }
