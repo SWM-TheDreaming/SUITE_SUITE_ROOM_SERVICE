@@ -1,5 +1,6 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
+import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.Message;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
@@ -12,8 +13,10 @@ import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +24,11 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     private final SuiteRoomRepository suiteRoomRepository;
     private final ParticipantRepository participantRepository;
 
+
     @Override
-    public Optional<List<SuiteRoom>> getAllSuiteRooms() {
-        return Optional.empty();
+    public List<SuiteRoomDto> getAllSuiteRooms() {
+        List<SuiteRoom> suiteRooms = suiteRoomRepository.findAll();
+        return suiteRooms.stream().map(suiteRoom -> suiteRoom.entityToDto()).collect(Collectors.toList());
     }
 
     @Override
