@@ -3,7 +3,10 @@ package com.suite.suite_suite_room_service.suiteRoom.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.suite.suite_suite_room_service.suiteRoom.dto.Message;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomDto;
+import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockParticipant;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockSuiteRoom;
+import com.suite.suite_suite_room_service.suiteRoom.service.SuiteRoomServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +16,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -25,7 +30,6 @@ class SuiteRoomControllerTest {
     @Autowired ObjectMapper mapper;
 
     @Autowired private MockMvc mockMvc;
-
     public static final String JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsb3BhaG4yQGdtYWlsLmNvbSIsIklEIjoiMSIsIk5BTUUiOiLrsJjsmIHtmZgiLCJOSUNLTkFNRSI6Imh3YW55OTkiLCJBQ0NPVU5UU1RBVFVTIjoiQUNUSVZBVEUiLCJST0xFIjoiUk9MRV9VU0VSIiwiaWF0IjoxNjkwNzgwOTIyLCJleHAiOjE2OTEzODU3MjJ9.fejoJ5Hr0P6O-Kf0TQH_eAqnbd-95E6SxBBlQyH65jo";
 
     @Test
@@ -41,6 +45,8 @@ class SuiteRoomControllerTest {
         Assertions.assertAll(
                 () -> assertThat(message.getStatusCode()).isEqualTo(200)
         );
+
+        System.out.println(responseBody);
 
     }
 
