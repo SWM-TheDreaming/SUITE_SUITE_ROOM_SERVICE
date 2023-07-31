@@ -1,8 +1,11 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
 
+import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
+import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
+import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockParticipant;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockSuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
@@ -12,14 +15,17 @@ import org.junit.jupiter.api.Assertions;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @DataJpaTest
@@ -63,6 +69,33 @@ class SuiteRoomServiceTest {
                 () -> assertThat(result_suiteRoom).isEqualTo(result_participant.getSuiteRoom())
         );
 
+    }
+
+    @Test
+    @DisplayName("스위트룸 수정")
+    public void updateSuiteRoom() {
+        //given
+        ReqSuiteRoomDto suiteRoomDto = MockSuiteRoom.getMockSuiteRoom("test", true);
+        SuiteRoom suiteRoom = suiteRoomDto.toSuiteRoomEntity();
+        Participant participant = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer());
+        suiteRoom.addParticipant(participant);
+        suiteRoomRepository.save(suiteRoom);
+        //when
+        Optional<Participant> member = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), participant.getMemberId(), true);
+        if(member.isEmpty())
+            assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.FORBIDDEN); });
+
+        ReqSuiteRoomDto updatedSuiteRoomDto = ReqSuiteRoomDto.builder()
+                .content("updated content")
+                .channelLink("http://www.naver.com").build();
+
+        suiteRoom.updateSuiteRoom(updatedSuiteRoomDto);
+        suiteRoomRepository.save(suiteRoom);
+        //then
+        Assertions.assertAll(
+                () -> assertThat(suiteRoom.getContent()).isEqualTo(updatedSuiteRoomDto.getContent()),
+                () -> assertThat(suiteRoom.getChannelLink()).isEqualTo(updatedSuiteRoomDto.getChannelLink())
+        );
     }
 
     @Test
