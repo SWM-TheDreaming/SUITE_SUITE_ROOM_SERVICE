@@ -4,11 +4,13 @@ package com.suite.suite_suite_room_service.suiteRoom.dto;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 
 
 @Getter
+@NoArgsConstructor
 public class ReqSuiteRoomDto {
     private String title;
     private String content;

@@ -2,8 +2,11 @@ package com.suite.suite_suite_room_service.suiteRoom.dto;
 
 import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Data
+@Getter
+@NoArgsConstructor
 public class Message {
     public static final String DEFAULT_RESPONSE = "Request processed successfully";
     private int statusCode;

@@ -6,6 +6,7 @@ import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
+import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
 import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
@@ -47,6 +48,9 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
 
     @Override
     public Message createSuiteRoom(ReqSuiteRoomDto reqSuiteRoomDto, AuthorizerDto authorizerDto) {
+        suiteRoomRepository.findByTitle(reqSuiteRoomDto.getTitle()).ifPresent(
+                (suiteRoom) ->  new CustomException(StatusCode.ALREADY_EXISTS)
+        );
         SuiteRoom suiteRoom = reqSuiteRoomDto.toSuiteRoomEntity();
         Participant participant = Participant.builder()
                                         .authorizerDto(authorizerDto)
