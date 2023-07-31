@@ -11,14 +11,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SuiteRoomService {
-    List<ResSuiteRoomDto> getAllSuiteRooms();
-
+    List<ResSuiteRoomDto> getAllSuiteRooms(AuthorizerDto authorizerDto);
     Optional<SuiteRoom> getSuiteRoom();
     Optional<List<SuiteRoom>> getAllProgressRooms();
     Optional<List<SuiteRoom>> getAllCompletionRooms();
-    Message createSuiteRoom(ReqSuiteRoomDto reqSuiteRoomDto, AuthorizerDto authorizerDto);
+    void createSuiteRoom(ReqSuiteRoomDto reqSuiteRoomDto, AuthorizerDto authorizerDto);
     Optional<SuiteRoom> joinRoom();
     Optional<SuiteRoom> deleteRoom();
-    Message updateSuiteRoom(ReqUpdateSuiteRoomDto reqUpdateSuiteRoomDto, AuthorizerDto authorizerDto);
+    void updateSuiteRoom(ReqUpdateSuiteRoomDto reqUpdateSuiteRoomDto, AuthorizerDto authorizerDto);
     Optional<?> commitPaymentStatus();
 }

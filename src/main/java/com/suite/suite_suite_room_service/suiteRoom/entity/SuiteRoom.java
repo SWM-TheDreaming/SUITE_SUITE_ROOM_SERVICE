@@ -98,7 +98,7 @@ public class SuiteRoom {
         this.channelLink = reqUpdateSuiteRoomDto.getChannelLink();
     }
 
-    public ResSuiteRoomDto toResSuiteRoomDto() {
+    public ResSuiteRoomDto toResSuiteRoomDto(Long participantCount, boolean isHost) {
         return ResSuiteRoomDto.builder()
                 .title(this.title)
                 .content(this.content)
@@ -110,10 +110,11 @@ public class SuiteRoom {
                 .minAttendanceRate(this.minAttendanceRate)
                 .minMissionCompleteRate(this.minMissionCompleteRate)
                 .isPublic(this.isPublic)
-                .password(this.password)
                 .channelLink(this.channelLink)
                 .studyMethod(this.studyMethod)
                 .contractAddress(this.contractAddress)
+                .participantCount(participantCount)
+                .isHost(isHost)
                 .build();
     }
 

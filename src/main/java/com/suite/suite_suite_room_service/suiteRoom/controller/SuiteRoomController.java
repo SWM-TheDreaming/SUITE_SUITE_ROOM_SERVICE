@@ -3,6 +3,7 @@ package com.suite.suite_suite_room_service.suiteRoom.controller;
 import com.suite.suite_suite_room_service.suiteRoom.config.ConfigUtil;
 import com.suite.suite_suite_room_service.suiteRoom.dto.Message;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ReqUpdateSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
@@ -31,8 +32,8 @@ public class SuiteRoomController {
 
     @GetMapping("/suiteroom")
     public ResponseEntity<Message> listUpRooms() {
-        List<ResSuiteRoomDto> resSuiteRoomDtos = suiteRoomService.getAllSuiteRooms();
-        return ResponseEntity.ok(new Message(StatusCode.OK, resSuiteRoomDtos));
+        List<ResSuiteRoomDto> getAllSuiteRooms = suiteRoomService.getAllSuiteRooms(getSuiteAuthorizer());
+        return ResponseEntity.ok(new Message(StatusCode.OK, getAllSuiteRooms));
     }
     @GetMapping("/suiteroom/detail/{suiteroodId}")
     public ResponseEntity<Message> detailOfRoom() {
@@ -48,7 +49,8 @@ public class SuiteRoomController {
     }
     @PostMapping("/suiteroom/registration")
     public ResponseEntity<Message> createRoom(@RequestBody ReqSuiteRoomDto reqSuiteRoomDto) {
-        return ResponseEntity.ok(suiteRoomService.createSuiteRoom(reqSuiteRoomDto, getSuiteAuthorizer()));
+        suiteRoomService.createSuiteRoom(reqSuiteRoomDto, getSuiteAuthorizer());
+        return ResponseEntity.ok(new Message(StatusCode.OK));
     }
     @PostMapping("/suiteroom/attendance")
     public ResponseEntity<Message> attendanceRoom() {
@@ -58,9 +60,10 @@ public class SuiteRoomController {
     public ResponseEntity<Message> deleteRoom() {
         return null;
     }
-    @PostMapping("/suiteroom/update")
-    public ResponseEntity<Message> updateRoom() {
-        return null;
+    @PatchMapping("/suiteroom/update")
+    public ResponseEntity<Message> updateRoom(@RequestBody ReqUpdateSuiteRoomDto reqUpdateSuiteRoomDto) {
+        suiteRoomService.updateSuiteRoom(reqUpdateSuiteRoomDto, getSuiteAuthorizer());
+        return ResponseEntity.ok(new Message(StatusCode.OK));
     }
     @PostMapping("/payment/completion")
     public ResponseEntity<Message> paymentCompletion() {

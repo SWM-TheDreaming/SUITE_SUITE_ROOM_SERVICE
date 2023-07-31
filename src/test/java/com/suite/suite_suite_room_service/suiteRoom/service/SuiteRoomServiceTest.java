@@ -114,7 +114,12 @@ class SuiteRoomServiceTest {
 
         //when
         List<SuiteRoom> suiteRooms = suiteRoomRepository.findAll();
-        suiteRooms.stream().map(suiteRoom -> suiteRoom.toResSuiteRoomDto()).collect(Collectors.toList());
+        suiteRooms.stream().map(
+                suiteRoom -> suiteRoom.toResSuiteRoomDto(
+                        participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId()),
+                        participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), MockParticipant.getMockAuthorizer().getMemberId(), true)
+                )
+        ).collect(Collectors.toList());
 
         //then
         Assertions.assertAll(

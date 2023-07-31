@@ -25,9 +25,16 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
 
 
     @Override
-    public List<ResSuiteRoomDto> getAllSuiteRooms() {
+    public List<ResSuiteRoomDto> getAllSuiteRooms(AuthorizerDto authorizerDto) {
         List<SuiteRoom> suiteRooms = suiteRoomRepository.findAll();
-        return suiteRooms.stream().map(suiteRoom -> suiteRoom.toResSuiteRoomDto()).collect(Collectors.toList());
+
+        return suiteRooms.stream().map(
+                suiteRoom -> suiteRoom.toResSuiteRoomDto(
+                        participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId()),
+                        participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), authorizerDto.getMemberId(), true)
+                )
+        ).collect(Collectors.toList());
+
 
     }
 
@@ -47,7 +54,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     }
 
     @Override
-    public Message createSuiteRoom(ReqSuiteRoomDto reqSuiteRoomDto, AuthorizerDto authorizerDto) {
+    public void createSuiteRoom(ReqSuiteRoomDto reqSuiteRoomDto, AuthorizerDto authorizerDto) {
         suiteRoomRepository.findByTitle(reqSuiteRoomDto.getTitle()).ifPresent(
                 (suiteRoom) ->  new CustomException(StatusCode.ALREADY_EXISTS)
         );
@@ -60,8 +67,6 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
 
         suiteRoomRepository.save(suiteRoom);
         participantRepository.save(participant);
-
-        return new Message(StatusCode.OK);
     }
 
     @Override
@@ -76,7 +81,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
 
     @Override
     @Transactional
-    public Message updateSuiteRoom(ReqUpdateSuiteRoomDto reqUpdateSuiteRoomDto, AuthorizerDto authorizerDto) {
+    public void updateSuiteRoom(ReqUpdateSuiteRoomDto reqUpdateSuiteRoomDto, AuthorizerDto authorizerDto) {
         SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(reqUpdateSuiteRoomDto.getSuiteRoomId())
                 .orElseThrow( () -> new CustomException(StatusCode.NOT_FOUND));
 
@@ -84,7 +89,6 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
                 .orElseThrow( () -> new CustomException(StatusCode.FORBIDDEN));
 
         suiteRoom.updateSuiteRoom(reqUpdateSuiteRoomDto);
-        return new Message(StatusCode.OK);
     }
 
     @Override
