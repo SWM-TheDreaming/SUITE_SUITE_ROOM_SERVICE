@@ -18,4 +18,14 @@ public class MockParticipant {
                 .isHost(ishost).build();
     }
 
+    public static AuthorizerDto getMockAuthorizer() {
+        return AuthorizerDto.builder()
+                .memberId(Long.parseLong("1"))
+                .accountStatus("ACTIVIATE")
+                .name("김대현")
+                .nickName("Darren")
+                .email("zxz4641@gmail.com")
+                .role("ROLE_USER").build();
+    }
+
 }

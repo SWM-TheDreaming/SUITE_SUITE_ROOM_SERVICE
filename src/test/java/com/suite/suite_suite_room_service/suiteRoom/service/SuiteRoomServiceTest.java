@@ -9,7 +9,6 @@ import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockSuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
-import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import org.junit.jupiter.api.Assertions;
 
 
@@ -24,7 +23,6 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import static org.mockito.Mockito.when;
 
 @DataJpaTest
 class SuiteRoomServiceTest {
@@ -37,7 +35,7 @@ class SuiteRoomServiceTest {
     public void createSuiteRoom() {
         //given
         SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("test",true).toSuiteRoomEntity();
-        Participant participant = MockParticipant.getMockParticipant(true, getMockAuthorizer());
+        Participant participant = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer());
         //when
         suiteRoom.addParticipant(participant);
         SuiteRoom result_suiteRoom = suiteRoomRepository.save(suiteRoom);
@@ -54,7 +52,7 @@ class SuiteRoomServiceTest {
     public void createSecretSuiteRoom() {
         //given
         SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("test",false).toSuiteRoomEntity();
-        Participant participant = MockParticipant.getMockParticipant(true, getMockAuthorizer());
+        Participant participant = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer());
         //when
         suiteRoom.addParticipant(participant);
         SuiteRoom result_suiteRoom = suiteRoomRepository.save(suiteRoom);
@@ -93,22 +91,5 @@ class SuiteRoomServiceTest {
         );
 
     }
-
-
-    private AuthorizerDto getMockAuthorizer() {
-        return AuthorizerDto.builder()
-                .memberId(Long.parseLong("1"))
-                .accountStatus("ACTIVIATE")
-                .name("김대현")
-                .nickName("Darren")
-                .email("zxz4641@gmail.com")
-                .role("ROLE_USER").build();
-    }
-
-
-
-
-
-
 
 }

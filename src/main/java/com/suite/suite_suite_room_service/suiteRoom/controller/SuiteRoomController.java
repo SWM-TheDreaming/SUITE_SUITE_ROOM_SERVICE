@@ -2,6 +2,7 @@ package com.suite.suite_suite_room_service.suiteRoom.controller;
 
 import com.suite.suite_suite_room_service.suiteRoom.config.ConfigUtil;
 import com.suite.suite_suite_room_service.suiteRoom.dto.Message;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import com.suite.suite_suite_room_service.suiteRoom.service.SuiteRoomService;
 import lombok.RequiredArgsConstructor;
@@ -41,8 +42,8 @@ public class SuiteRoomController {
         return null;
     }
     @PostMapping("/suiteroom/registration")
-    public ResponseEntity<Message> createRoom() {
-        return null;
+    public ResponseEntity<Message> createRoom(@RequestBody ReqSuiteRoomDto reqSuiteRoomDto) {
+        return ResponseEntity.ok(suiteRoomService.createSuiteRoom(reqSuiteRoomDto, getSuiteAuthorizer()));
     }
     @PostMapping("/suiteroom/attendance")
     public ResponseEntity<Message> attendanceRoom() {
