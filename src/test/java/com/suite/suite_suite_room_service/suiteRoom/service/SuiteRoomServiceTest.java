@@ -1,8 +1,12 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
 
+import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ReqUpdateSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
+import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
+import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockParticipant;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockSuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
@@ -17,9 +21,11 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @DataJpaTest
@@ -66,6 +72,33 @@ class SuiteRoomServiceTest {
     }
 
     @Test
+    @DisplayName("스위트룸 수정")
+    public void updateSuiteRoom() {
+        //given
+        ReqSuiteRoomDto suiteRoomDto = MockSuiteRoom.getMockSuiteRoom("test", true);
+        SuiteRoom suiteRoom = suiteRoomDto.toSuiteRoomEntity();
+        Participant participant = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer());
+        suiteRoom.addParticipant(participant);
+        suiteRoomRepository.save(suiteRoom);
+        //when
+        Optional<Participant> member = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), participant.getMemberId(), true);
+        if(member.isEmpty())
+            assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.FORBIDDEN); });
+
+        ReqUpdateSuiteRoomDto reqUpdateSuiteRoomDto = ReqUpdateSuiteRoomDto.builder()
+                .content("updated content")
+                .channelLink("http://www.naver.com").build();
+
+        suiteRoom.updateSuiteRoom(reqUpdateSuiteRoomDto);
+        suiteRoomRepository.save(suiteRoom);
+        //then
+        Assertions.assertAll(
+                () -> assertThat(suiteRoom.getContent()).isEqualTo(reqUpdateSuiteRoomDto.getContent()),
+                () -> assertThat(suiteRoom.getChannelLink()).isEqualTo(reqUpdateSuiteRoomDto.getChannelLink())
+        );
+    }
+
+    @Test
     @DisplayName("스위트룸 그룹 목록 확인")
     void getAllSuiteRooms() {
         //given
@@ -81,7 +114,12 @@ class SuiteRoomServiceTest {
 
         //when
         List<SuiteRoom> suiteRooms = suiteRoomRepository.findAll();
-        suiteRooms.stream().map(suiteRoom -> suiteRoom.toResSuiteRoomDto()).collect(Collectors.toList());
+        suiteRooms.stream().map(
+                suiteRoom -> suiteRoom.toResSuiteRoomDto(
+                        participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId()),
+                        participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), MockParticipant.getMockAuthorizer().getMemberId(), true)
+                )
+        ).collect(Collectors.toList());
 
         //then
         Assertions.assertAll(

@@ -1,9 +1,7 @@
 package com.suite.suite_suite_room_service.suiteRoom.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomDto;
-import com.suite.suite_suite_room_service.suiteRoom.dto.StudyCategory;
-import com.suite.suite_suite_room_service.suiteRoom.dto.StudyType;
+import com.suite.suite_suite_room_service.suiteRoom.dto.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -94,7 +92,13 @@ public class SuiteRoom {
         this.participants.add(participant);
         participant.addSuiteRoom(this);
     }
-    public ResSuiteRoomDto toResSuiteRoomDto() {
+
+    public void updateSuiteRoom(ReqUpdateSuiteRoomDto reqUpdateSuiteRoomDto) {
+        this.content = reqUpdateSuiteRoomDto.getContent();
+        this.channelLink = reqUpdateSuiteRoomDto.getChannelLink();
+    }
+
+    public ResSuiteRoomDto toResSuiteRoomDto(Long participantCount, boolean isHost) {
         return ResSuiteRoomDto.builder()
                 .title(this.title)
                 .content(this.content)
@@ -106,10 +110,11 @@ public class SuiteRoom {
                 .minAttendanceRate(this.minAttendanceRate)
                 .minMissionCompleteRate(this.minMissionCompleteRate)
                 .isPublic(this.isPublic)
-                .password(this.password)
                 .channelLink(this.channelLink)
                 .studyMethod(this.studyMethod)
                 .contractAddress(this.contractAddress)
+                .participantCount(participantCount)
+                .isHost(isHost)
                 .build();
     }
 

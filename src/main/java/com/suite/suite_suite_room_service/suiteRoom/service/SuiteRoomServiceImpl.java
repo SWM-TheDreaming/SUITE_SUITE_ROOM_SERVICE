@@ -1,9 +1,6 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
-import com.suite.suite_suite_room_service.suiteRoom.dto.Message;
-import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
-import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomDto;
-import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
+import com.suite.suite_suite_room_service.suiteRoom.dto.*;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
@@ -13,7 +10,9 @@ import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomReposito
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.beans.Transient;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,9 +25,16 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
 
 
     @Override
-    public List<ResSuiteRoomDto> getAllSuiteRooms() {
+    public List<ResSuiteRoomDto> getAllSuiteRooms(AuthorizerDto authorizerDto) {
         List<SuiteRoom> suiteRooms = suiteRoomRepository.findAll();
-        return suiteRooms.stream().map(suiteRoom -> suiteRoom.toResSuiteRoomDto()).collect(Collectors.toList());
+
+        return suiteRooms.stream().map(
+                suiteRoom -> suiteRoom.toResSuiteRoomDto(
+                        participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId()),
+                        participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), authorizerDto.getMemberId(), true)
+                )
+        ).collect(Collectors.toList());
+
 
     }
 
@@ -48,7 +54,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     }
 
     @Override
-    public Message createSuiteRoom(ReqSuiteRoomDto reqSuiteRoomDto, AuthorizerDto authorizerDto) {
+    public void createSuiteRoom(ReqSuiteRoomDto reqSuiteRoomDto, AuthorizerDto authorizerDto) {
         suiteRoomRepository.findByTitle(reqSuiteRoomDto.getTitle()).ifPresent(
                 (suiteRoom) ->  new CustomException(StatusCode.ALREADY_EXISTS)
         );
@@ -61,8 +67,6 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
 
         suiteRoomRepository.save(suiteRoom);
         participantRepository.save(participant);
-
-        return new Message(StatusCode.OK);
     }
 
     @Override
@@ -76,8 +80,15 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     }
 
     @Override
-    public Optional<SuiteRoom> renewalRoom() {
-        return Optional.empty();
+    @Transactional
+    public void updateSuiteRoom(ReqUpdateSuiteRoomDto reqUpdateSuiteRoomDto, AuthorizerDto authorizerDto) {
+        SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(reqUpdateSuiteRoomDto.getSuiteRoomId())
+                .orElseThrow( () -> new CustomException(StatusCode.NOT_FOUND));
+
+        participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(reqUpdateSuiteRoomDto.getSuiteRoomId(), authorizerDto.getMemberId(), true)
+                .orElseThrow( () -> new CustomException(StatusCode.FORBIDDEN));
+
+        suiteRoom.updateSuiteRoom(reqUpdateSuiteRoomDto);
     }
 
     @Override

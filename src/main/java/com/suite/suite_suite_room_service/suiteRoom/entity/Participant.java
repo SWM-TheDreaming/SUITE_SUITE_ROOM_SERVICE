@@ -22,7 +22,7 @@ public class Participant {
     @Column(name = "member_id")
     private Long memberId;
 
-    @Column(name = "email", unique = true)
+    @Column(name = "email")
     private String email;
 
     private String name;
