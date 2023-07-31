@@ -2,14 +2,10 @@ package com.suite.suite_suite_room_service.suiteRoom.service;
 
 
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
-
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
-import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
-import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockParticipant;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockSuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
-
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
 import org.junit.jupiter.api.Assertions;
 
@@ -53,9 +49,6 @@ class SuiteRoomServiceTest {
     @DisplayName("스위트룸 비공개생성")
     public void createSecretSuiteRoom() {
         //given
-//        suiteRoomRepository.findByTitle(MockSuiteRoom.getMockSuiteRoom("test",false).getTitle()).orElseThrow(
-//                () -> new CustomException(StatusCode.ALREADY_EXISTS)
-//        );
         SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("test",false).toSuiteRoomEntity();
         Participant participant = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer());
         //when
