@@ -3,11 +3,15 @@ package com.suite.suite_suite_room_service.suiteRoom.controller;
 import com.suite.suite_suite_room_service.suiteRoom.config.ConfigUtil;
 import com.suite.suite_suite_room_service.suiteRoom.dto.Message;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomDto;
+import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import com.suite.suite_suite_room_service.suiteRoom.service.SuiteRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.suite.suite_suite_room_service.suiteRoom.security.JwtInfoExtractor.getSuiteAuthorizer;
 
@@ -27,7 +31,8 @@ public class SuiteRoomController {
 
     @GetMapping("/suiteroom")
     public ResponseEntity<Message> listUpRooms() {
-        return null;
+        List<ResSuiteRoomDto> resSuiteRoomDtos = suiteRoomService.getAllSuiteRooms();
+        return ResponseEntity.ok(new Message(StatusCode.OK, resSuiteRoomDtos));
     }
     @GetMapping("/suiteroom/detail/{suiteroodId}")
     public ResponseEntity<Message> detailOfRoom() {

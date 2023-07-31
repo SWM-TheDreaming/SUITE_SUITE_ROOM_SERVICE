@@ -29,6 +29,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     public List<ResSuiteRoomDto> getAllSuiteRooms() {
         List<SuiteRoom> suiteRooms = suiteRoomRepository.findAll();
         return suiteRooms.stream().map(suiteRoom -> suiteRoom.toResSuiteRoomDto()).collect(Collectors.toList());
+
     }
 
     @Override

@@ -31,6 +31,7 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.projectlombok:lombok:1.18.26'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
@@ -46,6 +47,10 @@ dependencies {
     //security && JWT
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
+    //security && JWT TEST
+    testImplementation 'org.springframework.security:spring-security-test'
+
     //actuator
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.5.0'
