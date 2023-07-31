@@ -2,6 +2,7 @@ package com.suite.suite_suite_room_service.suiteRoom.service;
 
 import com.suite.suite_suite_room_service.suiteRoom.dto.Message;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ReqUpdateSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
@@ -18,6 +19,6 @@ public interface SuiteRoomService {
     Message createSuiteRoom(ReqSuiteRoomDto reqSuiteRoomDto, AuthorizerDto authorizerDto);
     Optional<SuiteRoom> joinRoom();
     Optional<SuiteRoom> deleteRoom();
-    Optional<SuiteRoom> renewalRoom();
+    Message updateSuiteRoom(ReqUpdateSuiteRoomDto reqUpdateSuiteRoomDto, AuthorizerDto authorizerDto);
     Optional<?> commitPaymentStatus();
 }

@@ -2,6 +2,7 @@ package com.suite.suite_suite_room_service.suiteRoom.service;
 
 
 import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ReqUpdateSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
@@ -15,7 +16,6 @@ import org.junit.jupiter.api.Assertions;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
@@ -85,16 +85,16 @@ class SuiteRoomServiceTest {
         if(member.isEmpty())
             assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.FORBIDDEN); });
 
-        ReqSuiteRoomDto updatedSuiteRoomDto = ReqSuiteRoomDto.builder()
+        ReqUpdateSuiteRoomDto reqUpdateSuiteRoomDto = ReqUpdateSuiteRoomDto.builder()
                 .content("updated content")
                 .channelLink("http://www.naver.com").build();
 
-        suiteRoom.updateSuiteRoom(updatedSuiteRoomDto);
+        suiteRoom.updateSuiteRoom(reqUpdateSuiteRoomDto);
         suiteRoomRepository.save(suiteRoom);
         //then
         Assertions.assertAll(
-                () -> assertThat(suiteRoom.getContent()).isEqualTo(updatedSuiteRoomDto.getContent()),
-                () -> assertThat(suiteRoom.getChannelLink()).isEqualTo(updatedSuiteRoomDto.getChannelLink())
+                () -> assertThat(suiteRoom.getContent()).isEqualTo(reqUpdateSuiteRoomDto.getContent()),
+                () -> assertThat(suiteRoom.getChannelLink()).isEqualTo(reqUpdateSuiteRoomDto.getChannelLink())
         );
     }
 

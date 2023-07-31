@@ -1,9 +1,6 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
-import com.suite.suite_suite_room_service.suiteRoom.dto.Message;
-import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
-import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomDto;
-import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
+import com.suite.suite_suite_room_service.suiteRoom.dto.*;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
@@ -13,7 +10,9 @@ import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomReposito
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.beans.Transient;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -76,8 +75,16 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     }
 
     @Override
-    public Optional<SuiteRoom> renewalRoom() {
-        return Optional.empty();
+    @Transactional
+    public Message updateSuiteRoom(ReqUpdateSuiteRoomDto reqUpdateSuiteRoomDto, AuthorizerDto authorizerDto) {
+        SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(reqUpdateSuiteRoomDto.getSuiteRoomId())
+                .orElseThrow( () -> new CustomException(StatusCode.NOT_FOUND));
+
+        participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(reqUpdateSuiteRoomDto.getSuiteRoomId(), authorizerDto.getMemberId(), true)
+                .orElseThrow( () -> new CustomException(StatusCode.FORBIDDEN));
+
+        suiteRoom.updateSuiteRoom(reqUpdateSuiteRoomDto);
+        return new Message(StatusCode.OK);
     }
 
     @Override
