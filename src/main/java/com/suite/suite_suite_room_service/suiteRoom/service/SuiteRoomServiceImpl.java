@@ -75,6 +75,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     }
 
     @Override
+    @Transactional
     public void deleteSuiteRoom(Long suiteRoomId, AuthorizerDto authorizerDto) {
         Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoomId, authorizerDto.getMemberId(), true).orElseThrow(
                 () -> new CustomException(StatusCode.FORBIDDEN)
