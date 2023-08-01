@@ -106,7 +106,7 @@ class SuiteRoomControllerTest {
         ReqSuiteRoomDto reqSuiteRoomDto = MockSuiteRoom.getMockSuiteRoom("title2", true);
         suiteRoomService.createSuiteRoom(reqSuiteRoomDto, MockAuthorizer.getMockAuthorizer("hwany"));
         //when
-        String responseBody = postRequest(url, YH_JWT, "");
+        String responseBody = deleteRequest(url, YH_JWT);
         Message message = mapper.readValue(responseBody, Message.class);
         //then
         Assertions.assertAll(
@@ -139,6 +139,16 @@ class SuiteRoomControllerTest {
 
     private String getRequest(String url, String jwt) throws Exception {
         MvcResult result = mockMvc.perform(get(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwt)
+                )
+                .andExpect(status().isOk()).andReturn();
+
+        return result.getResponse().getContentAsString();
+    }
+
+    private String deleteRequest(String url, String jwt) throws Exception {
+        MvcResult result = mockMvc.perform(delete(url)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + jwt)
                 )

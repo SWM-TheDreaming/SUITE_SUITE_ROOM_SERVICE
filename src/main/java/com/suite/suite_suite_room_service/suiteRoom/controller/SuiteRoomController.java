@@ -56,7 +56,7 @@ public class SuiteRoomController {
     public ResponseEntity<Message> attendanceRoom() {
         return null;
     }
-    @PostMapping("/suiteroom/delete/{suiteRoomId}")
+    @DeleteMapping("/suiteroom/delete/{suiteRoomId}")
     public ResponseEntity<Message> deleteRoom(@PathVariable Long suiteRoomId) {
         suiteRoomService.deleteSuiteRoom(suiteRoomId, getSuiteAuthorizer());
         return ResponseEntity.ok(new Message(StatusCode.OK));
