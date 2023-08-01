@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -40,7 +41,7 @@ class SuiteRoomControllerTest {
         ReqSuiteRoomDto reqSuiteRoomDto = MockSuiteRoom.getMockSuiteRoom("title2", true);
         String body = mapper.writeValueAsString(reqSuiteRoomDto);
         //when
-        String responseBody = postRequest("/suite/suiteroom/registration", body);
+        String responseBody = postRequest("/suite/suiteroom/registration", DR_JWT, body);
         Message message = mapper.readValue(responseBody, Message.class);
         //then
         Assertions.assertAll(
@@ -57,13 +58,13 @@ class SuiteRoomControllerTest {
         //given
         final String url = "/suite/suiteroom/update";
         ReqSuiteRoomDto reqSuiteRoomDto = MockSuiteRoom.getMockSuiteRoom("title2", true);
-        suiteRoomService.createSuiteRoom(reqSuiteRoomDto, MockAuthorizer.getMockAuthorizer("darren"));
+        suiteRoomService.createSuiteRoom(reqSuiteRoomDto, MockAuthorizer.getMockAuthorizer("hwany"));
         String body = mapper.writeValueAsString(ReqUpdateSuiteRoomDto.builder()
                 .suiteRoomId(Long.parseLong("1"))
                 .content("updated content")
                 .channelLink("http://www.naver.com").build());
         //when
-        String responseBody = patchRequest(url, body);
+        String responseBody = patchRequest(url, YH_JWT, body);
         Message message = mapper.readValue(responseBody, Message.class);
         //then
         Assertions.assertAll(
@@ -84,7 +85,7 @@ class SuiteRoomControllerTest {
 
         List<ResSuiteRoomDto> resService = suiteRoomService.getAllSuiteRooms(MockAuthorizer.getMockAuthorizer("hwany"));
         //when
-        String responseBody = getRequest(url);
+        String responseBody = getRequest(url, YH_JWT);
         Message message = mapper.readValue(responseBody, Message.class);
         List<ResSuiteRoomDto> result = (List<ResSuiteRoomDto>) message.getData();
 
@@ -97,32 +98,59 @@ class SuiteRoomControllerTest {
 
     }
 
-    private String postRequest(String url, String body) throws Exception {
+    @Test
+    @DisplayName("스터디 파투")
+    public void deleteSuiteRoom() throws Exception {
+        //given
+        final String url = "/suite/suiteroom/delete/1";
+        ReqSuiteRoomDto reqSuiteRoomDto = MockSuiteRoom.getMockSuiteRoom("title2", true);
+        suiteRoomService.createSuiteRoom(reqSuiteRoomDto, MockAuthorizer.getMockAuthorizer("hwany"));
+        //when
+        String responseBody = deleteRequest(url, YH_JWT);
+        Message message = mapper.readValue(responseBody, Message.class);
+        //then
+        Assertions.assertAll(
+                () -> assertThat(message.getStatusCode()).isEqualTo(200)
+        );
+
+    }
+
+    private String postRequest(String url, String jwt, String body) throws Exception {
         MvcResult result = mockMvc.perform(post(url)
                         .content(body) //HTTP body에 담는다.
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer " + this.YH_JWT)
+                        .header("Authorization", "Bearer " + jwt)
                 )
                 .andExpect(status().isOk()).andReturn();
 
         return result.getResponse().getContentAsString();
     }
 
-    private String patchRequest(String url, String body) throws Exception {
+    private String patchRequest(String url, String jwt, String body) throws Exception {
         MvcResult result = mockMvc.perform(patch(url)
                         .content(body) //HTTP body에 담는다.
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer " + this.YH_JWT)
+                        .header("Authorization", "Bearer " + jwt)
                 )
                 .andExpect(status().isOk()).andReturn();
 
         return result.getResponse().getContentAsString();
     }
 
-    private String getRequest(String url) throws Exception {
+    private String getRequest(String url, String jwt) throws Exception {
         MvcResult result = mockMvc.perform(get(url)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer " + this.YH_JWT)
+                        .header("Authorization", "Bearer " + jwt)
+                )
+                .andExpect(status().isOk()).andReturn();
+
+        return result.getResponse().getContentAsString();
+    }
+
+    private String deleteRequest(String url, String jwt) throws Exception {
+        MvcResult result = mockMvc.perform(delete(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwt)
                 )
                 .andExpect(status().isOk()).andReturn();
 

@@ -35,7 +35,7 @@ public class SuiteRoomController {
         List<ResSuiteRoomDto> getAllSuiteRooms = suiteRoomService.getAllSuiteRooms(getSuiteAuthorizer());
         return ResponseEntity.ok(new Message(StatusCode.OK, getAllSuiteRooms));
     }
-    @GetMapping("/suiteroom/detail/{suiteroodId}")
+    @GetMapping("/suiteroom/detail/{suiteroomId}")
     public ResponseEntity<Message> detailOfRoom() {
         return null;
     }
@@ -56,9 +56,10 @@ public class SuiteRoomController {
     public ResponseEntity<Message> attendanceRoom() {
         return null;
     }
-    @PostMapping("/suiteroom/delete")
-    public ResponseEntity<Message> deleteRoom() {
-        return null;
+    @DeleteMapping("/suiteroom/delete/{suiteRoomId}")
+    public ResponseEntity<Message> deleteRoom(@PathVariable Long suiteRoomId) {
+        suiteRoomService.deleteSuiteRoom(suiteRoomId, getSuiteAuthorizer());
+        return ResponseEntity.ok(new Message(StatusCode.OK));
     }
     @PatchMapping("/suiteroom/update")
     public ResponseEntity<Message> updateRoom(@RequestBody ReqUpdateSuiteRoomDto reqUpdateSuiteRoomDto) {

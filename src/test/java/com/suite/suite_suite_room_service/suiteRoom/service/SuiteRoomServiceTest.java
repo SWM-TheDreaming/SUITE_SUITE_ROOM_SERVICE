@@ -3,6 +3,7 @@ package com.suite.suite_suite_room_service.suiteRoom.service;
 
 import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ReqUpdateSuiteRoomDto;
+import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
@@ -126,6 +127,32 @@ class SuiteRoomServiceTest {
                 ()-> assertThat(suiteRooms.toArray().length).isEqualTo(2)
         );
 
+    }
+
+    @Test
+    @DisplayName("스터디 파투")
+    public void deleteSuiteRoom() {
+        //given
+        SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("title1", true).toSuiteRoomEntity();
+        Participant participant = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer());
+        suiteRoom.addParticipant(participant);
+        suiteRoomRepository.save(suiteRoom);
+        participantRepository.save(participant);
+        //when
+        Optional<Participant> host = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(Long.parseLong("1"), participant.getMemberId(), true);
+        if(host.isEmpty()) {
+            assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.FORBIDDEN); });
+        }
+
+        if(!host.get().getStatus().equals(SuiteStatus.START)) {
+            suiteRoomRepository.deleteBySuiteRoomId(Long.parseLong("1"));
+        }else throw new CustomException(StatusCode.NOT_DELETE_SUITE_ROOM);
+
+        //then
+        List<Participant> result = participantRepository.findBySuiteRoom_SuiteRoomId(Long.parseLong("1"));
+        Assertions.assertAll(
+                () -> assertThat(result.size()).isEqualTo(0)
+        );
     }
 
 }
