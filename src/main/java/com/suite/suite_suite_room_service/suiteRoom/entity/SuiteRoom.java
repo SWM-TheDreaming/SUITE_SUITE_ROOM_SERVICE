@@ -5,6 +5,7 @@ import com.suite.suite_suite_room_service.suiteRoom.dto.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -14,6 +15,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor
+@DynamicUpdate
 @Table(name = "suite_room")
 public class SuiteRoom {
 

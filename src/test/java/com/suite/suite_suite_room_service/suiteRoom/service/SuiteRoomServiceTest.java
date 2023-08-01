@@ -149,8 +149,9 @@ class SuiteRoomServiceTest {
         }else throw new CustomException(StatusCode.NOT_DELETE_SUITE_ROOM);
 
         //then
+        List<Participant> result = participantRepository.findBySuiteRoom_SuiteRoomId(Long.parseLong("1"));
         Assertions.assertAll(
-                () -> assertThat(participantRepository.findBySuiteRoom_SuiteRoomId(Long.parseLong("1"))).isEqualTo(null)
+                () -> assertThat(result.size()).isEqualTo(0)
         );
     }
 

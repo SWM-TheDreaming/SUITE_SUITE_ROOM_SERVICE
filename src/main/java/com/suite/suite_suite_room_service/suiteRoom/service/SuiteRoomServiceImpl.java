@@ -75,8 +75,13 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     }
 
     @Override
-    public Optional<SuiteRoom> deleteRoom() {
-        return Optional.empty();
+    public void deleteSuiteRoom(Long suiteRoomId, AuthorizerDto authorizerDto) {
+        Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoomId, authorizerDto.getMemberId(), true).orElseThrow(
+                () -> new CustomException(StatusCode.FORBIDDEN)
+        );
+        if(participant.getStatus().equals(SuiteStatus.START)) throw new CustomException(StatusCode.NOT_DELETE_SUITE_ROOM);
+
+        suiteRoomRepository.deleteBySuiteRoomId(suiteRoomId);
     }
 
     @Override
@@ -95,4 +100,5 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     public Optional<?> commitPaymentStatus() {
         return Optional.empty();
     }
+
 }

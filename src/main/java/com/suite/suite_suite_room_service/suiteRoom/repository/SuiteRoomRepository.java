@@ -10,4 +10,5 @@ public interface SuiteRoomRepository extends JpaRepository<SuiteRoom, Long> {
 
     Optional<SuiteRoom> findByTitle(String title);
     Optional<SuiteRoom> findBySuiteRoomId(Long suiteRoomId);
+    void deleteBySuiteRoomId(Long suiteRoomId);
 }
