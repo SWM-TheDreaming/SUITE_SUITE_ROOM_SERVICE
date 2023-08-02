@@ -31,12 +31,12 @@ public class SuiteRoomController {
     }
 
     @GetMapping("/suiteroom")
-    public ResponseEntity<Message> listUpRooms() {
+    public ResponseEntity<Message> listUpSuiteRooms() {
         List<ResSuiteRoomDto> getAllSuiteRooms = suiteRoomService.getAllSuiteRooms(getSuiteAuthorizer());
         return ResponseEntity.ok(new Message(StatusCode.OK, getAllSuiteRooms));
     }
     @GetMapping("/suiteroom/detail/{suiteroomId}")
-    public ResponseEntity<Message> detailOfRoom() {
+    public ResponseEntity<Message> listUpSuiteRoom() {
         return null;
     }
     @GetMapping("/progression")
