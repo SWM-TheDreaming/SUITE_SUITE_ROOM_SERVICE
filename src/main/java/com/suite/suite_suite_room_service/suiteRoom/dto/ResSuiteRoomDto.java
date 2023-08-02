@@ -3,11 +3,13 @@ package com.suite.suite_suite_room_service.suiteRoom.dto;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 import java.util.List;
 
 @Getter
+@NoArgsConstructor
 public class ResSuiteRoomDto {
     private String title;
     private String content;
