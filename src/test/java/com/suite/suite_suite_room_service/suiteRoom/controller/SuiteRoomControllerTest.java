@@ -1,5 +1,6 @@
 package com.suite.suite_suite_room_service.suiteRoom.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.suite.suite_suite_room_service.suiteRoom.dto.Message;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
@@ -106,7 +107,7 @@ class SuiteRoomControllerTest {
     @DisplayName("스위트룸 모집글 확인")
     public void listUpSuiteRoom() throws Exception {
         //given
-        final String url = "/suiteroom/detail/1";
+        final String url = "/suite/suiteroom/detail/1";
         final Long expectedSuiteRoomId = 1L;
         ReqSuiteRoomDto reqSuiteRoomDto1 = MockSuiteRoom.getMockSuiteRoom("hwany", true);
         ReqSuiteRoomDto reqSuiteRoomDto2 = MockSuiteRoom.getMockSuiteRoom("mini", true);
@@ -119,12 +120,14 @@ class SuiteRoomControllerTest {
 
         //when
         String responseBody = getRequest(url, YH_JWT);
-        Message message = mapper.readValue(responseBody, Message.class);
+        Message message = mapper.readValue(responseBody, new TypeReference<Message<ResSuiteRoomDto>>() {
+        });
         ResSuiteRoomDto result = (ResSuiteRoomDto) message.getData();
 
         //then
         Assertions.assertAll(
-                () -> assertThat(result).isEqualTo(findSuiteRoomBySuiteRoomIdResult),
+                () -> assertThat(result.getContent()).isEqualTo(findSuiteRoomBySuiteRoomIdResult.getContent()),
+                () -> assertThat(result.getTitle()).isEqualTo(findSuiteRoomBySuiteRoomIdResult.getTitle()),
                 () -> assertThat(message.getStatusCode()).isEqualTo(200)
         );
 

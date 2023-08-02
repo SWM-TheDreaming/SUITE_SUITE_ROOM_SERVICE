@@ -9,6 +9,7 @@ import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import com.suite.suite_suite_room_service.suiteRoom.service.SuiteRoomService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,9 +36,10 @@ public class SuiteRoomController {
         List<ResSuiteRoomDto> getAllSuiteRooms = suiteRoomService.getAllSuiteRooms(getSuiteAuthorizer());
         return ResponseEntity.ok(new Message(StatusCode.OK, getAllSuiteRooms));
     }
-    @GetMapping("/suiteroom/detail/{suiteroomId}")
-    public ResponseEntity<Message> listUpSuiteRoom() {
-        return null;
+    @GetMapping("/suiteroom/detail/{suiteRoomId}")
+    public ResponseEntity<Message> listUpSuiteRoom(@PathVariable Long suiteRoomId, AuthorizerDto authorizerDto) {
+        ResSuiteRoomDto getSuiteRoom = suiteRoomService.getSuiteRoom(suiteRoomId, authorizerDto);
+        return ResponseEntity.ok(new Message(StatusCode.OK, getSuiteRoom));
     }
     @GetMapping("/progression")
     public ResponseEntity<Message> listUpProgressionRooms() {

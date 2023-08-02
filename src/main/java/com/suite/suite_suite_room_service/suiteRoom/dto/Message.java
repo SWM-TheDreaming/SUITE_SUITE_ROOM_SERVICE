@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class Message {
+public class Message<T> {
     public static final String DEFAULT_RESPONSE = "Request processed successfully";
     private int statusCode;
     private String message;
-    private Object data;
+    private T data;
 
-    public Message(StatusCode statusCode, Object data) {
+    public Message(StatusCode statusCode, T data) {
         this.statusCode = statusCode.getCode();
         this.message = statusCode.getMessage();
         this.data = data;
@@ -22,6 +22,11 @@ public class Message {
     public Message(StatusCode statusCode) {
         this.statusCode = statusCode.getCode();
         this.message = statusCode.getMessage();
-        this.data = DEFAULT_RESPONSE;
+        this.data = (T) DEFAULT_RESPONSE;
     }
+
+    public T getData() {
+        return this.data;
+    }
+
 }
