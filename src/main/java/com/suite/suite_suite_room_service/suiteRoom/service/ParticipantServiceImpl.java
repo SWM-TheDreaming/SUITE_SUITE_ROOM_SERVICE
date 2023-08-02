@@ -30,7 +30,6 @@ public class ParticipantServiceImpl implements ParticipantService{
                                         .status(SuiteStatus.PLAIN)
                                         .isHost(false).build();
         suiteRoom.addParticipant(participant);
-        suiteRoomRepository.save(suiteRoom);
         participantRepository.save(participant);
     }
 
