@@ -17,6 +17,7 @@ public class ParticipantServiceImpl implements ParticipantService{
     private final SuiteRoomRepository suiteRoomRepository;
     private final ParticipantRepository participantRepository;
 
+    @Override
     public void addParticipant(Long suiteRoomId, AuthorizerDto authorizerDto) {
         SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId).orElseThrow(
                 () -> new CustomException(StatusCode.NOT_FOUND));
