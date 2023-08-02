@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
@@ -125,6 +126,30 @@ class SuiteRoomServiceTest {
         //then
         Assertions.assertAll(
                 ()-> assertThat(suiteRooms.toArray().length).isEqualTo(2)
+        );
+
+    }
+
+    @Test
+    @DisplayName("스위트룸 모집글 확인")
+    public void getSuiteRoom() {
+        //given
+        SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("토익 스터디 모집합니다.",true).toSuiteRoomEntity();
+        Participant participant = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer());
+        suiteRoom.addParticipant(participant);
+        suiteRoomRepository.save(suiteRoom);
+        //when
+        Optional<SuiteRoom> findSuiteRoomBySuiteRoomIdResult = suiteRoomRepository.findById(1L);
+        findSuiteRoomBySuiteRoomIdResult.orElseThrow(
+                () -> {
+                    return assertThrows(CustomException.class, () -> {
+                        throw new CustomException(StatusCode.SUITE_ROOM_NOT_FOUND);
+                    });
+                }
+        );
+        //then
+        assertAll(
+                () -> assertThat(findSuiteRoomBySuiteRoomIdResult.get()).isEqualTo(suiteRoom)
         );
 
     }
