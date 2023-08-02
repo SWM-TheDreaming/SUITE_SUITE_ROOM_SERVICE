@@ -38,8 +38,17 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     }
 
     @Override
-    public Optional<SuiteRoom> getSuiteRoom() {
-        return Optional.empty();
+    public ResSuiteRoomDto getSuiteRoom(Long suiteRoomId, AuthorizerDto authorizerDto) {
+        Optional<SuiteRoom> findSuiteRoomBySuiteRoomIdResult = suiteRoomRepository.findById(suiteRoomId);
+        findSuiteRoomBySuiteRoomIdResult.orElseThrow(
+                () -> {throw new CustomException(StatusCode.SUITE_ROOM_NOT_FOUND);}
+        );
+        ResSuiteRoomDto resSuiteRoomDto = findSuiteRoomBySuiteRoomIdResult.get().toResSuiteRoomDto(
+                participantRepository.countBySuiteRoom_SuiteRoomId(findSuiteRoomBySuiteRoomIdResult.get().getSuiteRoomId()),
+                participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(findSuiteRoomBySuiteRoomIdResult.get().getSuiteRoomId(), authorizerDto.getMemberId(), true)
+        );
+
+        return resSuiteRoomDto;
     }
 
     @Override

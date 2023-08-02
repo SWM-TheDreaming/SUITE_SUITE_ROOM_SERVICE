@@ -12,6 +12,7 @@ public enum StatusCode {
     ALREADY_EXISTS_PARTICIPANT(400, "이미 참여중 입니다.", HttpStatus.BAD_REQUEST),
     NOT_DELETE_SUITE_ROOM(400, "시작된 스터디는 삭제가 불가능합니다.", HttpStatus.BAD_REQUEST),
     USERNAME_OR_PASSWORD_NOT_FOUND (400, "아이디 또는 비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
+    SUITE_ROOM_NOT_FOUND (400, "존재하지 않는 스위트룸 아이디입니다.", HttpStatus.BAD_REQUEST),
     PASSWORD_NOT_FOUND (400, "비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
     FORBIDDEN(403, "해당 요청에 대한 권한이 없습니다.", HttpStatus.FORBIDDEN),
     UNAUTHORIZED (400, "로그인 후 이용가능합니다.", HttpStatus.UNAUTHORIZED),

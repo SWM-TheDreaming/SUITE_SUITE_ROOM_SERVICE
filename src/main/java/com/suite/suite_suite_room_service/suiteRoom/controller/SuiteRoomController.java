@@ -9,6 +9,7 @@ import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import com.suite.suite_suite_room_service.suiteRoom.service.SuiteRoomService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,13 +32,15 @@ public class SuiteRoomController {
     }
 
     @GetMapping("/suiteroom")
-    public ResponseEntity<Message> listUpRooms() {
+    public ResponseEntity<Message> listUpSuiteRooms() {
+        // 토큰 재발급 부분 여기서 처리
         List<ResSuiteRoomDto> getAllSuiteRooms = suiteRoomService.getAllSuiteRooms(getSuiteAuthorizer());
         return ResponseEntity.ok(new Message(StatusCode.OK, getAllSuiteRooms));
     }
-    @GetMapping("/suiteroom/detail/{suiteroomId}")
-    public ResponseEntity<Message> detailOfRoom() {
-        return null;
+    @GetMapping("/suiteroom/detail/{suiteRoomId}")
+    public ResponseEntity<Message> listUpSuiteRoom(@PathVariable Long suiteRoomId, AuthorizerDto authorizerDto) {
+        ResSuiteRoomDto getSuiteRoom = suiteRoomService.getSuiteRoom(suiteRoomId, authorizerDto);
+        return ResponseEntity.ok(new Message(StatusCode.OK, getSuiteRoom));
     }
     @GetMapping("/progression")
     public ResponseEntity<Message> listUpProgressionRooms() {
