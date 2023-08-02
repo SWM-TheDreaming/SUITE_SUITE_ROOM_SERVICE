@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface SuiteRoomService {
     List<ResSuiteRoomDto> getAllSuiteRooms(AuthorizerDto authorizerDto);
-    Optional<SuiteRoom> getSuiteRoom();
+    Optional<SuiteRoom> getSuiteRoom(Long suiteRoomId, AuthorizerDto authorizerDto);
     Optional<List<SuiteRoom>> getAllProgressRooms();
     Optional<List<SuiteRoom>> getAllCompletionRooms();
     void createSuiteRoom(ReqSuiteRoomDto reqSuiteRoomDto, AuthorizerDto authorizerDto);

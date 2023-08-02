@@ -39,7 +39,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     }
 
     @Override
-    public Optional<SuiteRoom> getSuiteRoom() {
+    public Optional<SuiteRoom> getSuiteRoom(Long SuiteRoomId, AuthorizerDto authorizerDto) {
         return Optional.empty();
     }
 

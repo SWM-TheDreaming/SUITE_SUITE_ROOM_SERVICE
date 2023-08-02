@@ -3,6 +3,7 @@ package com.suite.suite_suite_room_service.suiteRoom.service;
 
 import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ReqUpdateSuiteRoomDto;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
@@ -134,12 +135,13 @@ class SuiteRoomServiceTest {
     @DisplayName("스위트룸 모집글 확인")
     public void getSuiteRoom() {
         //given
+        Long expectedSuiteRoomId = 1L;
         SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("토익 스터디 모집합니다.",true).toSuiteRoomEntity();
         Participant participant = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer());
         suiteRoom.addParticipant(participant);
         suiteRoomRepository.save(suiteRoom);
         //when
-        Optional<SuiteRoom> findSuiteRoomBySuiteRoomIdResult = suiteRoomRepository.findById(1L);
+        Optional<SuiteRoom> findSuiteRoomBySuiteRoomIdResult = suiteRoomRepository.findById(expectedSuiteRoomId);
         findSuiteRoomBySuiteRoomIdResult.orElseThrow(
                 () -> {
                     return assertThrows(CustomException.class, () -> {
@@ -147,9 +149,14 @@ class SuiteRoomServiceTest {
                     });
                 }
         );
+        ResSuiteRoomDto resSuiteRoomDto = findSuiteRoomBySuiteRoomIdResult.get().toResSuiteRoomDto(
+                participantRepository.countBySuiteRoom_SuiteRoomId(expectedSuiteRoomId),
+                participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(expectedSuiteRoomId, MockParticipant.getMockAuthorizer().getMemberId(), true)
+        );
         //then
         assertAll(
-                () -> assertThat(findSuiteRoomBySuiteRoomIdResult.get()).isEqualTo(suiteRoom)
+                () -> assertThat(resSuiteRoomDto.getContent()).isEqualTo(suiteRoom.getContent()),
+                () -> assertThat(resSuiteRoomDto.getDepositAmount()).isEqualTo(suiteRoom.getDepositAmount())
         );
 
     }
