@@ -33,6 +33,7 @@ public class SuiteRoomController {
 
     @GetMapping("/suiteroom")
     public ResponseEntity<Message> listUpSuiteRooms() {
+        // 토큰 재발급 부분 여기서 처리
         List<ResSuiteRoomDto> getAllSuiteRooms = suiteRoomService.getAllSuiteRooms(getSuiteAuthorizer());
         return ResponseEntity.ok(new Message(StatusCode.OK, getAllSuiteRooms));
     }
