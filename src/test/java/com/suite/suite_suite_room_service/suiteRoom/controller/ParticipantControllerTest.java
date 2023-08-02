@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -43,7 +44,9 @@ class ParticipantControllerTest {
         //given
         ReqSuiteRoomDto reqSuiteRoomDto = MockSuiteRoom.getMockSuiteRoom("title2", true);
         suiteRoomService.createSuiteRoom(reqSuiteRoomDto, MockAuthorizer.getMockAuthorizer("hwany"));
-        String body = mapper.writeValueAsString(new HashMap<String, Long>().put("suiteRoomId", Long.parseLong("1")));
+        Map<String, Long> suiteRoomId = new HashMap<String, Long>();
+        suiteRoomId.put("suiteRoomId", Long.parseLong("1"));
+        String body = mapper.writeValueAsString(suiteRoomId);
         //when
         String responseBody = postRequest("/suite/suiteroom/attend", DR_JWT, body);
         Message message = mapper.readValue(responseBody, Message.class);

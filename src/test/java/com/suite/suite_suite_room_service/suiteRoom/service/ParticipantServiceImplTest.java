@@ -46,7 +46,7 @@ class ParticipantServiceImplTest {
                 () -> assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.NOT_FOUND); } )
         );
         AuthorizerDto authorizerDto = MockAuthorizer.getMockAuthorizer("kim1");
-        participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(targetSuiteRoomId, authorizerDto.getMemberId(), false).ifPresent(
+        participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(targetSuiteRoomId, authorizerDto.getMemberId()).ifPresent(
                 participant -> { assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.ALREADY_EXISTS_PARTICIPANT); } );}
         );
         Participant newParticipant = MockParticipant.getMockParticipant(false, authorizerDto);

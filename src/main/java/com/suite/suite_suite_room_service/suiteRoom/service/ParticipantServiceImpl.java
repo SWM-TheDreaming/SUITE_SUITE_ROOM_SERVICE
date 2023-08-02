@@ -22,7 +22,7 @@ public class ParticipantServiceImpl implements ParticipantService{
         SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId).orElseThrow(
                 () -> new CustomException(StatusCode.NOT_FOUND));
 
-        participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoomId, authorizerDto.getMemberId(), false).ifPresent(
+        participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, authorizerDto.getMemberId()).ifPresent(
                 member -> { throw new CustomException(StatusCode.ALREADY_EXISTS_PARTICIPANT); });
 
         Participant participant = Participant.builder()
