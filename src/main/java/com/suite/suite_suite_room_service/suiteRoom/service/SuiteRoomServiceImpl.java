@@ -55,7 +55,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     @Override
     public void createSuiteRoom(ReqSuiteRoomDto reqSuiteRoomDto, AuthorizerDto authorizerDto) {
         suiteRoomRepository.findByTitle(reqSuiteRoomDto.getTitle()).ifPresent(
-                (suiteRoom) ->  new CustomException(StatusCode.ALREADY_EXISTS_SUITEROOM)
+                suiteRoom ->  { throw new CustomException(StatusCode.ALREADY_EXISTS_SUITEROOM); }
         );
         SuiteRoom suiteRoom = reqSuiteRoomDto.toSuiteRoomEntity();
         Participant participant = Participant.builder()
