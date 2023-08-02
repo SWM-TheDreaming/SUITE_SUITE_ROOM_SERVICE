@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface ParticipantRepository extends JpaRepository<Participant, Long> {
     Optional<Participant> findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(Long suiteRoomId, Long memberId, boolean ishost);
+    Optional<Participant> findBySuiteRoom_SuiteRoomIdAndMemberId(Long suiteRoomId, Long memberId);
     List<Participant> findBySuiteRoom_SuiteRoomId(Long suiteRoomId);
 
     Long countBySuiteRoom_SuiteRoomId(Long suiteRoomId);

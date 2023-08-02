@@ -8,7 +8,8 @@ public enum StatusCode {
 
     DISABLED_ACCOUNT(403, "삭제된 계정입니다.", HttpStatus.FORBIDDEN),
     DORMANT_ACCOUNT(423, "이 계정은 휴먼 계정입니다.", HttpStatus.LOCKED),
-    ALREADY_EXISTS(400, "이미 존재하는 스위트룸입니다.", HttpStatus.BAD_REQUEST),
+    ALREADY_EXISTS_SUITEROOM(400, "이미 존재하는 스위트룸입니다.", HttpStatus.BAD_REQUEST),
+    ALREADY_EXISTS_PARTICIPANT(400, "이미 참여중 입니다.", HttpStatus.BAD_REQUEST),
     NOT_DELETE_SUITE_ROOM(400, "시작된 스터디는 삭제가 불가능합니다.", HttpStatus.BAD_REQUEST),
     USERNAME_OR_PASSWORD_NOT_FOUND (400, "아이디 또는 비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
     SUITE_ROOM_NOT_FOUND (400, "존재하지 않는 스위트룸 아이디입니다.", HttpStatus.BAD_REQUEST),

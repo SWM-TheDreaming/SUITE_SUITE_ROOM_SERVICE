@@ -33,9 +33,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureMockMvc
 class SuiteRoomControllerTest {
 
-    @Autowired ObjectMapper mapper;
+    @Autowired private ObjectMapper mapper;
     @Autowired private MockMvc mockMvc;
-    @Autowired SuiteRoomServiceImpl suiteRoomService;
+    @Autowired private SuiteRoomServiceImpl suiteRoomService;
     public static final String YH_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsb3BhaG4yQGdtYWlsLmNvbSIsIklEIjoiMSIsIk5BTUUiOiLrsJjsmIHtmZgiLCJOSUNLTkFNRSI6Imh3YW55OTkiLCJBQ0NPVU5UU1RBVFVTIjoiQUNUSVZBVEUiLCJST0xFIjoiUk9MRV9VU0VSIiwiaWF0IjoxNjkwODE0MDk5LCJleHAiOjE2OTE0MTg4OTl9.xlbiPnD366KP49g5v6X_F4yEZRvu6rbf3ph6j-AWxs8";
     public static final String DR_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6eHo0NjQxQGdtYWlsLmNvbSIsIklEIjoiMiIsIk5BTUUiOiLquYDrjIDtmIQiLCJOSUNLTkFNRSI6IkRhcnJlbiIsIkFDQ09VTlRTVEFUVVMiOiJBQ1RJVkFURSIsIlJPTEUiOiJST0xFX1VTRVIiLCJpYXQiOjE2OTA4MTQxMzUsImV4cCI6MTY5MTQxODkzNX0.ob5s7qQxdALJHpxb28pyYFiAqdeifGKfxtGx9MD3KQ0";
     @Test
