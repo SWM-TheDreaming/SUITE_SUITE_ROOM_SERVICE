@@ -1,12 +1,15 @@
 package com.suite.suite_suite_room_service.suiteRoom.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.suite.suite_suite_room_service.suiteRoom.dto.Message;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ReqUpdateSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomDto;
+import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockAuthorizer;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockSuiteRoom;
+import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import com.suite.suite_suite_room_service.suiteRoom.service.SuiteRoomServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +23,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -92,9 +96,41 @@ class SuiteRoomControllerTest {
         //then
         if(result.get(0) instanceof ResSuiteRoomDto) {
             Assertions.assertAll(
-                    () -> assertThat(result.get(0)).isEqualTo(resService.get(0))
+                    () -> assertThat(result.get(0)).isEqualTo(resService.get(0)),
+                    () -> assertThat(message.getStatusCode()).isEqualTo(200)
             );
         }
+
+    }
+
+    @Test
+    @DisplayName("스위트룸 모집글 확인")
+    public void listUpSuiteRoom() throws Exception {
+        //given
+        final String url = "/suite/suiteroom/detail/1";
+        final Long expectedSuiteRoomId = 1L;
+        ReqSuiteRoomDto reqSuiteRoomDto1 = MockSuiteRoom.getMockSuiteRoom("hwany", true);
+        ReqSuiteRoomDto reqSuiteRoomDto2 = MockSuiteRoom.getMockSuiteRoom("mini", true);
+        AuthorizerDto mockAuthorizer1 = MockAuthorizer.getMockAuthorizer("hwany");
+        AuthorizerDto mockAuthorizer2 = MockAuthorizer.getMockAuthorizer("mini");
+        suiteRoomService.createSuiteRoom(reqSuiteRoomDto1, mockAuthorizer1);
+        suiteRoomService.createSuiteRoom(reqSuiteRoomDto2, mockAuthorizer2);
+
+        ResSuiteRoomDto findSuiteRoomBySuiteRoomIdResult = suiteRoomService.getSuiteRoom(expectedSuiteRoomId, mockAuthorizer1);
+
+        //when
+        String responseBody = getRequest(url, YH_JWT);
+        Message message = mapper.readValue(responseBody, new TypeReference<Message<ResSuiteRoomDto>>() {
+        });
+        ResSuiteRoomDto result = (ResSuiteRoomDto) message.getData();
+
+        //then
+        Assertions.assertAll(
+                () -> assertThat(result.getContent()).isEqualTo(findSuiteRoomBySuiteRoomIdResult.getContent()),
+                () -> assertThat(result.getTitle()).isEqualTo(findSuiteRoomBySuiteRoomIdResult.getTitle()),
+                () -> assertThat(message.getStatusCode()).isEqualTo(200)
+        );
+
 
     }
 
