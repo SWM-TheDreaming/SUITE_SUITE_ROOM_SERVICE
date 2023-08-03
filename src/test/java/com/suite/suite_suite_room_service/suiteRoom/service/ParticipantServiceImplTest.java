@@ -75,8 +75,10 @@ class ParticipantServiceImplTest {
         AuthorizerDto authorizerDto = MockAuthorizer.getMockAuthorizer("kim1", 1L);
         //when
         Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(targetSuiteRoomId, authorizerDto.getMemberId()).orElseThrow(
-                () -> assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.FAILED_REQUEST); })
-         );
+                () -> assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.FAILED_REQUEST); }));
+
+        if(participant.getIsHost())
+            assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.CAN_NOT_CALCEL_SUITEROOM); });
 
         if(participant.getStatus().equals(SuiteStatus.READY))
             System.out.println("kafka");

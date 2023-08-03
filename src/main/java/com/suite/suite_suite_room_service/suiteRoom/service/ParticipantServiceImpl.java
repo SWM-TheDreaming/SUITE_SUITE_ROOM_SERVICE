@@ -39,12 +39,12 @@ public class ParticipantServiceImpl implements ParticipantService{
     @Transactional
     public void removeParticipant(Long suiteRoomId, AuthorizerDto authorizerDto) {
         Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, authorizerDto.getMemberId()).orElseThrow(
-                () -> new CustomException(StatusCode.FAILED_REQUEST)
-        );
+                () -> new CustomException(StatusCode.FAILED_REQUEST));
 
         if(participant.getStatus().equals(SuiteStatus.READY))
             System.out.println("kafka");
-
+        if(participant.getIsHost())
+            throw new CustomException(StatusCode.CAN_NOT_CALCEL_SUITEROOM);
         participantRepository.deleteBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, authorizerDto.getMemberId());
     }
 
