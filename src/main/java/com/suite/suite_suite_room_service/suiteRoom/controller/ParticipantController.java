@@ -23,4 +23,6 @@ public class ParticipantController {
         participantService.addParticipant(suiteRoomId.get("suiteRoomId"), getSuiteAuthorizer());
         return ResponseEntity.ok(new Message(StatusCode.OK));
     }
+
+
 }

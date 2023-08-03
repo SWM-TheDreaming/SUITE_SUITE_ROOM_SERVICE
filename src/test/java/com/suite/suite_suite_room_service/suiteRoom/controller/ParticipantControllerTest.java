@@ -56,6 +56,24 @@ class ParticipantControllerTest {
         );
     }
 
+    @Test
+    @DisplayName("스위트룸 참가 취소")
+    public void cancelSuiteRoom() throws Exception {
+        //given
+        ReqSuiteRoomDto reqSuiteRoomDto = MockSuiteRoom.getMockSuiteRoom("title2", true);
+        suiteRoomService.createSuiteRoom(reqSuiteRoomDto, MockAuthorizer.getMockAuthorizer("hwany"));
+        Map<String, Long> suiteRoomId = new HashMap<String, Long>();
+        suiteRoomId.put("suiteRoomId", Long.parseLong("1"));
+        String body = mapper.writeValueAsString(suiteRoomId);
+        //when
+        String responseBody = postRequest("/suite/suiteroom/attend/cancel", DR_JWT, body);
+        Message message = mapper.readValue(responseBody, Message.class);
+        //then
+        Assertions.assertAll(
+                () -> assertThat(message.getStatusCode()).isEqualTo(200)
+        );
+    }
+
 
 
     private String postRequest(String url, String jwt, String body) throws Exception {
