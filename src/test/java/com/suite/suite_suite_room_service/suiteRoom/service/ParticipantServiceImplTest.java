@@ -47,7 +47,7 @@ class ParticipantServiceImplTest {
     public void addParticipant() {
         //given
         Long targetSuiteRoomId = 1L;
-        AuthorizerDto authorizerDto = MockAuthorizer.getMockAuthorizer("kim1");
+        AuthorizerDto authorizerDto = MockAuthorizer.getMockAuthorizer("kim1", 1L);
         //when
         SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(targetSuiteRoomId).orElseThrow(
                 () -> assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.NOT_FOUND); } )
@@ -72,7 +72,7 @@ class ParticipantServiceImplTest {
     public void removeParticipant() {
         //given
         Long targetSuiteRoomId = 1L;
-        AuthorizerDto authorizerDto = MockAuthorizer.getMockAuthorizer("kim1");
+        AuthorizerDto authorizerDto = MockAuthorizer.getMockAuthorizer("kim1", 1L);
         //when
         Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(targetSuiteRoomId, authorizerDto.getMemberId()).orElseThrow(
                 () -> assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.FAILED_REQUEST); })

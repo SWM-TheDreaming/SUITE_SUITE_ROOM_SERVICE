@@ -10,6 +10,7 @@ import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomReposito
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +19,7 @@ public class ParticipantServiceImpl implements ParticipantService{
     private final ParticipantRepository participantRepository;
 
     @Override
+    @Transactional
     public void addParticipant(Long suiteRoomId, AuthorizerDto authorizerDto) {
         SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId).orElseThrow(
                 () -> new CustomException(StatusCode.NOT_FOUND));
@@ -34,6 +36,7 @@ public class ParticipantServiceImpl implements ParticipantService{
     }
 
     @Override
+    @Transactional
     public void removeParticipant(Long suiteRoomId, AuthorizerDto authorizerDto) {
         Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, authorizerDto.getMemberId()).orElseThrow(
                 () -> new CustomException(StatusCode.FAILED_REQUEST)

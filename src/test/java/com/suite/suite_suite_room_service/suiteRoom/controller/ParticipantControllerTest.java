@@ -6,9 +6,12 @@ import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockAuthorizer;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockSuiteRoom;
+import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
+import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import com.suite.suite_suite_room_service.suiteRoom.service.ParticipantServiceImpl;
 import com.suite.suite_suite_room_service.suiteRoom.service.SuiteRoomServiceImpl;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,16 +37,21 @@ class ParticipantControllerTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private ParticipantServiceImpl participantService;
     @Autowired private SuiteRoomServiceImpl suiteRoomService;
+    @Autowired private SuiteRoomRepository suiteRoomRepository;
 
     public static final String YH_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsb3BhaG4yQGdtYWlsLmNvbSIsIklEIjoiMSIsIk5BTUUiOiLrsJjsmIHtmZgiLCJOSUNLTkFNRSI6Imh3YW55OTkiLCJBQ0NPVU5UU1RBVFVTIjoiQUNUSVZBVEUiLCJST0xFIjoiUk9MRV9VU0VSIiwiaWF0IjoxNjkwODE0MDk5LCJleHAiOjE2OTE0MTg4OTl9.xlbiPnD366KP49g5v6X_F4yEZRvu6rbf3ph6j-AWxs8";
     public static final String DR_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6eHo0NjQxQGdtYWlsLmNvbSIsIklEIjoiMiIsIk5BTUUiOiLquYDrjIDtmIQiLCJOSUNLTkFNRSI6IkRhcnJlbiIsIkFDQ09VTlRTVEFUVVMiOiJBQ1RJVkFURSIsIlJPTEUiOiJST0xFX1VTRVIiLCJpYXQiOjE2OTA4MTQxMzUsImV4cCI6MTY5MTQxODkzNX0.ob5s7qQxdALJHpxb28pyYFiAqdeifGKfxtGx9MD3KQ0";
+
+    @BeforeEach
+    public void setUp() {
+        ReqSuiteRoomDto reqSuiteRoomDto = MockSuiteRoom.getMockSuiteRoom("title2", true);
+        suiteRoomService.createSuiteRoom(reqSuiteRoomDto, MockAuthorizer.getMockAuthorizer("hwany", 1L));
+    }
 
     @Test
     @DisplayName("스위트룸 참가하기")
     public void joinSuiteRoom() throws Exception {
         //given
-        ReqSuiteRoomDto reqSuiteRoomDto = MockSuiteRoom.getMockSuiteRoom("title2", true);
-        suiteRoomService.createSuiteRoom(reqSuiteRoomDto, MockAuthorizer.getMockAuthorizer("hwany"));
         Map<String, Long> suiteRoomId = new HashMap<String, Long>();
         suiteRoomId.put("suiteRoomId", Long.parseLong("1"));
         String body = mapper.writeValueAsString(suiteRoomId);
@@ -60,10 +68,10 @@ class ParticipantControllerTest {
     @DisplayName("스위트룸 참가 취소")
     public void cancelSuiteRoom() throws Exception {
         //given
-        ReqSuiteRoomDto reqSuiteRoomDto = MockSuiteRoom.getMockSuiteRoom("title2", true);
-        suiteRoomService.createSuiteRoom(reqSuiteRoomDto, MockAuthorizer.getMockAuthorizer("hwany"));
+        AuthorizerDto participant = MockAuthorizer.getMockAuthorizer("Darren", 2L);
+        participantService.addParticipant(1L, participant);
         Map<String, Long> suiteRoomId = new HashMap<String, Long>();
-        suiteRoomId.put("suiteRoomId", Long.parseLong("1"));
+        suiteRoomId.put("suiteRoomId", 1L);
         String body = mapper.writeValueAsString(suiteRoomId);
         //when
         String responseBody = postRequest("/suite/suiteroom/attend/cancel", DR_JWT, body);
