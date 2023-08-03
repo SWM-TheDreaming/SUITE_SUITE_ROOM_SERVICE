@@ -33,4 +33,16 @@ public class ParticipantServiceImpl implements ParticipantService{
         participantRepository.save(participant);
     }
 
+    @Override
+    public void removeParticipant(Long suiteRoomId, AuthorizerDto authorizerDto) {
+        Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, authorizerDto.getMemberId()).orElseThrow(
+                () -> new CustomException(StatusCode.FAILED_REQUEST)
+        );
+
+        if(participant.getStatus().equals(SuiteStatus.READY))
+            System.out.println("kafka");
+
+        participantRepository.deleteBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, authorizerDto.getMemberId());
+    }
+
 }

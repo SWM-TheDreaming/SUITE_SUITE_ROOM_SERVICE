@@ -69,7 +69,7 @@ class ParticipantServiceImplTest {
     @Test
     @DisplayName("스위트룸 참가 취소")
     @Transactional
-    public void cancelParticipant() {
+    public void removeParticipant() {
         //given
         Long targetSuiteRoomId = 1L;
         AuthorizerDto authorizerDto = MockAuthorizer.getMockAuthorizer("kim1");
