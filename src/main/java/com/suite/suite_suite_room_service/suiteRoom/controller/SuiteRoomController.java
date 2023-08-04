@@ -69,10 +69,6 @@ public class SuiteRoomController {
         suiteRoomService.updateSuiteRoom(reqUpdateSuiteRoomDto, getSuiteAuthorizer());
         return ResponseEntity.ok(new Message(StatusCode.OK));
     }
-    @PostMapping("/payment/completion")
-    public ResponseEntity<Message> paymentCompletion() {
-        return null;
-    }
 
 
 
