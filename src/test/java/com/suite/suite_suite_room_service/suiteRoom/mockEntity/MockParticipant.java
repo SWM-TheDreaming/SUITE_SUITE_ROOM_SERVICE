@@ -18,9 +18,9 @@ public class MockParticipant {
                 .isHost(ishost).build();
     }
 
-    public static AuthorizerDto getMockAuthorizer() {
+    public static AuthorizerDto getMockAuthorizer(String memberId) {
         return AuthorizerDto.builder()
-                .memberId(Long.parseLong("1"))
+                .memberId(Long.parseLong(memberId))
                 .accountStatus("ACTIVIATE")
                 .name("김대현")
                 .nickName("Darren")

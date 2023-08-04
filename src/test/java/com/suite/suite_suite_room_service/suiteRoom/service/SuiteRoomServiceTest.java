@@ -42,7 +42,7 @@ class SuiteRoomServiceTest {
     public void createSuiteRoom() {
         //given
         SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("test",true).toSuiteRoomEntity();
-        Participant participant = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer());
+        Participant participant = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer("1"));
         //when
         suiteRoom.addParticipant(participant);
         SuiteRoom result_suiteRoom = suiteRoomRepository.save(suiteRoom);
@@ -59,7 +59,7 @@ class SuiteRoomServiceTest {
     public void createSecretSuiteRoom() {
         //given
         SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("test",false).toSuiteRoomEntity();
-        Participant participant = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer());
+        Participant participant = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer("1"));
         //when
         suiteRoom.addParticipant(participant);
         SuiteRoom result_suiteRoom = suiteRoomRepository.save(suiteRoom);
@@ -80,7 +80,7 @@ class SuiteRoomServiceTest {
         //given
         ReqSuiteRoomDto suiteRoomDto = MockSuiteRoom.getMockSuiteRoom("test", true);
         SuiteRoom suiteRoom = suiteRoomDto.toSuiteRoomEntity();
-        Participant participant = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer());
+        Participant participant = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer("1"));
         suiteRoom.addParticipant(participant);
         suiteRoomRepository.save(suiteRoom);
         //when
@@ -120,7 +120,7 @@ class SuiteRoomServiceTest {
         suiteRooms.stream().map(
                 suiteRoom -> suiteRoom.toResSuiteRoomDto(
                         participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId()),
-                        participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), MockParticipant.getMockAuthorizer().getMemberId(), true)
+                        participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), MockParticipant.getMockAuthorizer("1").getMemberId(), true)
                 )
         ).collect(Collectors.toList());
 
@@ -137,7 +137,7 @@ class SuiteRoomServiceTest {
         //given
         Long expectedSuiteRoomId = 1L;
         SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("토익 스터디 모집합니다.",true).toSuiteRoomEntity();
-        Participant participant = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer());
+        Participant participant = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer("1"));
         suiteRoom.addParticipant(participant);
         suiteRoomRepository.save(suiteRoom);
         //when
@@ -151,7 +151,7 @@ class SuiteRoomServiceTest {
         );
         ResSuiteRoomDto resSuiteRoomDto = findSuiteRoomBySuiteRoomIdResult.get().toResSuiteRoomDto(
                 participantRepository.countBySuiteRoom_SuiteRoomId(expectedSuiteRoomId),
-                participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(expectedSuiteRoomId, MockParticipant.getMockAuthorizer().getMemberId(), true)
+                participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(expectedSuiteRoomId, MockParticipant.getMockAuthorizer("1").getMemberId(), true)
         );
         //then
         assertAll(
@@ -166,7 +166,7 @@ class SuiteRoomServiceTest {
     public void deleteSuiteRoom() {
         //given
         SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("title1", true).toSuiteRoomEntity();
-        Participant participant = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer());
+        Participant participant = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer("1"));
         suiteRoom.addParticipant(participant);
         suiteRoomRepository.save(suiteRoom);
         participantRepository.save(participant);

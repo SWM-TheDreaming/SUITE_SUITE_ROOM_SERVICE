@@ -56,4 +56,7 @@ public class Participant {
     public void addSuiteRoom(SuiteRoom suiteRoom) {
         this.suiteRoom = suiteRoom;
     }
+    public void updateStatus(SuiteStatus suiteStatus) {
+        this.status = suiteStatus;
+    }
 }
