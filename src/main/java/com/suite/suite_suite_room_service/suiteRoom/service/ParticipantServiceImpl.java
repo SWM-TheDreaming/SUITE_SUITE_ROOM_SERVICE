@@ -49,6 +49,7 @@ public class ParticipantServiceImpl implements ParticipantService{
     }
 
     @Override
+    @Transactional
     public void updatePaymentParticipant(Long suiteRoomId, Long memberId) {
         Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, memberId)
                 .orElseThrow(() -> { throw new CustomException(StatusCode.NOT_FOUND); });
