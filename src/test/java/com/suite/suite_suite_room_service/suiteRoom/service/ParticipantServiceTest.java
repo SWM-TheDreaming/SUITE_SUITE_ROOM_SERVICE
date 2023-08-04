@@ -103,8 +103,8 @@ class ParticipantServiceTest {
         SuiteRoom targetSuiteRoom = suiteRoomRepository.findBySuiteRoomId(consumedSuiteRoomId).orElseThrow(
                 () -> assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.NOT_FOUND);})
         );
-        SuiteStatus readyStatus = SuiteStatus.READY;
-        targetParticipant.updateStatus(readyStatus);
+
+        targetParticipant.updateStatus(SuiteStatus.READY);
 
         if (targetParticipant.getIsHost()) {
             targetSuiteRoom.openSuiteRoom();
@@ -149,11 +149,10 @@ class ParticipantServiceTest {
         if (!targetSuiteRoom.getIsOpen())
             assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.IS_NOT_OPEN);});
 
-        SuiteStatus readyStatus = SuiteStatus.READY;
-        targetParticipant.updateStatus(readyStatus);
+
+        targetParticipant.updateStatus( SuiteStatus.READY);
 
         System.out.println("결제서비스 kafka 메시지 큐에 READY 성공 메시지를 넣습니다.");
-        //then
         //then
         Participant assertParticipant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(consumedSuiteRoomId, consumedParticipantMemberId, participantGuest.getIsHost()).orElseThrow(
                 () -> assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.NOT_FOUND);})
