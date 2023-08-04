@@ -10,6 +10,7 @@ import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomReposito
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +19,7 @@ public class ParticipantServiceImpl implements ParticipantService{
     private final ParticipantRepository participantRepository;
 
     @Override
+    @Transactional
     public void addParticipant(Long suiteRoomId, AuthorizerDto authorizerDto) {
         SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId).orElseThrow(
                 () -> new CustomException(StatusCode.NOT_FOUND));
@@ -31,6 +33,19 @@ public class ParticipantServiceImpl implements ParticipantService{
                                         .isHost(false).build();
         suiteRoom.addParticipant(participant);
         participantRepository.save(participant);
+    }
+
+    @Override
+    @Transactional
+    public void removeParticipant(Long suiteRoomId, AuthorizerDto authorizerDto) {
+        Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, authorizerDto.getMemberId()).orElseThrow(
+                () -> new CustomException(StatusCode.FAILED_REQUEST));
+
+        if(participant.getStatus().equals(SuiteStatus.READY))
+            System.out.println("kafka");
+        if(participant.getIsHost())
+            throw new CustomException(StatusCode.CAN_NOT_CALCEL_SUITEROOM);
+        participantRepository.deleteBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, authorizerDto.getMemberId());
     }
 
 }

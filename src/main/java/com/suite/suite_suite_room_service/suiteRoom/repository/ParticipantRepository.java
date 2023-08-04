@@ -13,5 +13,6 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
 
     Long countBySuiteRoom_SuiteRoomId(Long suiteRoomId);
 
+    void deleteBySuiteRoom_SuiteRoomIdAndMemberId(Long suiteRoomId, Long memberId);
     Boolean existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(Long suiteRoomId, Long memberId, boolean ishost);
 }

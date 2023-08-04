@@ -62,7 +62,7 @@ class SuiteRoomControllerTest {
         //given
         final String url = "/suite/suiteroom/update";
         ReqSuiteRoomDto reqSuiteRoomDto = MockSuiteRoom.getMockSuiteRoom("title2", true);
-        suiteRoomService.createSuiteRoom(reqSuiteRoomDto, MockAuthorizer.getMockAuthorizer("hwany"));
+        suiteRoomService.createSuiteRoom(reqSuiteRoomDto, MockAuthorizer.getMockAuthorizer("hwany", 1L));
         String body = mapper.writeValueAsString(ReqUpdateSuiteRoomDto.builder()
                 .suiteRoomId(Long.parseLong("1"))
                 .content("updated content")
@@ -84,10 +84,10 @@ class SuiteRoomControllerTest {
 
         ReqSuiteRoomDto reqSuiteRoomDto1 = MockSuiteRoom.getMockSuiteRoom("hwany", true);
         ReqSuiteRoomDto reqSuiteRoomDto2 = MockSuiteRoom.getMockSuiteRoom("mini", true);
-        suiteRoomService.createSuiteRoom(reqSuiteRoomDto1, MockAuthorizer.getMockAuthorizer("hwany"));
-        suiteRoomService.createSuiteRoom(reqSuiteRoomDto2, MockAuthorizer.getMockAuthorizer("hwany"));
+        suiteRoomService.createSuiteRoom(reqSuiteRoomDto1, MockAuthorizer.getMockAuthorizer("hwany", 1L));
+        suiteRoomService.createSuiteRoom(reqSuiteRoomDto2, MockAuthorizer.getMockAuthorizer("hwany", 1L));
 
-        List<ResSuiteRoomDto> resService = suiteRoomService.getAllSuiteRooms(MockAuthorizer.getMockAuthorizer("hwany"));
+        List<ResSuiteRoomDto> resService = suiteRoomService.getAllSuiteRooms(MockAuthorizer.getMockAuthorizer("hwany", 1L));
         //when
         String responseBody = getRequest(url, YH_JWT);
         Message message = mapper.readValue(responseBody, Message.class);
@@ -111,8 +111,8 @@ class SuiteRoomControllerTest {
         final Long expectedSuiteRoomId = 1L;
         ReqSuiteRoomDto reqSuiteRoomDto1 = MockSuiteRoom.getMockSuiteRoom("hwany", true);
         ReqSuiteRoomDto reqSuiteRoomDto2 = MockSuiteRoom.getMockSuiteRoom("mini", true);
-        AuthorizerDto mockAuthorizer1 = MockAuthorizer.getMockAuthorizer("hwany");
-        AuthorizerDto mockAuthorizer2 = MockAuthorizer.getMockAuthorizer("mini");
+        AuthorizerDto mockAuthorizer1 = MockAuthorizer.getMockAuthorizer("hwany", 1L);
+        AuthorizerDto mockAuthorizer2 = MockAuthorizer.getMockAuthorizer("mini", 2L);
         suiteRoomService.createSuiteRoom(reqSuiteRoomDto1, mockAuthorizer1);
         suiteRoomService.createSuiteRoom(reqSuiteRoomDto2, mockAuthorizer2);
 
@@ -140,7 +140,7 @@ class SuiteRoomControllerTest {
         //given
         final String url = "/suite/suiteroom/delete/1";
         ReqSuiteRoomDto reqSuiteRoomDto = MockSuiteRoom.getMockSuiteRoom("title2", true);
-        suiteRoomService.createSuiteRoom(reqSuiteRoomDto, MockAuthorizer.getMockAuthorizer("hwany"));
+        suiteRoomService.createSuiteRoom(reqSuiteRoomDto, MockAuthorizer.getMockAuthorizer("hwany", 1L));
         //when
         String responseBody = deleteRequest(url, YH_JWT);
         Message message = mapper.readValue(responseBody, Message.class);

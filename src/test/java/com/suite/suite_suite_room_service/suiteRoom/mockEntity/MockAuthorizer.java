@@ -3,9 +3,9 @@ package com.suite.suite_suite_room_service.suiteRoom.mockEntity;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 
 public class MockAuthorizer {
-    public static AuthorizerDto getMockAuthorizer(String name) {
+    public static AuthorizerDto getMockAuthorizer(String name, Long memberId) {
         return AuthorizerDto.builder()
-                .memberId(Long.parseLong("1"))
+                .memberId(memberId)
                 .accountStatus("ACTIVIATE")
                 .name(name)
                 .nickName("Darren")

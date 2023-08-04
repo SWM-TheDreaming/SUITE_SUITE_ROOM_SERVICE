@@ -23,4 +23,10 @@ public class ParticipantController {
         participantService.addParticipant(suiteRoomId.get("suiteRoomId"), getSuiteAuthorizer());
         return ResponseEntity.ok(new Message(StatusCode.OK));
     }
+
+    @PostMapping("/suiteroom/attend/cancel")
+    public ResponseEntity<Message> cancelSuiteRoom(@RequestBody Map<String, Long> suiteRoomId) {
+        participantService.removeParticipant(suiteRoomId.get("suiteRoomId"), getSuiteAuthorizer());
+        return ResponseEntity.ok(new Message(StatusCode.OK));
+    }
 }

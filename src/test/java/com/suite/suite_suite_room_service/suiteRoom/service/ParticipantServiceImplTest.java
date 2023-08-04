@@ -1,5 +1,6 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
+import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
@@ -11,10 +12,12 @@ import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantReposi
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,23 +32,26 @@ class ParticipantServiceImplTest {
     @Autowired private ParticipantRepository participantRepository;
     @Autowired private SuiteRoomRepository suiteRoomRepository;
 
+    private final SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("test", true).toSuiteRoomEntity();
+    private final Participant participantHost = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer());
+
+    @BeforeEach
+    public void setUp() {
+        suiteRoom.addParticipant(participantHost);
+        suiteRoomRepository.save(suiteRoom);
+        participantRepository.save(participantHost);
+    }
 
     @Test
     @DisplayName("스위트룸 참가하기")
     public void addParticipant() {
         //given
-        SuiteRoom createSuiteRoom = MockSuiteRoom.getMockSuiteRoom("test", true).toSuiteRoomEntity();
-        Participant participantHost = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer());
-        createSuiteRoom.addParticipant(participantHost);
-        suiteRoomRepository.save(createSuiteRoom);
-        participantRepository.save(participantHost);
-        Optional<SuiteRoom> enterRoom = suiteRoomRepository.findBySuiteRoomId(Long.parseLong("1"));
-        Long targetSuiteRoomId = enterRoom.get().getSuiteRoomId();
+        Long targetSuiteRoomId = 1L;
+        AuthorizerDto authorizerDto = MockAuthorizer.getMockAuthorizer("kim1", 1L);
         //when
         SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(targetSuiteRoomId).orElseThrow(
                 () -> assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.NOT_FOUND); } )
         );
-        AuthorizerDto authorizerDto = MockAuthorizer.getMockAuthorizer("kim1");
         participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(targetSuiteRoomId, authorizerDto.getMemberId()).ifPresent(
                 participant -> { assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.ALREADY_EXISTS_PARTICIPANT); } );}
         );
@@ -59,6 +65,30 @@ class ParticipantServiceImplTest {
         );
     }
 
+
+    @Test
+    @DisplayName("스위트룸 참가 취소")
+    @Transactional
+    public void removeParticipant() {
+        //given
+        Long targetSuiteRoomId = 1L;
+        AuthorizerDto authorizerDto = MockAuthorizer.getMockAuthorizer("kim1", 1L);
+        //when
+        Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(targetSuiteRoomId, authorizerDto.getMemberId()).orElseThrow(
+                () -> assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.FAILED_REQUEST); }));
+
+        if(participant.getIsHost())
+            assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.CAN_NOT_CALCEL_SUITEROOM); });
+
+        if(participant.getStatus().equals(SuiteStatus.READY))
+            System.out.println("kafka");
+        participantRepository.deleteBySuiteRoom_SuiteRoomIdAndMemberId(targetSuiteRoomId, authorizerDto.getMemberId());
+        List<Participant> result = participantRepository.findBySuiteRoom_SuiteRoomId(targetSuiteRoomId);
+        //then
+        Assertions.assertAll(
+                () -> assertThat(result.size()).isEqualTo(1)
+        );
+    }
 
 
 }
