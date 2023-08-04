@@ -82,6 +82,12 @@ class ParticipantControllerTest {
         );
     }
 
+    @Test
+    @DisplayName("스위트룸 체크인 완료")
+    public void checkInSuiteRoom() throws Exception {
+
+    }
+
 
 
     private String postRequest(String url, String jwt, String body) throws Exception {

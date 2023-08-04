@@ -92,7 +92,7 @@ class ParticipantServiceTest {
     @Test
     @DisplayName("스위트룸 체크인 완료 - 방장")
     @Transactional
-    public void checkInHost() {
+    public void updatePayment() {
         //given
         Long consumedSuiteRoomId = suiteRoom.getSuiteRoomId();
         Long consumedMemberId = participantHost.getMemberId();
@@ -128,7 +128,7 @@ class ParticipantServiceTest {
     @Test
     @DisplayName("스위트룸 체크인 완료 - 참가자")
     @Transactional
-    public void checkInGuest() {
+    public void updatePaymentGuest() {
         //given
         Participant participantGuest = MockParticipant.getMockParticipant(false, MockParticipant.getMockAuthorizer("2"));
 

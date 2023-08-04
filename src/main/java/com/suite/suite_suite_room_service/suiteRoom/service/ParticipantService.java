@@ -6,4 +6,5 @@ public interface ParticipantService {
 
     void addParticipant(Long suiteRoomId, AuthorizerDto authorizerDto);
     void removeParticipant(Long suiteRoomId, AuthorizerDto authorizerDto);
+    void updatePaymentParticipant(Long suiteRoomId, Long memberId);
 }

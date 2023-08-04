@@ -48,4 +48,26 @@ public class ParticipantServiceImpl implements ParticipantService{
         participantRepository.deleteBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, authorizerDto.getMemberId());
     }
 
+    @Override
+    public void updatePaymentParticipant(Long suiteRoomId, Long memberId) {
+        Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, memberId)
+                .orElseThrow(() -> { throw new CustomException(StatusCode.NOT_FOUND); });
+        SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId)
+                .orElseThrow(() -> { throw new CustomException(StatusCode.NOT_FOUND); });
+
+        if (!suiteRoom.getIsOpen()) {
+            if(participant.getIsHost()) {
+                suiteRoom.openSuiteRoom();
+                participant.updateStatus(SuiteStatus.READY);
+            } else {
+                throw new CustomException(StatusCode.IS_NOT_OPEN);
+            }
+        } else {
+            participant.updateStatus(SuiteStatus.READY);
+        }
+
+        System.out.println("결제서비스 kafka 메시지 큐에 READY 성공 메시지를 넣습니다.");
+
+    }
+
 }
