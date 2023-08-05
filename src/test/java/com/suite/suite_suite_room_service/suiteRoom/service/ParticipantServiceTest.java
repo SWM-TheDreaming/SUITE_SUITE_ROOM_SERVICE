@@ -1,5 +1,6 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
+import com.suite.suite_suite_room_service.suiteRoom.dto.ResPaymentParticipantDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
@@ -20,6 +21,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -186,10 +188,13 @@ class ParticipantServiceTest {
         participantGuest.updateStatus(SuiteStatus.READY);
         //when
         List<Participant> checkedInParticipants = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatusNot(suiteRoomId, SuiteStatus.PLAIN);
-
+        checkedInParticipants.stream().map(
+                participant -> participant.toResPaymentParticipantDto()
+        ).collect(Collectors.toList());
         //then
         Assertions.assertAll(
                 () -> assertThat(checkedInParticipants.size()).isEqualTo(2),
+                () -> assertThat(checkedInParticipants.getClass()).isEqualTo(ResPaymentParticipantDto.class),
                 () -> assertThat(checkedInParticipants.get(0).getStatus()).isNotEqualTo(SuiteStatus.PLAIN),
                 () -> assertThat(checkedInParticipants.get(1).getStatus()).isNotEqualTo(SuiteStatus.PLAIN)
         );

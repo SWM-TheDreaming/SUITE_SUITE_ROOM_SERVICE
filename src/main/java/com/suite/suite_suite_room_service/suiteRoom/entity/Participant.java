@@ -1,6 +1,7 @@
 package com.suite.suite_suite_room_service.suiteRoom.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ResPaymentParticipantDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import lombok.Builder;
@@ -58,5 +59,13 @@ public class Participant {
     }
     public void updateStatus(SuiteStatus suiteStatus) {
         this.status = suiteStatus;
+    }
+
+    public ResPaymentParticipantDto toResPaymentParticipantDto() {
+        return ResPaymentParticipantDto.builder()
+                .nickName(this.nickname)
+                .status(this.status)
+                .isHost(this.isHost)
+                .build();
     }
 }

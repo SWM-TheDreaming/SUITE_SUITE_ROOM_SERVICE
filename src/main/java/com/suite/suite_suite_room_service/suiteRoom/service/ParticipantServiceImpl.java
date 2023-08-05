@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ParticipantServiceImpl implements ParticipantService{
@@ -70,5 +72,6 @@ public class ParticipantServiceImpl implements ParticipantService{
         System.out.println("결제서비스 kafka 메시지 큐에 READY 성공 메시지를 넣습니다.");
 
     }
+
 
 }
