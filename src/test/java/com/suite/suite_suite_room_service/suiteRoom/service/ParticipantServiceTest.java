@@ -171,7 +171,7 @@ class ParticipantServiceTest {
     @Test
     @DisplayName("스위트룸 체크인 목록 확인 - 납부자")
     @Transactional // for update status
-    public void listUpPayments() {
+    public void listUpPaymentParticipants() {
         //given
         Participant participantGuest = MockParticipant.getMockParticipant(false, MockParticipant.getMockAuthorizer("2"));
         Long suiteRoomId = suiteRoom.getSuiteRoomId();
@@ -203,7 +203,7 @@ class ParticipantServiceTest {
     @Test
     @DisplayName("스위트룸 체크인 목록 확인 - 미납부 신청자")
     @Transactional // for update status
-    public void listUpNotYetPayments() {
+    public void listUpNotYetPaymentParticipants() {
         //given
         Participant participantGuest = MockParticipant.getMockParticipant(false, MockParticipant.getMockAuthorizer("2"));
         Long suiteRoomId = suiteRoom.getSuiteRoomId();
@@ -218,8 +218,8 @@ class ParticipantServiceTest {
         participantRepository.save(participantGuest);
 
         //when
-        List<Participant> checkedInParticipants = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(suiteRoomId, SuiteStatus.PLAIN);
-        List<ResPaymentParticipantDto> assertionParticipants = checkedInParticipants.stream().map(
+        List<Participant> notYetCheckedInParticipants = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(suiteRoomId, SuiteStatus.PLAIN);
+        List<ResPaymentParticipantDto> assertionParticipants = notYetCheckedInParticipants.stream().map(
                 participant -> participant.toResPaymentParticipantDto()
         ).collect(Collectors.toList());
         //then

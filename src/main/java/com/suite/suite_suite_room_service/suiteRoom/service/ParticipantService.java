@@ -12,6 +12,9 @@ public interface ParticipantService {
     void removeParticipant(Long suiteRoomId, AuthorizerDto authorizerDto);
     void updatePaymentParticipant(Long suiteRoomId, Long memberId);
 
+    List<ResPaymentParticipantDto> listUpPaymentParticipants(Long suiteRoomId);
+
+    List<ResPaymentParticipantDto> listUpNotYetPaymentParticipants(Long suiteRoomId);
 
 
 }
