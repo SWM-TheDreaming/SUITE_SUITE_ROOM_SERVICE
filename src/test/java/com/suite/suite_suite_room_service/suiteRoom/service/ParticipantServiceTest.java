@@ -150,7 +150,7 @@ class ParticipantServiceTest {
             assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.IS_NOT_OPEN);});
 
 
-        targetParticipant.updateStatus( SuiteStatus.READY);
+        targetParticipant.updateStatus(SuiteStatus.READY);
 
         System.out.println("결제서비스 kafka 메시지 큐에 READY 성공 메시지를 넣습니다.");
         //then
@@ -163,6 +163,35 @@ class ParticipantServiceTest {
         Assertions.assertAll(
                 () -> assertThat(assertParticipant.getStatus()).isEqualTo(SuiteStatus.READY),
                 () -> assertThat(assertSuiteRoom.getIsOpen()).isEqualTo(true)
+        );
+    }
+
+    @Test
+    @DisplayName("스위트룸 체크인 목록 확인")
+    @Transactional // for update status
+    public void listUpPayments() {
+        //given
+        Participant participantGuest = MockParticipant.getMockParticipant(false, MockParticipant.getMockAuthorizer("2"));
+        Long suiteRoomId = suiteRoom.getSuiteRoomId();
+
+        SuiteRoom targetSuiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId)
+                .orElseThrow(() -> assertThrows(CustomException.class, () -> {throw new CustomException(StatusCode.NOT_FOUND);}));
+
+        participantHost.updateStatus(SuiteStatus.READY);
+        targetSuiteRoom.openSuiteRoom();
+
+        targetSuiteRoom.addParticipant(participantGuest);
+        participantRepository.save(participantGuest);
+
+        participantGuest.updateStatus(SuiteStatus.READY);
+        //when
+        List<Participant> checkedInParticipants = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatusNot(suiteRoomId, SuiteStatus.PLAIN);
+
+        //then
+        Assertions.assertAll(
+                () -> assertThat(checkedInParticipants.size()).isEqualTo(2),
+                () -> assertThat(checkedInParticipants.get(0).getStatus()).isNotEqualTo(SuiteStatus.PLAIN),
+                () -> assertThat(checkedInParticipants.get(1).getStatus()).isNotEqualTo(SuiteStatus.PLAIN)
         );
     }
 
