@@ -12,6 +12,8 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
     Optional<Participant> findBySuiteRoom_SuiteRoomIdAndMemberId(Long suiteRoomId, Long memberId);
 
     List<Participant> findAllBySuiteRoom_SuiteRoomIdAndStatusNot(Long suiteRoomId, SuiteStatus suiteStatus);
+
+    List<Participant> findAllBySuiteRoom_SuiteRoomIdAndStatus(Long suiteRoomId, SuiteStatus suiteStatus);
     List<Participant> findBySuiteRoom_SuiteRoomId(Long suiteRoomId);
 
     Long countBySuiteRoom_SuiteRoomId(Long suiteRoomId);
