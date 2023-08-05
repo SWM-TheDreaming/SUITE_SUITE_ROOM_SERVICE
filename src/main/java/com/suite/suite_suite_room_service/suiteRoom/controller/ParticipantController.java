@@ -37,4 +37,14 @@ public class ParticipantController {
         participantService.updatePaymentParticipant(checkInInfoDto.getSuiteRoomId(), checkInInfoDto.getMemberId());
         return ResponseEntity.ok(new Message(StatusCode.OK));
     }
+
+    @GetMapping("/payment/ready/{suiteRoomId}")
+    public ResponseEntity<Message> getCheckInList(@PathVariable Long suiteRoomId) {
+        return ResponseEntity.ok(new Message(StatusCode.OK, participantService.listUpPaymentParticipants(suiteRoomId)));
+    }
+
+    @GetMapping("/payment/plain/{suiteRoomId}")
+    public ResponseEntity<Message> getNotYetCheckInList(@PathVariable Long suiteRoomId) {
+        return ResponseEntity.ok(new Message(StatusCode.OK, participantService.listUpNotYetPaymentParticipants(suiteRoomId)));
+    }
 }

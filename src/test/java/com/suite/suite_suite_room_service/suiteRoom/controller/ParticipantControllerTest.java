@@ -1,11 +1,9 @@
 package com.suite.suite_suite_room_service.suiteRoom.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.suite.suite_suite_room_service.suiteRoom.dto.Message;
-import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
-import com.suite.suite_suite_room_service.suiteRoom.dto.ResPaymentParticipantDto;
-import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
+import com.suite.suite_suite_room_service.suiteRoom.dto.*;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
@@ -29,8 +27,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -117,22 +117,26 @@ class ParticipantControllerTest {
 
     @Test
     @DisplayName("스위트룸 체크인 목록 확인 - 납부자")
+    @Transactional
     public void getCheckInList() throws Exception {
-        //givne
-        final String url = "/suite/payment/ready";
-        Participant participantHost = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer("1"));
-        Participant participantGuest = MockParticipant.getMockParticipant(false, MockParticipant.getMockAuthorizer("2"));
-        SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("토익 스터디 모집", true).toSuiteRoomEntity();
+        //given
+        final String url = "/suite/payment/ready/1";
+        Participant participantGuest = MockParticipant.getMockParticipant(false, MockAuthorizer.getMockAuthorizer("darren", 2L));
+        Participant participantHost = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(1L, 1L).orElseThrow(
+                () -> Assertions.assertThrows(CustomException.class, ()->{throw new CustomException(StatusCode.NOT_FOUND);})
+        );
+        SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(1L).orElseThrow(
+                () -> Assertions.assertThrows(CustomException.class, ()->{throw new CustomException(StatusCode.NOT_FOUND);})
+        );
 
         participantHost.updateStatus(SuiteStatus.READY);
         suiteRoom.openSuiteRoom();
 
-        suiteRoom.addParticipant(participantGuest);
-        suiteRoomRepository.save(suiteRoom);
-        participantRepository.save(participantGuest);
+        saveParticipantWithTransaction(participantGuest, suiteRoom);
         //when
         String responseBody = getRequest(url, YH_JWT);
-        Message message = mapper.readValue(responseBody, Message.class);
+        Message message = mapper.readValue(responseBody, new TypeReference<Message<List<ResPaymentParticipantDto>>>() {
+        });
         List<ResPaymentParticipantDto> result = (List<ResPaymentParticipantDto>) message.getData();
         //then
         Assertions.assertAll(
@@ -143,28 +147,38 @@ class ParticipantControllerTest {
 
     @Test
     @DisplayName("스위트룸 체크인 목록 확인 - 미납부 신청자")
+    @Transactional
     public void getNotYetCheckInList() throws Exception {
-        //givne
-        final String url = "/suite/payment/pending";
-        Participant participantHost = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer("1"));
-        Participant participantGuest = MockParticipant.getMockParticipant(false, MockParticipant.getMockAuthorizer("2"));
-        SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("토익 스터디 모집", true).toSuiteRoomEntity();
+        //given
+        final String url = "/suite/payment/plain/1";
+        Participant participantGuest = MockParticipant.getMockParticipant(false, MockAuthorizer.getMockAuthorizer("darren", 2L));
+        Participant participantHost = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(1L, 1L).orElseThrow(
+                () -> Assertions.assertThrows(CustomException.class, ()->{throw new CustomException(StatusCode.NOT_FOUND);})
+        );
+        SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(1L).orElseThrow(
+                () -> Assertions.assertThrows(CustomException.class, ()->{throw new CustomException(StatusCode.NOT_FOUND);})
+        );
 
         participantHost.updateStatus(SuiteStatus.READY);
         suiteRoom.openSuiteRoom();
 
-        suiteRoom.addParticipant(participantGuest);
-        suiteRoomRepository.save(suiteRoom);
-        participantRepository.save(participantGuest);
+        saveParticipantWithTransaction(participantGuest, suiteRoom);
+
         //when
         String responseBody = getRequest(url, YH_JWT);
-        Message message = mapper.readValue(responseBody, Message.class);
+        Message message = mapper.readValue(responseBody, new TypeReference<Message<List<ResPaymentParticipantDto>>>() {
+        });
         List<ResPaymentParticipantDto> result = (List<ResPaymentParticipantDto>) message.getData();
         //then
         Assertions.assertAll(
                 () -> assertThat(message.getStatusCode()).isEqualTo(200),
-                () -> assertThat(result.get(0).getStatus()).isEqualTo(SuiteStatus.READY)
+                () -> assertThat(result.get(0).getStatus()).isEqualTo(SuiteStatus.PLAIN)
         );
+    }
+    @Rollback(true)
+    protected void saveParticipantWithTransaction(Participant participantGuest, SuiteRoom suiteRoom) {
+        suiteRoom.addParticipant(participantGuest);
+        participantRepository.save(participantGuest);
     }
 
     private String postRequest(String url, String jwt, String body) throws Exception {

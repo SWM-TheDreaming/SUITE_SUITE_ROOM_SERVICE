@@ -77,7 +77,7 @@ public class ParticipantServiceImpl implements ParticipantService{
 
     @Override
     public List<ResPaymentParticipantDto> listUpPaymentParticipants(Long suiteRoomId) {
-        List<Participant> checkedInParticipants = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(suiteRoomId, SuiteStatus.PLAIN);
+        List<Participant> checkedInParticipants = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(suiteRoomId, SuiteStatus.READY);
         List<ResPaymentParticipantDto> resPaymentParticipantDtos = checkedInParticipants.stream().map(
                 participant -> participant.toResPaymentParticipantDto()
         ).collect(Collectors.toList());
