@@ -4,12 +4,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.suite.suite_suite_room_service.suiteRoom.dto.Message;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ResPaymentParticipantDto;
+import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
+import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
+import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
+import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
+import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockAuthorizer;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockCheckInInfo;
+import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockParticipant;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockSuiteRoom;
+import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
+import com.suite.suite_suite_room_service.suiteRoom.service.ParticipantService;
 import com.suite.suite_suite_room_service.suiteRoom.service.ParticipantServiceImpl;
+import com.suite.suite_suite_room_service.suiteRoom.service.SuiteRoomService;
 import com.suite.suite_suite_room_service.suiteRoom.service.SuiteRoomServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +33,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,8 +47,10 @@ class ParticipantControllerTest {
 
     @Autowired private ObjectMapper mapper;
     @Autowired private MockMvc mockMvc;
-    @Autowired private ParticipantServiceImpl participantService;
-    @Autowired private SuiteRoomServiceImpl suiteRoomService;
+    @Autowired private ParticipantService participantService;
+    @Autowired private SuiteRoomService suiteRoomService;
+    @Autowired private ParticipantRepository participantRepository;
+    @Autowired private SuiteRoomRepository suiteRoomRepository;
 
 
 
@@ -102,6 +115,57 @@ class ParticipantControllerTest {
         );
     }
 
+    @Test
+    @DisplayName("스위트룸 체크인 목록 확인 - 납부자")
+    public void getCheckInList() throws Exception {
+        //givne
+        final String url = "/suite/payment/ready";
+        Participant participantHost = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer("1"));
+        Participant participantGuest = MockParticipant.getMockParticipant(false, MockParticipant.getMockAuthorizer("2"));
+        SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("토익 스터디 모집", true).toSuiteRoomEntity();
+
+        participantHost.updateStatus(SuiteStatus.READY);
+        suiteRoom.openSuiteRoom();
+
+        suiteRoom.addParticipant(participantGuest);
+        suiteRoomRepository.save(suiteRoom);
+        participantRepository.save(participantGuest);
+        //when
+        String responseBody = getRequest(url, YH_JWT);
+        Message message = mapper.readValue(responseBody, Message.class);
+        List<ResPaymentParticipantDto> result = (List<ResPaymentParticipantDto>) message.getData();
+        //then
+        Assertions.assertAll(
+                () -> assertThat(message.getStatusCode()).isEqualTo(200),
+                () -> assertThat(result.get(0).getStatus()).isEqualTo(SuiteStatus.READY)
+        );
+    }
+
+    @Test
+    @DisplayName("스위트룸 체크인 목록 확인 - 미납부 신청자")
+    public void getNotYetCheckInList() throws Exception {
+        //givne
+        final String url = "/suite/payment/pending";
+        Participant participantHost = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer("1"));
+        Participant participantGuest = MockParticipant.getMockParticipant(false, MockParticipant.getMockAuthorizer("2"));
+        SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("토익 스터디 모집", true).toSuiteRoomEntity();
+
+        participantHost.updateStatus(SuiteStatus.READY);
+        suiteRoom.openSuiteRoom();
+
+        suiteRoom.addParticipant(participantGuest);
+        suiteRoomRepository.save(suiteRoom);
+        participantRepository.save(participantGuest);
+        //when
+        String responseBody = getRequest(url, YH_JWT);
+        Message message = mapper.readValue(responseBody, Message.class);
+        List<ResPaymentParticipantDto> result = (List<ResPaymentParticipantDto>) message.getData();
+        //then
+        Assertions.assertAll(
+                () -> assertThat(message.getStatusCode()).isEqualTo(200),
+                () -> assertThat(result.get(0).getStatus()).isEqualTo(SuiteStatus.READY)
+        );
+    }
 
     private String postRequest(String url, String jwt, String body) throws Exception {
         MvcResult result = mockMvc.perform(post(url)
