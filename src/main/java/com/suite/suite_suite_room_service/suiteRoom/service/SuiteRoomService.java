@@ -16,8 +16,7 @@ public interface SuiteRoomService {
     Optional<List<SuiteRoom>> getAllProgressRooms();
     Optional<List<SuiteRoom>> getAllCompletionRooms();
     void createSuiteRoom(ReqSuiteRoomDto reqSuiteRoomDto, AuthorizerDto authorizerDto);
-    Optional<SuiteRoom> joinRoom();
     void deleteSuiteRoom(Long suiteRoomId, AuthorizerDto authorizerDto);
     void updateSuiteRoom(ReqUpdateSuiteRoomDto reqUpdateSuiteRoomDto, AuthorizerDto authorizerDto);
-    Optional<?> commitPaymentStatus();
+
 }

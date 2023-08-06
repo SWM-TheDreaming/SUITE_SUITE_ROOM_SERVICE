@@ -23,6 +23,7 @@ public class MockSuiteRoom {
                 .minMissionCompleteRate(80)
                 .isPublic(isPublic)
                 .password(isPublic ? null : 3249)
+                .isOpen(false)
                 .channelLink("https://open.kakao.com/o/gshpRksf")
                 .studyMethod(StudyType.ONLINE).build();
     }

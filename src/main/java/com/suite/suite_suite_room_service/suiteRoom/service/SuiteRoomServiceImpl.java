@@ -77,10 +77,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
         participantRepository.save(participant);
     }
 
-    @Override
-    public Optional<SuiteRoom> joinRoom() {
-        return Optional.empty();
-    }
+
 
     @Override
     @Transactional
@@ -105,9 +102,6 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
         suiteRoom.updateSuiteRoom(reqUpdateSuiteRoomDto);
     }
 
-    @Override
-    public Optional<?> commitPaymentStatus() {
-        return Optional.empty();
-    }
+
 
 }

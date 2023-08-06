@@ -57,6 +57,9 @@ public class SuiteRoom {
     @Column(name = "password")
     private Integer password;
 
+    @Column(name = "is_open")
+    private Boolean isOpen;
+
     @Column(name = "channel_link")
     private String channelLink;
 
@@ -72,7 +75,7 @@ public class SuiteRoom {
     private List<Participant> participants = new ArrayList<>();
 
     @Builder
-    public SuiteRoom(Long suiteRoomId, String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, String channelLink, StudyType studyMethod, String contractAddress, Long participantId) {
+    public SuiteRoom(Long suiteRoomId, String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, Boolean isOpen, String channelLink, StudyType studyMethod, String contractAddress, Long participantId) {
         this.suiteRoomId = suiteRoomId;
         this.title = title;
         this.content = content;
@@ -85,6 +88,7 @@ public class SuiteRoom {
         this.minMissionCompleteRate = minMissionCompleteRate;
         this.isPublic = isPublic;
         this.password = password;
+        this.isOpen = isOpen;
         this.channelLink = channelLink;
         this.studyMethod = studyMethod;
         this.contractAddress = contractAddress;
@@ -100,6 +104,10 @@ public class SuiteRoom {
         this.channelLink = reqUpdateSuiteRoomDto.getChannelLink();
     }
 
+    public void openSuiteRoom() {
+        this.isOpen = true;
+    }
+
     public ResSuiteRoomDto toResSuiteRoomDto(Long participantCount, boolean isHost) {
         return ResSuiteRoomDto.builder()
                 .title(this.title)
@@ -112,6 +120,7 @@ public class SuiteRoom {
                 .minAttendanceRate(this.minAttendanceRate)
                 .minMissionCompleteRate(this.minMissionCompleteRate)
                 .isPublic(this.isPublic)
+                .isOpen(this.isOpen)
                 .channelLink(this.channelLink)
                 .studyMethod(this.studyMethod)
                 .contractAddress(this.contractAddress)

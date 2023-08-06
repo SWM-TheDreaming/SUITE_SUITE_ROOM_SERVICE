@@ -23,12 +23,13 @@ public class ReqSuiteRoomDto {
     private Integer minMissionCompleteRate;
     private Boolean isPublic;
     private Integer password;
+    private Boolean isOpen;
     private String channelLink;
     private StudyType studyMethod;
     private String contractAddress;
 
     @Builder
-    public ReqSuiteRoomDto(String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, String channelLink, StudyType studyMethod, String contractAddress) {
+    public ReqSuiteRoomDto(String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, Boolean isOpen, String channelLink, StudyType studyMethod, String contractAddress) {
         this.title = title;
         this.content = content;
         this.subject = subject;
@@ -40,6 +41,7 @@ public class ReqSuiteRoomDto {
         this.minMissionCompleteRate = minMissionCompleteRate;
         this.isPublic = isPublic;
         this.password = password;
+        this.isOpen = isOpen;
         this.channelLink = channelLink;
         this.studyMethod = studyMethod;
         this.contractAddress = contractAddress;
@@ -58,6 +60,7 @@ public class ReqSuiteRoomDto {
                 .minMissionCompleteRate(minMissionCompleteRate)
                 .isPublic(isPublic)
                 .password(password)
+                .isOpen(isOpen)
                 .channelLink(channelLink)
                 .studyMethod(studyMethod)
                 .contractAddress(contractAddress).build();

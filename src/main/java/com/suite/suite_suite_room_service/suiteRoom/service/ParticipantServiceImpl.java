@@ -1,5 +1,6 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
+import com.suite.suite_suite_room_service.suiteRoom.dto.ResPaymentParticipantDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
@@ -11,6 +12,9 @@ import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +50,43 @@ public class ParticipantServiceImpl implements ParticipantService{
         if(participant.getIsHost())
             throw new CustomException(StatusCode.CAN_NOT_CALCEL_SUITEROOM);
         participantRepository.deleteBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, authorizerDto.getMemberId());
+    }
+
+    @Override
+    @Transactional
+    public void updatePaymentParticipant(Long suiteRoomId, Long memberId) {
+        Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, memberId)
+                .orElseThrow(() -> { throw new CustomException(StatusCode.NOT_FOUND); });
+        SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId)
+                .orElseThrow(() -> { throw new CustomException(StatusCode.NOT_FOUND); });
+
+        if (participant.getIsHost())
+            suiteRoom.openSuiteRoom();
+
+        participant.updateStatus(SuiteStatus.READY);
+
+        System.out.println("결제서비스 kafka 메시지 큐에 READY 성공 메시지를 넣습니다.");
+
+    }
+
+    @Override
+    public List<ResPaymentParticipantDto> listUpPaymentParticipants(Long suiteRoomId) {
+        List<Participant> checkedInParticipants = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(suiteRoomId, SuiteStatus.READY);
+        List<ResPaymentParticipantDto> resPaymentParticipantDtos = checkedInParticipants.stream().map(
+                participant -> participant.toResPaymentParticipantDto()
+        ).collect(Collectors.toList());
+
+        return resPaymentParticipantDtos;
+    }
+
+    @Override
+    public List<ResPaymentParticipantDto> listUpNotYetPaymentParticipants(Long suiteRoomId) {
+        List<Participant> notYetCheckedInParticipants = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(suiteRoomId, SuiteStatus.PLAIN);
+        List<ResPaymentParticipantDto> resPaymentParticipantDtos = notYetCheckedInParticipants.stream().map(
+                participant -> participant.toResPaymentParticipantDto()
+        ).collect(Collectors.toList());
+
+        return resPaymentParticipantDtos;
     }
 
 }
