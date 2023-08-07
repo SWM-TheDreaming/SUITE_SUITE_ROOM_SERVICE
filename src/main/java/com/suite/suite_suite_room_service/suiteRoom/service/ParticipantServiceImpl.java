@@ -71,20 +71,20 @@ public class ParticipantServiceImpl implements ParticipantService{
 
     @Override
     public List<ResPaymentParticipantDto> listUpPaymentParticipants(Long suiteRoomId) {
-        List<Participant> checkedInParticipants = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(suiteRoomId, SuiteStatus.READY);
-        List<ResPaymentParticipantDto> resPaymentParticipantDtos = checkedInParticipants.stream().map(
-                participant -> participant.toResPaymentParticipantDto()
-        ).collect(Collectors.toList());
+        List<ResPaymentParticipantDto> resPaymentParticipantDtos = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(suiteRoomId, SuiteStatus.READY)
+                .stream().map(
+                        participant -> participant.toResPaymentParticipantDto()
+                ).collect(Collectors.toList());
 
         return resPaymentParticipantDtos;
     }
 
     @Override
     public List<ResPaymentParticipantDto> listUpNotYetPaymentParticipants(Long suiteRoomId) {
-        List<Participant> notYetCheckedInParticipants = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(suiteRoomId, SuiteStatus.PLAIN);
-        List<ResPaymentParticipantDto> resPaymentParticipantDtos = notYetCheckedInParticipants.stream().map(
-                participant -> participant.toResPaymentParticipantDto()
-        ).collect(Collectors.toList());
+        List<ResPaymentParticipantDto> resPaymentParticipantDtos = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(suiteRoomId, SuiteStatus.PLAIN)
+                .stream().map(
+                        participant -> participant.toResPaymentParticipantDto()
+                ).collect(Collectors.toList());
 
         return resPaymentParticipantDtos;
     }
