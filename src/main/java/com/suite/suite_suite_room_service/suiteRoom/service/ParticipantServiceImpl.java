@@ -89,4 +89,19 @@ public class ParticipantServiceImpl implements ParticipantService{
         return resPaymentParticipantDtos;
     }
 
+    @Override
+    @Transactional
+    public List<ResPaymentParticipantDto> updateParticipantsStatusReadyToStart(Long suiteRoomId) {
+        List<ResPaymentParticipantDto> resPaymentParticipantDtos = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(suiteRoomId, SuiteStatus.READY)
+                .stream()
+                .map(
+                        participant -> {
+                            if(participant.getStatus() == SuiteStatus.PLAIN) throw new CustomException(StatusCode.PLAIN_USER_EXIST);
+
+                            participant.updateStatus(SuiteStatus.START);
+                            return participant.toResPaymentParticipantDto();
+                        }
+                ).collect(Collectors.toList());
+        return resPaymentParticipantDtos;
+    }
 }
