@@ -236,6 +236,8 @@ class ParticipantServiceTest {
                             return participant.toResPaymentParticipantDto();
                         }
                 ).collect(Collectors.toList());
+
+        System.out.println("kafka 프로듀싱 to 블록체인 서비스");
         //then
         Assertions.assertAll(
                 () -> assertThat(resPaymentParticipantDtos.size()).isEqualTo(3),

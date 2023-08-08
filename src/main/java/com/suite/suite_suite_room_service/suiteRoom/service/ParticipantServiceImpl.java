@@ -55,15 +55,10 @@ public class ParticipantServiceImpl implements ParticipantService{
     @Override
     @Transactional
     public void updatePaymentParticipant(Long suiteRoomId, Long memberId) {
-        System.out.println("@@@@@@@@@@@@@@@@@@@ service in");
-        System.out.println(suiteRoomId);
-        System.out.println(memberId);
         Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, memberId)
                 .orElseThrow(() -> { throw new CustomException(StatusCode.NOT_FOUND); });
-        System.out.println("@@@@@@@@@@@@@ participant find");
         SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId)
                 .orElseThrow(() -> { throw new CustomException(StatusCode.NOT_FOUND); });
-        System.out.println("@@@@@@@@@@@@@ suiteRoom Find");
         if (participant.getIsHost())
             suiteRoom.openSuiteRoom();
 
@@ -106,6 +101,7 @@ public class ParticipantServiceImpl implements ParticipantService{
                             return participant.toResPaymentParticipantDto();
                         }
                 ).collect(Collectors.toList());
+        System.out.println("kafka 프로듀싱 to 블록체인 서비스");
         return resPaymentParticipantDtos;
     }
 }

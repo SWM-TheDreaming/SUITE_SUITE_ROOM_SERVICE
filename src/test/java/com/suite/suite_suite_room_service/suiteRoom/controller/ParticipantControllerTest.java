@@ -2,23 +2,18 @@ package com.suite.suite_suite_room_service.suiteRoom.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+
 import com.suite.suite_suite_room_service.suiteRoom.dto.*;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
-import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
-import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
+
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockAuthorizer;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockCheckInInfo;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockParticipant;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockSuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
-import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
-import com.suite.suite_suite_room_service.suiteRoom.service.ParticipantService;
-import com.suite.suite_suite_room_service.suiteRoom.service.ParticipantServiceImpl;
-import com.suite.suite_suite_room_service.suiteRoom.service.SuiteRoomService;
-import com.suite.suite_suite_room_service.suiteRoom.service.SuiteRoomServiceImpl;
+
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -50,11 +45,24 @@ class ParticipantControllerTest {
     @Autowired private SuiteRoomRepository suiteRoomRepository;
 
 
-
+    /**
+     * @Rule
+     * 방장은 YH로 생성
+     * 게스트는 DR로 생성
+     *
+     * @Specific
+     * 실제 토큰의 Claim 값과 동일하게 **_NAME, **_ID 를 선언해야 합니다.
+     * 테스트시 에러가 발생합니다.
+     * */
     public static final String YH_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJod2FueTkxODFAZ21haWwuY29tIiwiSUQiOiI0IiwiTkFNRSI6IuuwmOyYge2ZmCIsIk5JQ0tOQU1FIjoiaHdhbnk5OSIsIkFDQ09VTlRTVEFUVVMiOiJBQ1RJVkFURSIsIlJPTEUiOiJST0xFX1VTRVIiLCJpYXQiOjE2OTE0MjA3NzAsImV4cCI6MTY5MjAyNTU3MH0.HBeRgdr5hoknYOYRSHcv9p1vDDmi4uIyodQ5NNFPhGM";
     public static final String DR_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6eHo0NjQxQGdtYWlsLmNvbSIsIklEIjoiNiIsIk5BTUUiOiLquYDrjIDtmIQiLCJOSUNLTkFNRSI6ImRhcnJlbiIsIkFDQ09VTlRTVEFUVVMiOiJBQ1RJVkFURSIsIlJPTEUiOiJST0xFX1VTRVIiLCJpYXQiOjE2OTE0MjA3NDksImV4cCI6MTY5MjAyNTU0OX0.1WAKPpRRhliVXMrPJ8U1OlGsDxYenq5SUyn4Esk2UH4";
+    public static final String DR_NAME = "김대현";
+    public static final String YH_NAME = "반영환";
+    public static final Long DR_ID = 6L;
+    public static final Long YH_ID = 4L;
+
     private final SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("test", true).toSuiteRoomEntity();
-    private final Participant participantHost = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer("1"));
+    private final Participant participantHost = MockParticipant.getMockParticipant(true, MockAuthorizer.getMockAuthorizer(YH_NAME, YH_ID));
     @BeforeEach
     public void setUp() {
         suiteRoom.addParticipant(participantHost);
@@ -83,13 +91,7 @@ class ParticipantControllerTest {
     @DisplayName("스위트룸 참가 취소")
     public void cancelSuiteRoom() throws Exception {
         //given
-        //실제 토큰의 Claim 값과 동일하게 넣어주어야 합니다. 서비스 로직상 다르면 테스트가 터져요!!!
-        Participant participantGuest = MockParticipant.getMockParticipant(false, MockAuthorizer.getMockAuthorizer("김대현", 6L));
-
-        participantHost.updateStatus(SuiteStatus.READY);
-        suiteRoom.openSuiteRoom();
-
-        saveParticipantWithTransaction(participantGuest, suiteRoom);
+        addGuest();
 
         Map<String, Long> suiteRoomId = new HashMap<String, Long>();
         suiteRoomId.put("suiteRoomId", suiteRoom.getSuiteRoomId());
@@ -116,7 +118,7 @@ class ParticipantControllerTest {
         String body = mapper.writeValueAsString(messageCard);
 
         //when
-        String responseBody = postRequest(url, DR_JWT, body);
+        String responseBody = postRequest(url, YH_JWT, body);
 
         Message message = mapper.readValue(responseBody, Message.class);
         //then
@@ -129,16 +131,10 @@ class ParticipantControllerTest {
     @DisplayName("스위트룸 체크인 목록 확인 - 납부자")
     public void getCheckInList() throws Exception {
         //given
-        final String url = "/suite/payment/ready/" + String.valueOf(suiteRoom.getSuiteRoomId());
-
-        Participant participantGuest = MockParticipant.getMockParticipant(false, MockAuthorizer.getMockAuthorizer("darren", 2L));
-
-        participantHost.updateStatus(SuiteStatus.READY);
-        suiteRoom.openSuiteRoom();
-
-        saveParticipantWithTransaction(participantGuest, suiteRoom);
+        final String url = "/suite/payment/ready/" + suiteRoom.getSuiteRoomId();
+        addGuest();
         //when
-        String responseBody = getRequest(url, YH_JWT);
+        String responseBody = getRequest(url, DR_JWT);
         Message message = mapper.readValue(responseBody, new TypeReference<Message<List<ResPaymentParticipantDto>>>() {
         });
         List<ResPaymentParticipantDto> result = (List<ResPaymentParticipantDto>) message.getData();
@@ -153,15 +149,10 @@ class ParticipantControllerTest {
     public void getNotYetCheckInList() throws Exception {
         //given
         final String url = "/suite/payment/plain/" + String.valueOf(suiteRoom.getSuiteRoomId());
-        Participant participantGuest = MockParticipant.getMockParticipant(false, MockAuthorizer.getMockAuthorizer("darren", 2L));
-
-        participantHost.updateStatus(SuiteStatus.READY);
-        suiteRoom.openSuiteRoom();
-
-        saveParticipantWithTransaction(participantGuest, suiteRoom);
+        addGuest();
 
         //when
-        String responseBody = getRequest(url, YH_JWT);
+        String responseBody = getRequest(url, DR_JWT);
         Message message = mapper.readValue(responseBody, new TypeReference<Message<List<ResPaymentParticipantDto>>>() {
         });
         List<ResPaymentParticipantDto> result = (List<ResPaymentParticipantDto>) message.getData();
@@ -172,10 +163,39 @@ class ParticipantControllerTest {
                 () -> assertThat(result).allMatch(dto -> dto.getStatus() == SuiteStatus.PLAIN)
         );
     }
-    @Rollback
-    protected void saveParticipantWithTransaction(Participant participantGuest, SuiteRoom suiteRoom) {
+
+    @Test
+    @DisplayName("스위트룸-스터디-시작")
+    public void startSuiteRoom() throws Exception {
+        //given
+        final String url = "/suite/suiteroom/beginning";
+        addGuest();
+        //when
+        Map<String, Long> suiteRoomId = new HashMap<String, Long>();
+        suiteRoomId.put("suiteRoomId", suiteRoom.getSuiteRoomId());
+        String body = mapper.writeValueAsString(suiteRoomId);
+
+        String responseBody = postRequest(url, YH_JWT, body);
+
+        Message message = mapper.readValue(responseBody, Message.class);
+        //then
+        Assertions.assertAll(
+                () -> assertThat(message.getStatusCode()).isEqualTo(200)
+        );
+
+    }
+
+    protected void addGuest() {
+        Participant participantGuest = MockParticipant.getMockParticipant(false, MockAuthorizer.getMockAuthorizer(DR_NAME, DR_ID));
+
+        updateHostStatus();
+
         suiteRoom.addParticipant(participantGuest);
         participantRepository.save(participantGuest);
+    }
+    protected void updateHostStatus() {
+        participantHost.updateStatus(SuiteStatus.READY);
+        suiteRoom.openSuiteRoom();
     }
 
     private String postRequest(String url, String jwt, String body) throws Exception {
