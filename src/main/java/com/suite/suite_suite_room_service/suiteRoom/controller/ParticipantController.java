@@ -30,8 +30,6 @@ public class ParticipantController {
 
     @PostMapping("/suiteroom/attend/cancel")
     public ResponseEntity<Message> cancelSuiteRoom(@RequestBody Map<String, Long> suiteRoomId) {
-        System.out.println("@@@@@@@@@@@@@@@");
-        System.out.println(suiteRoomId.get("suiteRoomId"));
         participantService.removeParticipant(suiteRoomId.get("suiteRoomId"), getSuiteAuthorizer());
         return ResponseEntity.ok(new Message(StatusCode.OK));
     }
