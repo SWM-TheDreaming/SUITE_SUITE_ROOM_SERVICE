@@ -2,23 +2,18 @@ package com.suite.suite_suite_room_service.suiteRoom.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+
 import com.suite.suite_suite_room_service.suiteRoom.dto.*;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
-import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
-import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
+
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockAuthorizer;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockCheckInInfo;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockParticipant;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockSuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
-import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
-import com.suite.suite_suite_room_service.suiteRoom.service.ParticipantService;
-import com.suite.suite_suite_room_service.suiteRoom.service.ParticipantServiceImpl;
-import com.suite.suite_suite_room_service.suiteRoom.service.SuiteRoomService;
-import com.suite.suite_suite_room_service.suiteRoom.service.SuiteRoomServiceImpl;
+
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -51,8 +46,13 @@ class ParticipantControllerTest {
 
 
     /**
+     * @Rule
      * 방장은 YH로 생성
      * 게스트는 DR로 생성
+     *
+     * @Specific
+     * 실제 토큰의 Claim 값과 동일하게 **_NAME, **_ID 를 선언해야 합니다.
+     * 테스트시 에러가 발생합니다.
      * */
     public static final String YH_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJod2FueTkxODFAZ21haWwuY29tIiwiSUQiOiI0IiwiTkFNRSI6IuuwmOyYge2ZmCIsIk5JQ0tOQU1FIjoiaHdhbnk5OSIsIkFDQ09VTlRTVEFUVVMiOiJBQ1RJVkFURSIsIlJPTEUiOiJST0xFX1VTRVIiLCJpYXQiOjE2OTE0MjA3NzAsImV4cCI6MTY5MjAyNTU3MH0.HBeRgdr5hoknYOYRSHcv9p1vDDmi4uIyodQ5NNFPhGM";
     public static final String DR_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6eHo0NjQxQGdtYWlsLmNvbSIsIklEIjoiNiIsIk5BTUUiOiLquYDrjIDtmIQiLCJOSUNLTkFNRSI6ImRhcnJlbiIsIkFDQ09VTlRTVEFUVVMiOiJBQ1RJVkFURSIsIlJPTEUiOiJST0xFX1VTRVIiLCJpYXQiOjE2OTE0MjA3NDksImV4cCI6MTY5MjAyNTU0OX0.1WAKPpRRhliVXMrPJ8U1OlGsDxYenq5SUyn4Esk2UH4";
@@ -91,7 +91,6 @@ class ParticipantControllerTest {
     @DisplayName("스위트룸 참가 취소")
     public void cancelSuiteRoom() throws Exception {
         //given
-        //실제 토큰의 Claim 값과 동일하게 넣어주어야 합니다. 서비스 로직상 다르면 테스트가 터져요!!!
         addGuest();
 
         Map<String, Long> suiteRoomId = new HashMap<String, Long>();

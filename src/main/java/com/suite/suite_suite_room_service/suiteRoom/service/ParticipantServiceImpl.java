@@ -101,6 +101,7 @@ public class ParticipantServiceImpl implements ParticipantService{
                             return participant.toResPaymentParticipantDto();
                         }
                 ).collect(Collectors.toList());
+        System.out.println("kafka 프로듀싱 to 블록체인 서비스");
         return resPaymentParticipantDtos;
     }
 }

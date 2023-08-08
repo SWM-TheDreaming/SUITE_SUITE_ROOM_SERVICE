@@ -34,6 +34,12 @@ public class ParticipantController {
         return ResponseEntity.ok(new Message(StatusCode.OK));
     }
 
+    @PostMapping("/suiteroom/beginning")
+    public ResponseEntity<Message> startSuiteRoom(@RequestBody Map<String, Long> suiteRoomId) {
+        participantService.updateParticipantsStatusReadyToStart(suiteRoomId.get("suiteRoomId"));
+        return ResponseEntity.ok(new Message(StatusCode.OK));
+    }
+
     @PostMapping("/payment/completion")
     public ResponseEntity<Message> checkInSuiteRoom(@RequestBody CheckInInfoDto checkInInfoDto) {
         // kafka consume 부분이 여기 들어갑니다. 임시로 CheckInInfoDto를 카드처럼 사용했습니다.
