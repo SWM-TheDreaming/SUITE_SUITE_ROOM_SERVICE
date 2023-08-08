@@ -12,12 +12,10 @@ import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockSuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -28,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @DataJpaTest
+@Transactional
+@Rollback
 class ParticipantServiceTest {
 
     @Autowired private ParticipantRepository participantRepository;
@@ -43,11 +43,18 @@ class ParticipantServiceTest {
         participantRepository.save(participantHost);
     }
 
+
+    /**
+     * @수정 요구사항
+     * 결제 서비스와 붙일 카프카 추가 ( 포인트 차감 )
+     * 이미 시작된 스터디에 간발의 차로 신청을 누르는 버저비트상황에서 참여가 안되도록
+     * Participant.getStatus == READY 일 때에만 참여 가능하게 수정
+     * */
     @Test
     @DisplayName("스위트룸 참가하기")
     public void addParticipant() {
         //given
-        Long targetSuiteRoomId = 1L;
+        Long targetSuiteRoomId = suiteRoom.getSuiteRoomId();
         AuthorizerDto authorizerDto = MockAuthorizer.getMockAuthorizer("kim1", 1L);
         //when
         SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(targetSuiteRoomId).orElseThrow(
@@ -66,13 +73,16 @@ class ParticipantServiceTest {
         );
     }
 
-
+    /**
+     * @수정 요구사항
+     * 결제 서비스와 붙일 카프카 추가 ( 포인트 환불 )
+     * 방장은 그러면 스터디 파투를 할 때 포인트를 환급받을 백로그가 필요
+     * */
     @Test
     @DisplayName("스위트룸 참가 취소")
-    @Transactional
     public void removeParticipant() {
         //given
-        Long targetSuiteRoomId = 1L;
+        Long targetSuiteRoomId = suiteRoom.getSuiteRoomId();
         AuthorizerDto authorizerDto = MockAuthorizer.getMockAuthorizer("kim1", 1L);
         //when
         Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(targetSuiteRoomId, authorizerDto.getMemberId()).orElseThrow(
@@ -93,7 +103,6 @@ class ParticipantServiceTest {
 
     @Test
     @DisplayName("스위트룸 체크인 완료 - 방장")
-    @Transactional
     public void updatePayment() {
         //given
         Long consumedSuiteRoomId = suiteRoom.getSuiteRoomId();
@@ -129,22 +138,17 @@ class ParticipantServiceTest {
 
     @Test
     @DisplayName("스위트룸 체크인 완료 - 참가자")
-    @Transactional
     public void updatePaymentGuest() {
         //given
-        Participant participantGuest = MockParticipant.getMockParticipant(false, MockParticipant.getMockAuthorizer("2"));
+                Long consumedSuiteRoomId = suiteRoom.getSuiteRoomId();
+        Long consumedParticipantMemberId = 2L;
 
-        Long consumedSuiteRoomId = suiteRoom.getSuiteRoomId();
-        Long consumedParticipantMemberId = participantGuest.getMemberId();
+        addParticipantForTest(String.valueOf(consumedParticipantMemberId), consumedSuiteRoomId, false);
         SuiteRoom targetSuiteRoom = suiteRoomRepository.findBySuiteRoomId(consumedSuiteRoomId).orElseThrow(
                 () -> assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.NOT_FOUND); } )
         );
-        targetSuiteRoom.openSuiteRoom();
-
-        targetSuiteRoom.addParticipant(participantGuest);
-        participantRepository.save(participantGuest);
         //when
-        Participant targetParticipant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(consumedSuiteRoomId, consumedParticipantMemberId, participantGuest.getIsHost()).orElseThrow(
+        Participant targetParticipant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(consumedSuiteRoomId, consumedParticipantMemberId, false).orElseThrow(
                 () -> assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.NOT_FOUND);})
         );
 
@@ -156,7 +160,7 @@ class ParticipantServiceTest {
 
         System.out.println("결제서비스 kafka 메시지 큐에 READY 성공 메시지를 넣습니다.");
         //then
-        Participant assertParticipant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(consumedSuiteRoomId, consumedParticipantMemberId, participantGuest.getIsHost()).orElseThrow(
+        Participant assertParticipant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(consumedSuiteRoomId, consumedParticipantMemberId, false).orElseThrow(
                 () -> assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.NOT_FOUND);})
         );
         SuiteRoom assertSuiteRoom = suiteRoomRepository.findBySuiteRoomId(consumedSuiteRoomId).orElseThrow(
@@ -170,64 +174,93 @@ class ParticipantServiceTest {
 
     @Test
     @DisplayName("스위트룸 체크인 목록 확인 - 납부자")
-    @Transactional // for update status
+    //@Transactional // for update status
     public void listUpPaymentParticipants() {
         //given
-        Participant participantGuest = MockParticipant.getMockParticipant(false, MockParticipant.getMockAuthorizer("2"));
-        Long suiteRoomId = suiteRoom.getSuiteRoomId();
+        Long targetSuiteRoomId = suiteRoom.getSuiteRoomId();
+        addParticipantForTest("2", targetSuiteRoomId, true);
 
-        SuiteRoom targetSuiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId)
+        Participant participantGuest = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(targetSuiteRoomId,2L,false)
                 .orElseThrow(() -> assertThrows(CustomException.class, () -> {throw new CustomException(StatusCode.NOT_FOUND);}));
-
-        participantHost.updateStatus(SuiteStatus.READY);
-        targetSuiteRoom.openSuiteRoom();
-
-        targetSuiteRoom.addParticipant(participantGuest);
-        participantRepository.save(participantGuest);
-
         participantGuest.updateStatus(SuiteStatus.READY);
         //when
-        List<Participant> checkedInParticipants = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatusNot(suiteRoomId, SuiteStatus.PLAIN);
-        List<ResPaymentParticipantDto> assertionParticipants = checkedInParticipants.stream().map(
-                participant -> participant.toResPaymentParticipantDto()
-        ).collect(Collectors.toList());
+        List<ResPaymentParticipantDto> resPaymentParticipantDtos = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatusNot(targetSuiteRoomId, SuiteStatus.PLAIN)
+                .stream().map(
+                        participant -> participant.toResPaymentParticipantDto()
+                ).collect(Collectors.toList());
         //then
         Assertions.assertAll(
-                () -> assertThat(assertionParticipants.size()).isEqualTo(2),
-                () -> assertThat(assertionParticipants.get(0).getClass()).isEqualTo(ResPaymentParticipantDto.class),
-                () -> assertThat(assertionParticipants.get(0).getStatus()).isNotEqualTo(SuiteStatus.PLAIN),
-                () -> assertThat(assertionParticipants.get(1).getStatus()).isNotEqualTo(SuiteStatus.PLAIN)
+                () -> assertThat(resPaymentParticipantDtos.size()).isEqualTo(2),
+                () -> assertThat(resPaymentParticipantDtos).allMatch(dto -> dto.getStatus() != SuiteStatus.PLAIN),
+                () -> assertThat(resPaymentParticipantDtos).allMatch(dto -> dto.getClass() == ResPaymentParticipantDto.class)
+        );
+    }
+
+
+    @Test
+    @DisplayName("스위트룸 체크인 목록 확인 - 미납부 신청자")
+    //@Transactional // for update status
+    public void listUpNotYetPaymentParticipants() {
+        //given
+        Long targetSuiteRoomId = suiteRoom.getSuiteRoomId();
+        addParticipantForTest("2", targetSuiteRoomId, false);
+        //when
+        List<ResPaymentParticipantDto> resPaymentParticipantDtos = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(targetSuiteRoomId, SuiteStatus.PLAIN)
+                .stream().map(
+                        participant -> participant.toResPaymentParticipantDto()
+                ).collect(Collectors.toList());
+        //then
+        Assertions.assertAll(
+                () -> assertThat(resPaymentParticipantDtos.size()).isEqualTo(1),
+                () -> assertThat(resPaymentParticipantDtos).allMatch(dto -> dto.getStatus() == SuiteStatus.PLAIN),
+                () -> assertThat(resPaymentParticipantDtos).allMatch(dto -> dto.getClass() == ResPaymentParticipantDto.class)
         );
     }
 
     @Test
-    @DisplayName("스위트룸 체크인 목록 확인 - 미납부 신청자")
-    @Transactional // for update status
-    public void listUpNotYetPaymentParticipants() {
+    @DisplayName("스터디 그룹 시작")
+    public void updateParticipantsStatusReadyToStart() {
         //given
-        Participant participantGuest = MockParticipant.getMockParticipant(false, MockParticipant.getMockAuthorizer("2"));
-        Long suiteRoomId = suiteRoom.getSuiteRoomId();
+        Long targetSuiteRoomId = suiteRoom.getSuiteRoomId();
+        addParticipantForTest("2", targetSuiteRoomId, true);
+        addParticipantForTest("3", targetSuiteRoomId, true);
+        //when
+        List<ResPaymentParticipantDto> resPaymentParticipantDtos = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(targetSuiteRoomId, SuiteStatus.READY)
+                .stream()
+                .map(
+                        participant -> {
+                            if(participant.getStatus() == SuiteStatus.PLAIN) Assertions.assertThrows(
+                                    CustomException.class, () -> { throw new CustomException(StatusCode.PLAIN_USER_EXIST);}
+                            );
+                            participant.updateStatus(SuiteStatus.START);
+                            return participant.toResPaymentParticipantDto();
+                        }
+                ).collect(Collectors.toList());
 
+        System.out.println("kafka 프로듀싱 to 블록체인 서비스");
+        //then
+        Assertions.assertAll(
+                () -> assertThat(resPaymentParticipantDtos.size()).isEqualTo(3),
+                () -> assertThat(resPaymentParticipantDtos).allMatch(dto -> dto.getStatus() == SuiteStatus.START),
+                () -> assertThat(resPaymentParticipantDtos).allMatch(dto -> dto.getClass() == ResPaymentParticipantDto.class)
+        );
+
+    }
+
+    private void addParticipantForTest(String memberId, Long suiteRoomId, Boolean updateStatus) {
+        Participant participantGuest = MockParticipant.getMockParticipant(false, MockParticipant.getMockAuthorizer(memberId));
         SuiteRoom targetSuiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId)
                 .orElseThrow(() -> assertThrows(CustomException.class, () -> {throw new CustomException(StatusCode.NOT_FOUND);}));
 
         participantHost.updateStatus(SuiteStatus.READY);
         targetSuiteRoom.openSuiteRoom();
 
+        if(updateStatus) participantGuest.updateStatus(SuiteStatus.READY);
+
         targetSuiteRoom.addParticipant(participantGuest);
+
         participantRepository.save(participantGuest);
 
-        //when
-        List<Participant> notYetCheckedInParticipants = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(suiteRoomId, SuiteStatus.PLAIN);
-        List<ResPaymentParticipantDto> assertionParticipants = notYetCheckedInParticipants.stream().map(
-                participant -> participant.toResPaymentParticipantDto()
-        ).collect(Collectors.toList());
-        //then
-        Assertions.assertAll(
-                () -> assertThat(assertionParticipants.size()).isEqualTo(1),
-                () -> assertThat(assertionParticipants.get(0).getClass()).isEqualTo(ResPaymentParticipantDto.class),
-                () -> assertThat(assertionParticipants.get(0).getStatus()).isEqualTo(SuiteStatus.PLAIN)
-        );
     }
 
 

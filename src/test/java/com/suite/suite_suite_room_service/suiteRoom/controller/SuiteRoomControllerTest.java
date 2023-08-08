@@ -9,7 +9,10 @@ import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockAuthorizer;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockSuiteRoom;
+import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
+import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
+import com.suite.suite_suite_room_service.suiteRoom.service.SuiteRoomService;
 import com.suite.suite_suite_room_service.suiteRoom.service.SuiteRoomServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -18,8 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,13 +36,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
+@Rollback
 class SuiteRoomControllerTest {
+
+
+    @Autowired private SuiteRoomService suiteRoomService;
 
     @Autowired private ObjectMapper mapper;
     @Autowired private MockMvc mockMvc;
-    @Autowired private SuiteRoomServiceImpl suiteRoomService;
-    public static final String YH_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsb3BhaG4yQGdtYWlsLmNvbSIsIklEIjoiMSIsIk5BTUUiOiLrsJjsmIHtmZgiLCJOSUNLTkFNRSI6Imh3YW55OTkiLCJBQ0NPVU5UU1RBVFVTIjoiQUNUSVZBVEUiLCJST0xFIjoiUk9MRV9VU0VSIiwiaWF0IjoxNjkwODE0MDk5LCJleHAiOjE2OTE0MTg4OTl9.xlbiPnD366KP49g5v6X_F4yEZRvu6rbf3ph6j-AWxs8";
-    public static final String DR_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6eHo0NjQxQGdtYWlsLmNvbSIsIklEIjoiMiIsIk5BTUUiOiLquYDrjIDtmIQiLCJOSUNLTkFNRSI6IkRhcnJlbiIsIkFDQ09VTlRTVEFUVVMiOiJBQ1RJVkFURSIsIlJPTEUiOiJST0xFX1VTRVIiLCJpYXQiOjE2OTA4MTQxMzUsImV4cCI6MTY5MTQxODkzNX0.ob5s7qQxdALJHpxb28pyYFiAqdeifGKfxtGx9MD3KQ0";
+    @Autowired private ParticipantRepository participantRepository;
+    @Autowired private SuiteRoomRepository suiteRoomRepository;
+    public static final String YH_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJod2FueTkxODFAZ21haWwuY29tIiwiSUQiOiI0IiwiTkFNRSI6IuuwmOyYge2ZmCIsIk5JQ0tOQU1FIjoiaHdhbnk5OSIsIkFDQ09VTlRTVEFUVVMiOiJBQ1RJVkFURSIsIlJPTEUiOiJST0xFX1VTRVIiLCJpYXQiOjE2OTE0MjA3NzAsImV4cCI6MTY5MjAyNTU3MH0.HBeRgdr5hoknYOYRSHcv9p1vDDmi4uIyodQ5NNFPhGM";
+    public static final String DR_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6eHo0NjQxQGdtYWlsLmNvbSIsIklEIjoiNiIsIk5BTUUiOiLquYDrjIDtmIQiLCJOSUNLTkFNRSI6ImRhcnJlbiIsIkFDQ09VTlRTVEFUVVMiOiJBQ1RJVkFURSIsIlJPTEUiOiJST0xFX1VTRVIiLCJpYXQiOjE2OTE0MjA3NDksImV4cCI6MTY5MjAyNTU0OX0.1WAKPpRRhliVXMrPJ8U1OlGsDxYenq5SUyn4Esk2UH4";
     @Test
     @DisplayName("스위트룸 생성")
     public void createSuiteRoom() throws Exception {
@@ -62,9 +73,10 @@ class SuiteRoomControllerTest {
         //given
         final String url = "/suite/suiteroom/update";
         ReqSuiteRoomDto reqSuiteRoomDto = MockSuiteRoom.getMockSuiteRoom("title2", true);
-        suiteRoomService.createSuiteRoom(reqSuiteRoomDto, MockAuthorizer.getMockAuthorizer("hwany", 1L));
+        suiteRoomService.createSuiteRoom(reqSuiteRoomDto, MockAuthorizer.getMockAuthorizer("반영환", 4L));
+        Long suiteRoomId = suiteRoomRepository.findAll().get(0).getSuiteRoomId();
         String body = mapper.writeValueAsString(ReqUpdateSuiteRoomDto.builder()
-                .suiteRoomId(Long.parseLong("1"))
+                .suiteRoomId(suiteRoomId)
                 .content("updated content")
                 .channelLink("http://www.naver.com").build());
         //when
@@ -138,9 +150,10 @@ class SuiteRoomControllerTest {
     @DisplayName("스터디 파투")
     public void deleteSuiteRoom() throws Exception {
         //given
-        final String url = "/suite/suiteroom/delete/1";
         ReqSuiteRoomDto reqSuiteRoomDto = MockSuiteRoom.getMockSuiteRoom("title2", true);
-        suiteRoomService.createSuiteRoom(reqSuiteRoomDto, MockAuthorizer.getMockAuthorizer("hwany", 1L));
+        suiteRoomService.createSuiteRoom(reqSuiteRoomDto, MockAuthorizer.getMockAuthorizer("반영환", 4L));
+        Long suiteRoomId = suiteRoomRepository.findAll().get(0).getSuiteRoomId();
+        final String url = "/suite/suiteroom/delete/" + String.valueOf(suiteRoomId);
         //when
         String responseBody = deleteRequest(url, YH_JWT);
         Message message = mapper.readValue(responseBody, Message.class);

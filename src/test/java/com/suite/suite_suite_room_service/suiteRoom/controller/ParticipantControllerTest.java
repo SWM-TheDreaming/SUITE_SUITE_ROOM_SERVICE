@@ -2,27 +2,19 @@ package com.suite.suite_suite_room_service.suiteRoom.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+
 import com.suite.suite_suite_room_service.suiteRoom.dto.*;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
-import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
-import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
+
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockAuthorizer;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockCheckInInfo;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockParticipant;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockSuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
-import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
-import com.suite.suite_suite_room_service.suiteRoom.service.ParticipantService;
-import com.suite.suite_suite_room_service.suiteRoom.service.ParticipantServiceImpl;
-import com.suite.suite_suite_room_service.suiteRoom.service.SuiteRoomService;
-import com.suite.suite_suite_room_service.suiteRoom.service.SuiteRoomServiceImpl;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,33 +33,50 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
 @AutoConfigureMockMvc
+@SpringBootTest
+@Transactional
+@Rollback
 class ParticipantControllerTest {
 
     @Autowired private ObjectMapper mapper;
     @Autowired private MockMvc mockMvc;
-    @Autowired private ParticipantService participantService;
-    @Autowired private SuiteRoomService suiteRoomService;
     @Autowired private ParticipantRepository participantRepository;
     @Autowired private SuiteRoomRepository suiteRoomRepository;
 
 
+    /**
+     * @Rule
+     * 방장은 YH로 생성
+     * 게스트는 DR로 생성
+     *
+     * @Specific
+     * 실제 토큰의 Claim 값과 동일하게 **_NAME, **_ID 를 선언해야 합니다.
+     * 테스트시 에러가 발생합니다.
+     * */
+    public static final String YH_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJod2FueTkxODFAZ21haWwuY29tIiwiSUQiOiI0IiwiTkFNRSI6IuuwmOyYge2ZmCIsIk5JQ0tOQU1FIjoiaHdhbnk5OSIsIkFDQ09VTlRTVEFUVVMiOiJBQ1RJVkFURSIsIlJPTEUiOiJST0xFX1VTRVIiLCJpYXQiOjE2OTE0MjA3NzAsImV4cCI6MTY5MjAyNTU3MH0.HBeRgdr5hoknYOYRSHcv9p1vDDmi4uIyodQ5NNFPhGM";
+    public static final String DR_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6eHo0NjQxQGdtYWlsLmNvbSIsIklEIjoiNiIsIk5BTUUiOiLquYDrjIDtmIQiLCJOSUNLTkFNRSI6ImRhcnJlbiIsIkFDQ09VTlRTVEFUVVMiOiJBQ1RJVkFURSIsIlJPTEUiOiJST0xFX1VTRVIiLCJpYXQiOjE2OTE0MjA3NDksImV4cCI6MTY5MjAyNTU0OX0.1WAKPpRRhliVXMrPJ8U1OlGsDxYenq5SUyn4Esk2UH4";
+    public static final String DR_NAME = "김대현";
+    public static final String YH_NAME = "반영환";
+    public static final Long DR_ID = 6L;
+    public static final Long YH_ID = 4L;
 
-    public static final String YH_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJod2FueTkxODFAZ21haWwuY29tIiwiSUQiOiIxIiwiTkFNRSI6IuuwmOyYge2ZmCIsIk5JQ0tOQU1FIjoiaHdhbnk5OSIsIkFDQ09VTlRTVEFUVVMiOiJBQ1RJVkFURSIsIlJPTEUiOiJST0xFX1VTRVIiLCJpYXQiOjE2OTExMzQzMDEsImV4cCI6MTY5MTczOTEwMX0.ol8qYp-j1hre4bAyOnTmlHaFVoHL-rGTgA5YfVWuRa0";
-    public static final String DR_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6eHo0NjQxQGdtYWlsLmNvbSIsIklEIjoiMiIsIk5BTUUiOiLquYDrjIDtmIQiLCJOSUNLTkFNRSI6IkRhcnJlbiIsIkFDQ09VTlRTVEFUVVMiOiJBQ1RJVkFURSIsIlJPTEUiOiJST0xFX1VTRVIiLCJpYXQiOjE2OTA4MTQxMzUsImV4cCI6MTY5MTQxODkzNX0.ob5s7qQxdALJHpxb28pyYFiAqdeifGKfxtGx9MD3KQ0";
+    private final SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("test", true).toSuiteRoomEntity();
+    private final Participant participantHost = MockParticipant.getMockParticipant(true, MockAuthorizer.getMockAuthorizer(YH_NAME, YH_ID));
     @BeforeEach
     public void setUp() {
-        ReqSuiteRoomDto reqSuiteRoomDto = MockSuiteRoom.getMockSuiteRoom("title2", true);
-        suiteRoomService.createSuiteRoom(reqSuiteRoomDto, MockAuthorizer.getMockAuthorizer("hwany", 1L));
+        suiteRoom.addParticipant(participantHost);
+        suiteRoomRepository.save(suiteRoom);
+        participantRepository.save(participantHost);
     }
+
 
     @Test
     @DisplayName("스위트룸 참가하기")
     public void joinSuiteRoom() throws Exception {
         //given
         Map<String, Long> suiteRoomId = new HashMap<String, Long>();
-        suiteRoomId.put("suiteRoomId", Long.parseLong("1"));
+        suiteRoomId.put("suiteRoomId", suiteRoom.getSuiteRoomId());
         String body = mapper.writeValueAsString(suiteRoomId);
         //when
         String responseBody = postRequest("/suite/suiteroom/attend", DR_JWT, body);
@@ -82,11 +91,12 @@ class ParticipantControllerTest {
     @DisplayName("스위트룸 참가 취소")
     public void cancelSuiteRoom() throws Exception {
         //given
-        AuthorizerDto participant = MockAuthorizer.getMockAuthorizer("Darren", 2L);
-        participantService.addParticipant(1L, participant);
+        addGuest();
+
         Map<String, Long> suiteRoomId = new HashMap<String, Long>();
-        suiteRoomId.put("suiteRoomId", 1L);
+        suiteRoomId.put("suiteRoomId", suiteRoom.getSuiteRoomId());
         String body = mapper.writeValueAsString(suiteRoomId);
+
         //when
         String responseBody = postRequest("/suite/suiteroom/attend/cancel", DR_JWT, body);
         Message message = mapper.readValue(responseBody, Message.class);
@@ -103,11 +113,13 @@ class ParticipantControllerTest {
         final String url = "/suite/payment/completion";
 
         Map<String, MockCheckInInfo> messageCard = new HashMap<String, MockCheckInInfo>();
-        MockCheckInInfo checkInInfo = new MockCheckInInfo(1L, 1L);
+        MockCheckInInfo checkInInfo = new MockCheckInInfo(suiteRoom.getSuiteRoomId(), participantHost.getMemberId());
         messageCard.put("checkInInfo", checkInInfo);
         String body = mapper.writeValueAsString(messageCard);
+
         //when
         String responseBody = postRequest(url, YH_JWT, body);
+
         Message message = mapper.readValue(responseBody, Message.class);
         //then
         Assertions.assertAll(
@@ -117,68 +129,73 @@ class ParticipantControllerTest {
 
     @Test
     @DisplayName("스위트룸 체크인 목록 확인 - 납부자")
-    @Transactional
     public void getCheckInList() throws Exception {
         //given
-        final String url = "/suite/payment/ready/1";
-        Participant participantGuest = MockParticipant.getMockParticipant(false, MockAuthorizer.getMockAuthorizer("darren", 2L));
-        Participant participantHost = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(1L, 1L).orElseThrow(
-                () -> Assertions.assertThrows(CustomException.class, ()->{throw new CustomException(StatusCode.NOT_FOUND);})
-        );
-        SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(1L).orElseThrow(
-                () -> Assertions.assertThrows(CustomException.class, ()->{throw new CustomException(StatusCode.NOT_FOUND);})
-        );
-
-        participantHost.updateStatus(SuiteStatus.READY);
-        suiteRoom.openSuiteRoom();
-
-        saveParticipantWithTransaction(participantGuest, suiteRoom);
+        final String url = "/suite/payment/ready/" + suiteRoom.getSuiteRoomId();
+        addGuest();
         //when
-        String responseBody = getRequest(url, YH_JWT);
+        String responseBody = getRequest(url, DR_JWT);
         Message message = mapper.readValue(responseBody, new TypeReference<Message<List<ResPaymentParticipantDto>>>() {
         });
         List<ResPaymentParticipantDto> result = (List<ResPaymentParticipantDto>) message.getData();
         //then
         Assertions.assertAll(
                 () -> assertThat(message.getStatusCode()).isEqualTo(200),
-                () -> assertThat(result.get(0).getStatus()).isEqualTo(SuiteStatus.READY)
+                () -> assertThat(result).allMatch(dto -> dto.getStatus() == SuiteStatus.READY)
+        );
+    }
+    @Test
+    @DisplayName("스위트룸 체크인 목록 확인 - 미납부 신청자")
+    public void getNotYetCheckInList() throws Exception {
+        //given
+        final String url = "/suite/payment/plain/" + String.valueOf(suiteRoom.getSuiteRoomId());
+        addGuest();
+
+        //when
+        String responseBody = getRequest(url, DR_JWT);
+        Message message = mapper.readValue(responseBody, new TypeReference<Message<List<ResPaymentParticipantDto>>>() {
+        });
+        List<ResPaymentParticipantDto> result = (List<ResPaymentParticipantDto>) message.getData();
+        System.out.println(result.get(0).getStatus());
+        //then
+        Assertions.assertAll(
+                () -> assertThat(message.getStatusCode()).isEqualTo(200),
+                () -> assertThat(result).allMatch(dto -> dto.getStatus() == SuiteStatus.PLAIN)
         );
     }
 
     @Test
-    @DisplayName("스위트룸 체크인 목록 확인 - 미납부 신청자")
-    @Transactional
-    public void getNotYetCheckInList() throws Exception {
+    @DisplayName("스위트룸-스터디-시작")
+    public void startSuiteRoom() throws Exception {
         //given
-        final String url = "/suite/payment/plain/1";
-        Participant participantGuest = MockParticipant.getMockParticipant(false, MockAuthorizer.getMockAuthorizer("darren", 2L));
-        Participant participantHost = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(1L, 1L).orElseThrow(
-                () -> Assertions.assertThrows(CustomException.class, ()->{throw new CustomException(StatusCode.NOT_FOUND);})
-        );
-        SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(1L).orElseThrow(
-                () -> Assertions.assertThrows(CustomException.class, ()->{throw new CustomException(StatusCode.NOT_FOUND);})
-        );
-
-        participantHost.updateStatus(SuiteStatus.READY);
-        suiteRoom.openSuiteRoom();
-
-        saveParticipantWithTransaction(participantGuest, suiteRoom);
-
+        final String url = "/suite/suiteroom/beginning";
+        addGuest();
         //when
-        String responseBody = getRequest(url, YH_JWT);
-        Message message = mapper.readValue(responseBody, new TypeReference<Message<List<ResPaymentParticipantDto>>>() {
-        });
-        List<ResPaymentParticipantDto> result = (List<ResPaymentParticipantDto>) message.getData();
+        Map<String, Long> suiteRoomId = new HashMap<String, Long>();
+        suiteRoomId.put("suiteRoomId", suiteRoom.getSuiteRoomId());
+        String body = mapper.writeValueAsString(suiteRoomId);
+
+        String responseBody = postRequest(url, YH_JWT, body);
+
+        Message message = mapper.readValue(responseBody, Message.class);
         //then
         Assertions.assertAll(
-                () -> assertThat(message.getStatusCode()).isEqualTo(200),
-                () -> assertThat(result.get(0).getStatus()).isEqualTo(SuiteStatus.PLAIN)
+                () -> assertThat(message.getStatusCode()).isEqualTo(200)
         );
+
     }
-    @Rollback(true)
-    protected void saveParticipantWithTransaction(Participant participantGuest, SuiteRoom suiteRoom) {
+
+    protected void addGuest() {
+        Participant participantGuest = MockParticipant.getMockParticipant(false, MockAuthorizer.getMockAuthorizer(DR_NAME, DR_ID));
+
+        updateHostStatus();
+
         suiteRoom.addParticipant(participantGuest);
         participantRepository.save(participantGuest);
+    }
+    protected void updateHostStatus() {
+        participantHost.updateStatus(SuiteStatus.READY);
+        suiteRoom.openSuiteRoom();
     }
 
     private String postRequest(String url, String jwt, String body) throws Exception {
