@@ -6,6 +6,8 @@ import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
 import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
+import com.suite.suite_suite_room_service.suiteRoom.kafka.PaymentProducer;
+import com.suite.suite_suite_room_service.suiteRoom.kafka.dto.KafkaDto;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 public class ParticipantServiceImpl implements ParticipantService{
     private final SuiteRoomRepository suiteRoomRepository;
     private final ParticipantRepository participantRepository;
+    private final PaymentProducer paymentProducer;
 
     @Override
     @Transactional
@@ -45,8 +48,15 @@ public class ParticipantServiceImpl implements ParticipantService{
         Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, authorizerDto.getMemberId()).orElseThrow(
                 () -> new CustomException(StatusCode.FAILED_REQUEST));
 
-        if(participant.getStatus().equals(SuiteStatus.READY))
-            System.out.println("kafka");
+        if(participant.getStatus().equals(SuiteStatus.READY)) {
+            KafkaDto kafkaDto = KafkaDto.builder()
+                    .yyyymmdd("2021-01-01")
+                    .skuCd("10300000033")
+                    .fieldName("ipgoNo")
+                    .diff(100).build();
+            paymentProducer.sendPaymentMessage(kafkaDto);
+        }
+
         if(participant.getIsHost())
             throw new CustomException(StatusCode.CAN_NOT_CALCEL_SUITEROOM);
         participantRepository.deleteBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, authorizerDto.getMemberId());
