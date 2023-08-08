@@ -176,7 +176,7 @@ class SuiteRoomServiceTest {
         suiteRoomRepository.save(suiteRoom);
         participantRepository.save(participant);
         //when
-        Optional<Participant> host = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(Long.parseLong("1"), participant.getMemberId(), true);
+        Optional<Participant> host = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), participant.getMemberId(), true);
         if(host.isEmpty()) {
             assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.FORBIDDEN); });
         }

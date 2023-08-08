@@ -55,11 +55,15 @@ public class ParticipantServiceImpl implements ParticipantService{
     @Override
     @Transactional
     public void updatePaymentParticipant(Long suiteRoomId, Long memberId) {
+        System.out.println("@@@@@@@@@@@@@@@@@@@ service in");
+        System.out.println(suiteRoomId);
+        System.out.println(memberId);
         Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, memberId)
                 .orElseThrow(() -> { throw new CustomException(StatusCode.NOT_FOUND); });
+        System.out.println("@@@@@@@@@@@@@ participant find");
         SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId)
                 .orElseThrow(() -> { throw new CustomException(StatusCode.NOT_FOUND); });
-
+        System.out.println("@@@@@@@@@@@@@ suiteRoom Find");
         if (participant.getIsHost())
             suiteRoom.openSuiteRoom();
 
@@ -71,22 +75,37 @@ public class ParticipantServiceImpl implements ParticipantService{
 
     @Override
     public List<ResPaymentParticipantDto> listUpPaymentParticipants(Long suiteRoomId) {
-        List<Participant> checkedInParticipants = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(suiteRoomId, SuiteStatus.READY);
-        List<ResPaymentParticipantDto> resPaymentParticipantDtos = checkedInParticipants.stream().map(
-                participant -> participant.toResPaymentParticipantDto()
-        ).collect(Collectors.toList());
+        List<ResPaymentParticipantDto> resPaymentParticipantDtos = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(suiteRoomId, SuiteStatus.READY)
+                .stream().map(
+                        participant -> participant.toResPaymentParticipantDto()
+                ).collect(Collectors.toList());
 
         return resPaymentParticipantDtos;
     }
 
     @Override
     public List<ResPaymentParticipantDto> listUpNotYetPaymentParticipants(Long suiteRoomId) {
-        List<Participant> notYetCheckedInParticipants = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(suiteRoomId, SuiteStatus.PLAIN);
-        List<ResPaymentParticipantDto> resPaymentParticipantDtos = notYetCheckedInParticipants.stream().map(
-                participant -> participant.toResPaymentParticipantDto()
-        ).collect(Collectors.toList());
+        List<ResPaymentParticipantDto> resPaymentParticipantDtos = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(suiteRoomId, SuiteStatus.PLAIN)
+                .stream().map(
+                        participant -> participant.toResPaymentParticipantDto()
+                ).collect(Collectors.toList());
 
         return resPaymentParticipantDtos;
     }
 
+    @Override
+    @Transactional
+    public List<ResPaymentParticipantDto> updateParticipantsStatusReadyToStart(Long suiteRoomId) {
+        List<ResPaymentParticipantDto> resPaymentParticipantDtos = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(suiteRoomId, SuiteStatus.READY)
+                .stream()
+                .map(
+                        participant -> {
+                            if(participant.getStatus() == SuiteStatus.PLAIN) throw new CustomException(StatusCode.PLAIN_USER_EXIST);
+
+                            participant.updateStatus(SuiteStatus.START);
+                            return participant.toResPaymentParticipantDto();
+                        }
+                ).collect(Collectors.toList());
+        return resPaymentParticipantDtos;
+    }
 }
