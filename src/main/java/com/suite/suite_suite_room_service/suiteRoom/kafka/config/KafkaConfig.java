@@ -1,19 +1,14 @@
 package com.suite.suite_suite_room_service.suiteRoom.kafka.config;
 
 
-import com.suite.suite_suite_room_service.suiteRoom.kafka.dto.KafkaDto;
-import org.apache.kafka.clients.admin.NewTopic;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
+import com.common.commonsuite.dto.KafkaDto;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
-import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
@@ -42,12 +37,21 @@ public class KafkaConfig {
         return new KafkaTemplate<String, KafkaDto>(producerFactory());
     }
 
-    @Bean
+    /*@Bean
     public ConsumerFactory<String, KafkaDto> stockChangeConsumer() {
 
         Map<String, Object> configs = new HashMap<>();
         configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configs.put(ConsumerConfig.GROUP_ID_CONFIG, "suite");
+        // JSON Deserialization Configuration
+        JsonDeserializer<KafkaDto> jsonDeserializer = new JsonDeserializer<>(KafkaDto.class);
+        jsonDeserializer.addTrustedPackages("*"); // Allow deserialization of all packages
+
+        ErrorHandlingDeserializer<KafkaDto> errorHandlingDeserializer = new ErrorHandlingDeserializer<>(jsonDeserializer);
+
+        configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
+        configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
+        configs.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, errorHandlingDeserializer);
 
         return new DefaultKafkaConsumerFactory<>(
                 configs,
@@ -60,7 +64,7 @@ public class KafkaConfig {
         ConcurrentKafkaListenerContainerFactory<String, KafkaDto> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(stockChangeConsumer());
         return factory;
-    }
+    }*/
 
 
 

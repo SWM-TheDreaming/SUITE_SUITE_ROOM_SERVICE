@@ -26,6 +26,7 @@ dependencyManagement {
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 
@@ -68,6 +69,8 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.springframework.kafka/spring-kafka
     implementation 'org.springframework.kafka:spring-kafka:2.8.5'
+
+    implementation 'com.common:common-suite:1.2'
 
 }
 

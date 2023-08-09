@@ -1,7 +1,6 @@
 package com.suite.suite_suite_room_service.suiteRoom.kafka;
 
-import com.suite.suite_suite_room_service.suiteRoom.kafka.dto.KafkaDto;
-import lombok.NoArgsConstructor;
+import com.common.commonsuite.dto.KafkaDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
