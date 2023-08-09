@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 public class ParticipantServiceImpl implements ParticipantService{
     private final SuiteRoomRepository suiteRoomRepository;
     private final ParticipantRepository participantRepository;
-    private final PaymentProducer paymentProducer;
 
     @Override
     @Transactional
@@ -54,7 +53,7 @@ public class ParticipantServiceImpl implements ParticipantService{
                     .skuCd("10300000033")
                     .fieldName("ipgoNo")
                     .diff(100).build();
-            paymentProducer.sendPaymentMessage(kafkaDto);
+            //paymentProducer.sendPaymentMessage(kafkaDto);
         }
 
         if(participant.getIsHost())

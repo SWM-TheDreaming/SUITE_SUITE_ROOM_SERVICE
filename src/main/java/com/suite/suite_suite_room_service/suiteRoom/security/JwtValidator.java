@@ -1,8 +1,8 @@
 package com.suite.suite_suite_room_service.suiteRoom.security;
 
-import com.suite.suite_suite_room_service.suiteRoom.config.ConfigUtil;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletRequest;
@@ -11,12 +11,14 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Component
 public class JwtValidator {
-    private final ConfigUtil configUtil;
+    @Value("${jwt.access.key}")
+    private String accessKey;
 
     //토큰의 유효성 검사
     public boolean validateToken(ServletRequest request, String jwtToken) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(configUtil.getProperty("jwt.access.key").getBytes()).parseClaimsJws(jwtToken);
+            Jws<Claims> claims = Jwts.parser().setSigningKey(accessKey.getBytes()).parseClaimsJws(jwtToken);
+            if(claims.getBody().getExpiration() == null) return true;
             return !claims.getBody().getExpiration().before(new Date());
         } catch (SignatureException e) {
             request.setAttribute("exception", "ForbiddenException");

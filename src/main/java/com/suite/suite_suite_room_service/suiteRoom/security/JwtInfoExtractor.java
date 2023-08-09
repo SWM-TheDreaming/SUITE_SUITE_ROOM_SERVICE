@@ -1,10 +1,10 @@
 package com.suite.suite_suite_room_service.suiteRoom.security;
 
-import com.suite.suite_suite_room_service.suiteRoom.config.ConfigUtil;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -14,10 +14,11 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class JwtInfoExtractor {
 
-    private final ConfigUtil configUtil;
+    @Value("${jwt.access.key}")
+    private String accessKey;
 
     public Claims extractToken(String token) {
-        return Jwts.parser().setSigningKey(configUtil.getProperty("jwt.access.key").getBytes()).parseClaimsJws(token).getBody();
+        return Jwts.parser().setSigningKey(accessKey.getBytes()).parseClaimsJws(token).getBody();
     }
 
     public static AuthorizerDto getSuiteAuthorizer() {

@@ -26,16 +26,7 @@ public class KafkaConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
     // 테스트 Topic 생성 1
-    @Bean
-    public NewTopic paymentEvent() {
-        return new NewTopic("payment_event", 1, (short) 1);
-    }
 
-    // 테스트 Topic 생성 2
-    @Bean
-    public NewTopic myTopic2() {
-        return new NewTopic("my_topic_2", 1, (short) 1);
-    }
 
     @Bean
     public ProducerFactory<String, KafkaDto> producerFactory() {

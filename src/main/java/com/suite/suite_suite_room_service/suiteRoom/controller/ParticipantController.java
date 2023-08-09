@@ -21,7 +21,6 @@ import static com.suite.suite_suite_room_service.suiteRoom.security.JwtInfoExtra
 @RequestMapping("/suite")
 public class ParticipantController {
     private final ParticipantService participantService;
-    private final ObjectMapper objectMapper;
     @PostMapping("/suiteroom/attend")
     public ResponseEntity<Message> joinSuiteRoom(@RequestBody Map<String, Long> suiteRoomId) {
         participantService.addParticipant(suiteRoomId.get("suiteRoomId"), getSuiteAuthorizer());

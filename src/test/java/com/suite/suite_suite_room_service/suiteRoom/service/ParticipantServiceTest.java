@@ -34,7 +34,7 @@ class ParticipantServiceTest {
     @Autowired private SuiteRoomRepository suiteRoomRepository;
 
     private final SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("test", true).toSuiteRoomEntity();
-    private final Participant participantHost = MockParticipant.getMockParticipant(true, MockParticipant.getMockAuthorizer("1"));
+    private final Participant participantHost = MockParticipant.getMockParticipant(true, MockAuthorizer.YH());
 
     @BeforeEach
     public void setUp() {
@@ -55,15 +55,15 @@ class ParticipantServiceTest {
     public void addParticipant() {
         //given
         Long targetSuiteRoomId = suiteRoom.getSuiteRoomId();
-        AuthorizerDto authorizerDto = MockAuthorizer.getMockAuthorizer("kim1", 1L);
+        AuthorizerDto DH = MockAuthorizer.DH();
         //when
         SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(targetSuiteRoomId).orElseThrow(
                 () -> assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.NOT_FOUND); } )
         );
-        participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(targetSuiteRoomId, authorizerDto.getMemberId()).ifPresent(
+        participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(targetSuiteRoomId, DH.getMemberId()).ifPresent(
                 participant -> { assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.ALREADY_EXISTS_PARTICIPANT); } );}
         );
-        Participant newParticipant = MockParticipant.getMockParticipant(false, authorizerDto);
+        Participant newParticipant = MockParticipant.getMockParticipant(false, DH);
         suiteRoom.addParticipant(newParticipant);
         participantRepository.save(newParticipant);
         List<Participant> result = participantRepository.findBySuiteRoom_SuiteRoomId(targetSuiteRoomId);
@@ -83,7 +83,7 @@ class ParticipantServiceTest {
     public void removeParticipant() {
         //given
         Long targetSuiteRoomId = suiteRoom.getSuiteRoomId();
-        AuthorizerDto authorizerDto = MockAuthorizer.getMockAuthorizer("kim1", 1L);
+        AuthorizerDto authorizerDto = MockAuthorizer.YH();
         //when
         Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(targetSuiteRoomId, authorizerDto.getMemberId()).orElseThrow(
                 () -> assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.FAILED_REQUEST); }));
@@ -140,15 +140,15 @@ class ParticipantServiceTest {
     @DisplayName("스위트룸 체크인 완료 - 참가자")
     public void updatePaymentGuest() {
         //given
-                Long consumedSuiteRoomId = suiteRoom.getSuiteRoomId();
-        Long consumedParticipantMemberId = 2L;
+        Long consumedSuiteRoomId = suiteRoom.getSuiteRoomId();
+        AuthorizerDto DH = MockAuthorizer.DH();
 
-        addParticipantForTest(String.valueOf(consumedParticipantMemberId), consumedSuiteRoomId, false);
+        addParticipantForTest(DH, consumedSuiteRoomId, false);
         SuiteRoom targetSuiteRoom = suiteRoomRepository.findBySuiteRoomId(consumedSuiteRoomId).orElseThrow(
                 () -> assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.NOT_FOUND); } )
         );
         //when
-        Participant targetParticipant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(consumedSuiteRoomId, consumedParticipantMemberId, false).orElseThrow(
+        Participant targetParticipant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(consumedSuiteRoomId, DH.getMemberId(), false).orElseThrow(
                 () -> assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.NOT_FOUND);})
         );
 
@@ -160,7 +160,7 @@ class ParticipantServiceTest {
 
         System.out.println("결제서비스 kafka 메시지 큐에 READY 성공 메시지를 넣습니다.");
         //then
-        Participant assertParticipant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(consumedSuiteRoomId, consumedParticipantMemberId, false).orElseThrow(
+        Participant assertParticipant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(consumedSuiteRoomId, DH.getMemberId(), false).orElseThrow(
                 () -> assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.NOT_FOUND);})
         );
         SuiteRoom assertSuiteRoom = suiteRoomRepository.findBySuiteRoomId(consumedSuiteRoomId).orElseThrow(
@@ -178,9 +178,10 @@ class ParticipantServiceTest {
     public void listUpPaymentParticipants() {
         //given
         Long targetSuiteRoomId = suiteRoom.getSuiteRoomId();
-        addParticipantForTest("2", targetSuiteRoomId, true);
+        AuthorizerDto DH = MockAuthorizer.DH();
+        addParticipantForTest(DH, targetSuiteRoomId, true);
 
-        Participant participantGuest = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(targetSuiteRoomId,2L,false)
+        Participant participantGuest = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(targetSuiteRoomId,DH.getMemberId(),false)
                 .orElseThrow(() -> assertThrows(CustomException.class, () -> {throw new CustomException(StatusCode.NOT_FOUND);}));
         participantGuest.updateStatus(SuiteStatus.READY);
         //when
@@ -203,7 +204,8 @@ class ParticipantServiceTest {
     public void listUpNotYetPaymentParticipants() {
         //given
         Long targetSuiteRoomId = suiteRoom.getSuiteRoomId();
-        addParticipantForTest("2", targetSuiteRoomId, false);
+        AuthorizerDto DH = MockAuthorizer.DH();
+        addParticipantForTest(DH, targetSuiteRoomId, false);
         //when
         List<ResPaymentParticipantDto> resPaymentParticipantDtos = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(targetSuiteRoomId, SuiteStatus.PLAIN)
                 .stream().map(
@@ -222,8 +224,10 @@ class ParticipantServiceTest {
     public void updateParticipantsStatusReadyToStart() {
         //given
         Long targetSuiteRoomId = suiteRoom.getSuiteRoomId();
-        addParticipantForTest("2", targetSuiteRoomId, true);
-        addParticipantForTest("3", targetSuiteRoomId, true);
+        AuthorizerDto DH = MockAuthorizer.DH();
+        AuthorizerDto JH = MockAuthorizer.JH();
+        addParticipantForTest(DH, targetSuiteRoomId, true);
+        addParticipantForTest(JH, targetSuiteRoomId, true);
         //when
         List<ResPaymentParticipantDto> resPaymentParticipantDtos = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(targetSuiteRoomId, SuiteStatus.READY)
                 .stream()
@@ -247,8 +251,8 @@ class ParticipantServiceTest {
 
     }
 
-    private void addParticipantForTest(String memberId, Long suiteRoomId, Boolean updateStatus) {
-        Participant participantGuest = MockParticipant.getMockParticipant(false, MockParticipant.getMockAuthorizer(memberId));
+    private void addParticipantForTest(AuthorizerDto authorizerDto, Long suiteRoomId, Boolean updateStatus) {
+        Participant participantGuest = MockParticipant.getMockParticipant(false, authorizerDto);
         SuiteRoom targetSuiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId)
                 .orElseThrow(() -> assertThrows(CustomException.class, () -> {throw new CustomException(StatusCode.NOT_FOUND);}));
 
