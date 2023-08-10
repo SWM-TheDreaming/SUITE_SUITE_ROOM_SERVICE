@@ -24,8 +24,5 @@ public class Message<T> {
         this.data = (T) DEFAULT_RESPONSE;
     }
 
-    public T getData() {
-        return this.data;
-    }
 
 }

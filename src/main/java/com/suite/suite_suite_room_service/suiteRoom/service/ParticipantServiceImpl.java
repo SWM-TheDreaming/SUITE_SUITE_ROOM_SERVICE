@@ -50,10 +50,9 @@ public class ParticipantServiceImpl implements ParticipantService{
 
         if(participant.getStatus().equals(SuiteStatus.READY)) {
             KafkaDto kafkaDto = KafkaDto.builder()
-                    .yyyymmdd("2021-01-01")
-                    .skuCd("10300000033")
-                    .fieldName("ipgoNo")
-                    .diff(100).build();
+                    .message("paymeny")
+                    .count(0)
+                    .data(authorizerDto).build();
             paymentProducer.sendPaymentMessage(kafkaDto);
         }
 
