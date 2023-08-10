@@ -16,6 +16,7 @@ import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomReposito
 
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -54,22 +55,20 @@ class ParticipantControllerTest {
      * 실제 토큰의 Claim 값과 동일하게 **_NAME, **_ID 를 선언해야 합니다.
      * 테스트시 에러가 발생합니다.
      * */
-    public static final String YH_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJod2FueTkxODFAZ21haWwuY29tIiwiSUQiOiI0IiwiTkFNRSI6IuuwmOyYge2ZmCIsIk5JQ0tOQU1FIjoiaHdhbnk5OSIsIkFDQ09VTlRTVEFUVVMiOiJBQ1RJVkFURSIsIlJPTEUiOiJST0xFX1VTRVIiLCJpYXQiOjE2OTE0MjA3NzAsImV4cCI6MTY5MjAyNTU3MH0.HBeRgdr5hoknYOYRSHcv9p1vDDmi4uIyodQ5NNFPhGM";
-    public static final String DR_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ6eHo0NjQxQGdtYWlsLmNvbSIsIklEIjoiNiIsIk5BTUUiOiLquYDrjIDtmIQiLCJOSUNLTkFNRSI6ImRhcnJlbiIsIkFDQ09VTlRTVEFUVVMiOiJBQ1RJVkFURSIsIlJPTEUiOiJST0xFX1VTRVIiLCJpYXQiOjE2OTE0MjA3NDksImV4cCI6MTY5MjAyNTU0OX0.1WAKPpRRhliVXMrPJ8U1OlGsDxYenq5SUyn4Esk2UH4";
-    public static final String DR_NAME = "김대현";
-    public static final String YH_NAME = "반영환";
-    public static final Long DR_ID = 6L;
-    public static final Long YH_ID = 4L;
+
+    @Value("${token.YH}")
+    private String YH_JWT;
+    @Value("${token.DH}")
+    private String DH_JWT;
 
     private final SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("test", true).toSuiteRoomEntity();
-    private final Participant participantHost = MockParticipant.getMockParticipant(true, MockAuthorizer.getMockAuthorizer(YH_NAME, YH_ID));
+    private final Participant participantHost = MockParticipant.getMockParticipant(true, MockAuthorizer.YH());
     @BeforeEach
     public void setUp() {
         suiteRoom.addParticipant(participantHost);
         suiteRoomRepository.save(suiteRoom);
         participantRepository.save(participantHost);
     }
-
 
     @Test
     @DisplayName("스위트룸 참가하기")
@@ -79,7 +78,7 @@ class ParticipantControllerTest {
         suiteRoomId.put("suiteRoomId", suiteRoom.getSuiteRoomId());
         String body = mapper.writeValueAsString(suiteRoomId);
         //when
-        String responseBody = postRequest("/suite/suiteroom/attend", DR_JWT, body);
+        String responseBody = postRequest("/suite/suiteroom/attend", DH_JWT, body);
         Message message = mapper.readValue(responseBody, Message.class);
         //then
         Assertions.assertAll(
@@ -98,7 +97,7 @@ class ParticipantControllerTest {
         String body = mapper.writeValueAsString(suiteRoomId);
 
         //when
-        String responseBody = postRequest("/suite/suiteroom/attend/cancel", DR_JWT, body);
+        String responseBody = postRequest("/suite/suiteroom/attend/cancel", DH_JWT, body);
         Message message = mapper.readValue(responseBody, Message.class);
         //then
         Assertions.assertAll(
@@ -134,7 +133,7 @@ class ParticipantControllerTest {
         final String url = "/suite/payment/ready/" + suiteRoom.getSuiteRoomId();
         addGuest();
         //when
-        String responseBody = getRequest(url, DR_JWT);
+        String responseBody = getRequest(url, DH_JWT);
         Message message = mapper.readValue(responseBody, new TypeReference<Message<List<ResPaymentParticipantDto>>>() {
         });
         List<ResPaymentParticipantDto> result = (List<ResPaymentParticipantDto>) message.getData();
@@ -152,7 +151,7 @@ class ParticipantControllerTest {
         addGuest();
 
         //when
-        String responseBody = getRequest(url, DR_JWT);
+        String responseBody = getRequest(url, DH_JWT);
         Message message = mapper.readValue(responseBody, new TypeReference<Message<List<ResPaymentParticipantDto>>>() {
         });
         List<ResPaymentParticipantDto> result = (List<ResPaymentParticipantDto>) message.getData();
@@ -186,7 +185,7 @@ class ParticipantControllerTest {
     }
 
     protected void addGuest() {
-        Participant participantGuest = MockParticipant.getMockParticipant(false, MockAuthorizer.getMockAuthorizer(DR_NAME, DR_ID));
+        Participant participantGuest = MockParticipant.getMockParticipant(false, MockAuthorizer.DH());
 
         updateHostStatus();
 
