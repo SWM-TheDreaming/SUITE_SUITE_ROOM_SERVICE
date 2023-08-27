@@ -14,19 +14,9 @@ configurations {
     }
 }
 
-ext {
-    set('springCloudVersion', "2021.0.8")
-}
-
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-    }
-}
 
 repositories {
     mavenCentral()
-    mavenLocal()
 }
 
 
@@ -59,10 +49,6 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.6.3'
 
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    //config server
-    implementation 'org.springframework.cloud:spring-cloud-starter-config:2.2.6.RELEASE'
-    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
 
     runtimeOnly 'com.h2database:h2'
     testImplementation 'com.h2database:h2'

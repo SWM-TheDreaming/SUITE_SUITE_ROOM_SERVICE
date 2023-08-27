@@ -1,6 +1,5 @@
 package com.suite.suite_suite_room_service.suiteRoom.kafka;
 
-import com.common.commonsuite.dto.KafkaDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,9 +14,9 @@ public class PaymentProducer {
     @Value("${payment.topic}")
     private String paymentTopic;
 
-    private final KafkaTemplate<String, KafkaDto> kafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
-    public void sendPaymentMessage(KafkaDto message) {
+    public void sendPaymentMessage(String message) {
         log.info("paymentTopic message : {}", message);
         this.kafkaTemplate.send(paymentTopic, message);
     }

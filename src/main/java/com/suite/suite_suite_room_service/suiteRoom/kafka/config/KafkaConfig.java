@@ -1,7 +1,6 @@
 package com.suite.suite_suite_room_service.suiteRoom.kafka.config;
 
 
-import com.common.commonsuite.dto.KafkaDto;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,17 +23,17 @@ public class KafkaConfig {
 
 
     @Bean
-    public ProducerFactory<String, KafkaDto> producerFactory() {
+    public ProducerFactory<String, String> producerFactory() {
         Map<String,Object> configs = new HashMap<>();
         configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        return new DefaultKafkaProducerFactory<String, KafkaDto>(configs);
+        return new DefaultKafkaProducerFactory<String, String>(configs);
     }
 
     @Bean
-    public KafkaTemplate<String, KafkaDto> kafkaTemplate() {
-        return new KafkaTemplate<String, KafkaDto>(producerFactory());
+    public KafkaTemplate<String, String> kafkaTemplate() {
+        return new KafkaTemplate<String, String>(producerFactory());
     }
 
     /*@Bean

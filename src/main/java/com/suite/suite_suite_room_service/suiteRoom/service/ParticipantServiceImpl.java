@@ -1,6 +1,5 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
-import com.common.commonsuite.dto.KafkaDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ResPaymentParticipantDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
@@ -49,11 +48,7 @@ public class ParticipantServiceImpl implements ParticipantService{
                 () -> new CustomException(StatusCode.FAILED_REQUEST));
 
         if(participant.getStatus().equals(SuiteStatus.READY)) {
-            KafkaDto kafkaDto = KafkaDto.builder()
-                    .message("paymeny")
-                    .count(0)
-                    .data(authorizerDto).build();
-            paymentProducer.sendPaymentMessage(kafkaDto);
+
         }
 
         if(participant.getIsHost())
