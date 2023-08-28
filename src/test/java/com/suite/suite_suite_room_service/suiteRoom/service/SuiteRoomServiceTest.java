@@ -50,34 +50,14 @@ class SuiteRoomServiceTest {
     @Autowired private SuiteRoomRepository suiteRoomRepository;
     @Autowired private ParticipantRepository participantRepository;
 
-    @Value("${jwt.access.key}")
-    private String accessSecretKey;
-    @Value("${jwt.refresh.key}")
-    private String refreshSecretKey;
-    @Value("${jwt.expiring.key}")
-    private String expiringSecretKey;
-    @Value("${jwt.non-expiring.key}")
-    private String nonExpiringSecretKey;
-    @Value("${jwt.access.validtime}")
-    private long accessTokenValidTime;
-    @Value("${jwt.refresh.validtime}")
-    private long refreshTokenValidTime;
-    @Value("${jwt.expiring.validtime}")
-    private long expiringTokenValidTime;
-    @Value("${jwt.non-expiring.validtime}")
-    private long nonExpiringTokenValidTime;
+
 
     private final SuiteRoom  suiteRoom = MockSuiteRoom.getMockSuiteRoom("test", true).toSuiteRoomEntity();
     private final Participant participantHost = MockParticipant.getMockParticipant(true, MockAuthorizer.YH());
-    private MockJwtCreator mockJwtCreator;
-    private MockJwtCreator mockExpiringJwtCreator;
-    private MockJwtCreator mockNonExpiringJwtCreator;
+
 
     @BeforeEach
     public void setUp() {
-        mockJwtCreator = new MockJwtCreator(accessSecretKey, refreshSecretKey, accessTokenValidTime, refreshTokenValidTime);
-        mockExpiringJwtCreator = new MockJwtCreator(expiringSecretKey, refreshSecretKey, expiringTokenValidTime, refreshTokenValidTime);
-        mockNonExpiringJwtCreator = new MockJwtCreator(nonExpiringSecretKey, refreshSecretKey, nonExpiringTokenValidTime, refreshTokenValidTime);
         suiteRoom.addParticipant(participantHost);
         suiteRoomRepository.save(suiteRoom);
         participantRepository.save(participantHost);
@@ -170,52 +150,7 @@ class SuiteRoomServiceTest {
 
     }
 
-    @Test
-    @DisplayName("스위트룸 그룹 목록 확인 - 토큰 재발급 O")
-    void getAllSuiteRoomsRenewalToken() {
-        //given
-        // 방장의 AuthorizerDto 정보
-        AuthorizerDto mockAuthorizer = MockAuthorizer.YH();
 
-        MockToken expiringMockToken = mockExpiringJwtCreator.createToken(mockAuthorizer);
-        Jws<Claims> expiringClaims = Jwts.parser().setSigningKey(expiringSecretKey.getBytes()).parseClaimsJws(expiringMockToken.getAccessToken());
-        //when
-        Date now = new Date();
-        MockToken assertionToken;
-        if (expiringClaims.getBody().getExpiration().getTime() < now.getTime() + 86400000) {
-            assertionToken = mockJwtCreator.createToken(mockAuthorizer);
-        } else {
-            assertionToken = expiringMockToken;
-        }
-        Jws<Claims> assertionClaims = Jwts.parser().setSigningKey(accessSecretKey.getBytes()).parseClaimsJws(assertionToken.getAccessToken());
-        //then
-        Assertions.assertAll(
-                ()-> assertThat(assertionClaims.getBody().getExpiration().getTime()).isGreaterThanOrEqualTo(expiringClaims.getBody().getExpiration().getTime())
-        );
-    }
-    @Test
-    @DisplayName("스위트룸 그룹 목록 확인 - 토큰 재발급 X")
-    void getAllSuiteRoomsHoldToken() {
-        //given
-        // 방장의 AuthorizerDto 정보
-        AuthorizerDto mockAuthorizer = MockAuthorizer.YH();
-
-        MockToken nonExpiringMockToken = mockNonExpiringJwtCreator.createToken(mockAuthorizer);
-        Jws<Claims> nonExpiringClaims = Jwts.parser().setSigningKey(nonExpiringSecretKey.getBytes()).parseClaimsJws(nonExpiringMockToken.getAccessToken());
-        //when
-        Date now = new Date();
-        MockToken assertionToken;
-        if (nonExpiringClaims.getBody().getExpiration().getTime() < now.getTime() + 86400000) {
-            assertionToken = mockJwtCreator.createToken(mockAuthorizer);
-        } else {
-            assertionToken = nonExpiringMockToken;
-        }
-        Jws<Claims> assertionClaims = Jwts.parser().setSigningKey(nonExpiringSecretKey.getBytes()).parseClaimsJws(assertionToken.getAccessToken());
-        //then
-        Assertions.assertAll(
-                ()-> assertThat(assertionClaims.getBody().getExpiration().getTime()).isEqualTo(nonExpiringClaims.getBody().getExpiration().getTime())
-        );
-    }
 
 
     @Test

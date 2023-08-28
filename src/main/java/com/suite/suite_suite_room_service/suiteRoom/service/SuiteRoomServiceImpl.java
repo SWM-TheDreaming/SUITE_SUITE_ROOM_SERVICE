@@ -5,14 +5,18 @@ import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
 import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
-import com.suite.suite_suite_room_service.suiteRoom.kafka.PaymentProducer;
+
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
+import com.suite.suite_suite_room_service.suiteRoom.security.AuthorizationJwtCreator;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,9 +26,11 @@ import java.util.stream.Collectors;
 public class SuiteRoomServiceImpl implements SuiteRoomService{
     private final SuiteRoomRepository suiteRoomRepository;
     private final ParticipantRepository participantRepository;
+    private final AuthorizationJwtCreator authorizationJwtCreator;
 
     @Override
     public List<ResSuiteRoomDto> getAllSuiteRooms(AuthorizerDto authorizerDto) {
+
         List<SuiteRoom> suiteRooms = suiteRoomRepository.findAll();
 
         return suiteRooms.stream().map(

@@ -58,8 +58,8 @@ class ParticipantControllerTest {
 
     @Value("${token.YH}")
     private String YH_JWT;
-    @Value("${token.DH}")
-    private String DH_JWT;
+    @Value("${token.DR}")
+    private String DR_JWT;
 
     private final SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("test", true).toSuiteRoomEntity();
     private final Participant participantHost = MockParticipant.getMockParticipant(true, MockAuthorizer.YH());
@@ -78,7 +78,7 @@ class ParticipantControllerTest {
         suiteRoomId.put("suiteRoomId", suiteRoom.getSuiteRoomId());
         String body = mapper.writeValueAsString(suiteRoomId);
         //when
-        String responseBody = postRequest("/suite/suiteroom/attend", DH_JWT, body);
+        String responseBody = postRequest("/suite/suiteroom/attend", DR_JWT, body);
         Message message = mapper.readValue(responseBody, Message.class);
         //then
         Assertions.assertAll(
@@ -97,7 +97,7 @@ class ParticipantControllerTest {
         String body = mapper.writeValueAsString(suiteRoomId);
 
         //when
-        String responseBody = postRequest("/suite/suiteroom/attend/cancel", DH_JWT, body);
+        String responseBody = postRequest("/suite/suiteroom/attend/cancel", DR_JWT, body);
         Message message = mapper.readValue(responseBody, Message.class);
         //then
         Assertions.assertAll(
@@ -133,7 +133,7 @@ class ParticipantControllerTest {
         final String url = "/suite/payment/ready/" + suiteRoom.getSuiteRoomId();
         addGuest();
         //when
-        String responseBody = getRequest(url, DH_JWT);
+        String responseBody = getRequest(url, DR_JWT);
         Message message = mapper.readValue(responseBody, new TypeReference<Message<List<ResPaymentParticipantDto>>>() {
         });
         List<ResPaymentParticipantDto> result = (List<ResPaymentParticipantDto>) message.getData();
@@ -151,7 +151,7 @@ class ParticipantControllerTest {
         addGuest();
 
         //when
-        String responseBody = getRequest(url, DH_JWT);
+        String responseBody = getRequest(url, DR_JWT);
         Message message = mapper.readValue(responseBody, new TypeReference<Message<List<ResPaymentParticipantDto>>>() {
         });
         List<ResPaymentParticipantDto> result = (List<ResPaymentParticipantDto>) message.getData();
