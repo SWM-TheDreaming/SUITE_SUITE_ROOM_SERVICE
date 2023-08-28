@@ -49,8 +49,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         Claims claims = jwtInfoExtractor.extractToken(accessToken);
         UsernamePasswordAuthenticationToken authenticationToken = getAuthenticationToken(claims, request);
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
-
     }
 
     private JwtAuthenticationToken getAuthenticationToken(Claims claims, ServletRequest request) {

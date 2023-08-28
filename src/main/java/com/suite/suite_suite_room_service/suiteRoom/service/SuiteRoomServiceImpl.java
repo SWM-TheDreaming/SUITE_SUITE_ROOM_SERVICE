@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class SuiteRoomServiceImpl implements SuiteRoomService{
     private final SuiteRoomRepository suiteRoomRepository;
     private final ParticipantRepository participantRepository;
-    private final AuthorizationJwtCreator authorizationJwtCreator;
+
 
     @Override
     public List<ResSuiteRoomDto> getAllSuiteRooms(AuthorizerDto authorizerDto) {
