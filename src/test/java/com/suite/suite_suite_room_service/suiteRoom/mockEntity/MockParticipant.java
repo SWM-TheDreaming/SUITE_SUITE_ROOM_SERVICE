@@ -4,11 +4,7 @@ import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+
 
 public class MockParticipant {
     public static Participant getMockParticipant(boolean ishost, AuthorizerDto authorizerDto) {
@@ -17,5 +13,6 @@ public class MockParticipant {
                 .status(SuiteStatus.PLAIN)
                 .isHost(ishost).build();
     }
+
 
 }

@@ -1,5 +1,6 @@
 package com.suite.suite_suite_room_service.suiteRoom.mockEntity;
 
+import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 
 public class MockAuthorizer {
@@ -32,4 +33,5 @@ public class MockAuthorizer {
                 .email("one348@naver.com")
                 .role("ROLE_USER").build();
     }
+
 }

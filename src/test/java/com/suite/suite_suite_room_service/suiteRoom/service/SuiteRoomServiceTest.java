@@ -8,31 +8,39 @@ import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
 import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
-import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockAuthorizer;
-import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockParticipant;
-import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockSuiteRoom;
+import com.suite.suite_suite_room_service.suiteRoom.mockEntity.*;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.Assertions;
 
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import javax.annotation.PostConstruct;
+import java.lang.reflect.Member;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 
 @Transactional
@@ -42,8 +50,11 @@ class SuiteRoomServiceTest {
     @Autowired private SuiteRoomRepository suiteRoomRepository;
     @Autowired private ParticipantRepository participantRepository;
 
+
+
     private final SuiteRoom  suiteRoom = MockSuiteRoom.getMockSuiteRoom("test", true).toSuiteRoomEntity();
     private final Participant participantHost = MockParticipant.getMockParticipant(true, MockAuthorizer.YH());
+
 
     @BeforeEach
     public void setUp() {
@@ -120,7 +131,8 @@ class SuiteRoomServiceTest {
         SuiteRoom createSuiteRoom = MockSuiteRoom.getMockSuiteRoom("test test",true).toSuiteRoomEntity();
         createSuiteRoom.addParticipant(participantHost);
         suiteRoomRepository.save(createSuiteRoom);
-        //when
+
+
         List<SuiteRoom> suiteRooms = suiteRoomRepository.findAll();
         List<ResSuiteRoomDto> assertionSuiteRooms = suiteRooms.stream().map(
                 suiteRoom -> suiteRoom.toResSuiteRoomDto(
@@ -129,6 +141,7 @@ class SuiteRoomServiceTest {
                 )
         ).collect(Collectors.toList());
 
+
         //then
         Assertions.assertAll(
                 ()-> assertThat(assertionSuiteRooms.get(0).getClass()).isEqualTo(ResSuiteRoomDto.class),
@@ -136,6 +149,9 @@ class SuiteRoomServiceTest {
         );
 
     }
+
+
+
 
     @Test
     @DisplayName("스위트룸 모집글 확인")
@@ -190,5 +206,7 @@ class SuiteRoomServiceTest {
                 () -> assertThat(result.size()).isEqualTo(0)
         );
     }
+
+
 
 }

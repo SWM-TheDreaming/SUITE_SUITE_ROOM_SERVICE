@@ -8,11 +8,13 @@ import com.suite.suite_suite_room_service.suiteRoom.dto.ReqUpdateSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
-import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockAuthorizer;
-import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockParticipant;
-import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockSuiteRoom;
+import com.suite.suite_suite_room_service.suiteRoom.mockEntity.*;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
+import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,6 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -46,14 +49,37 @@ class SuiteRoomControllerTest {
 
     @Value("${token.YH}")
     private String YH_JWT;
-    @Value("${token.DH}")
-    private String DH_JWT;
+    @Value("${token.DR}")
+    private String DR_JWT;
+
+    @Value("${jwt.access.key}")
+    private String accessSecretKey;
+    @Value("${jwt.refresh.key}")
+    private String refreshSecretKey;
+    @Value("${jwt.expiring.key}")
+    private String expiringSecretKey;
+    @Value("${jwt.non-expiring.key}")
+    private String nonExpiringSecretKey;
+    @Value("${jwt.access.validtime}")
+    private long accessTokenValidTime;
+    @Value("${jwt.refresh.validtime}")
+    private long refreshTokenValidTime;
+    @Value("${jwt.expiring.validtime}")
+    private long expiringTokenValidTime;
+    @Value("${jwt.non-expiring.validtime}")
+    private long nonExpiringTokenValidTime;
 
     private final SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("test", true).toSuiteRoomEntity();
     private final Participant participantHost = MockParticipant.getMockParticipant(true, MockAuthorizer.YH());
-
+    private MockJwtCreator mockJwtCreator;
+    private MockJwtCreator mockExpiringJwtCreator;
+    private MockJwtCreator mockNonExpiringJwtCreator;
     @BeforeEach
     public void setUp() {
+        mockJwtCreator = new MockJwtCreator(accessSecretKey, refreshSecretKey, accessTokenValidTime, refreshTokenValidTime);
+        mockExpiringJwtCreator = new MockJwtCreator(expiringSecretKey, refreshSecretKey, expiringTokenValidTime, refreshTokenValidTime);
+        mockNonExpiringJwtCreator = new MockJwtCreator(nonExpiringSecretKey, refreshSecretKey, nonExpiringTokenValidTime, refreshTokenValidTime);
+
         suiteRoom.addParticipant(participantHost);
         suiteRoomRepository.save(suiteRoom);
         participantRepository.save(participantHost);
@@ -66,7 +92,7 @@ class SuiteRoomControllerTest {
         ReqSuiteRoomDto reqSuiteRoomDto = MockSuiteRoom.getMockSuiteRoom("title darren", true);
         String body = mapper.writeValueAsString(reqSuiteRoomDto);
         //when
-        String responseBody = postRequest("/suite/suiteroom/registration", DH_JWT, body);
+        String responseBody = postRequest("/suite/suiteroom/registration", DR_JWT, body);
         Message message = mapper.readValue(responseBody, Message.class);
         //then
         Assertions.assertAll(
@@ -115,7 +141,53 @@ class SuiteRoomControllerTest {
                 () -> assertThat(message.getStatusCode()).isEqualTo(200)
         );
 
+    }
 
+    @Test
+    @DisplayName("스위트룸 그룹 목록 확인 - 토큰 재발급 O")
+    void listUpSuiteRoomsRenewalToken() {
+        //given
+        // 방장의 AuthorizerDto 정보
+        AuthorizerDto mockAuthorizer = MockAuthorizer.YH();
+
+        MockToken expiringMockToken = mockExpiringJwtCreator.createToken(mockAuthorizer);
+        Jws<Claims> expiringClaims = Jwts.parser().setSigningKey(expiringSecretKey.getBytes()).parseClaimsJws(expiringMockToken.getAccessToken());
+        //when
+        Date now = new Date();
+        MockToken assertionToken;
+        if (expiringClaims.getBody().getExpiration().getTime() < now.getTime() + 86400000) {
+            assertionToken = mockJwtCreator.createToken(mockAuthorizer);
+        } else {
+            assertionToken = expiringMockToken;
+        }
+        Jws<Claims> assertionClaims = Jwts.parser().setSigningKey(accessSecretKey.getBytes()).parseClaimsJws(assertionToken.getAccessToken());
+        //then
+        Assertions.assertAll(
+                ()-> assertThat(assertionClaims.getBody().getExpiration().getTime()).isGreaterThanOrEqualTo(expiringClaims.getBody().getExpiration().getTime())
+        );
+    }
+    @Test
+    @DisplayName("스위트룸 그룹 목록 확인 - 토큰 재발급 X")
+    void listUpSuiteRoomsHoldToken() {
+        //given
+        // 방장의 AuthorizerDto 정보
+        AuthorizerDto mockAuthorizer = MockAuthorizer.YH();
+
+        MockToken nonExpiringMockToken = mockNonExpiringJwtCreator.createToken(mockAuthorizer);
+        Jws<Claims> nonExpiringClaims = Jwts.parser().setSigningKey(nonExpiringSecretKey.getBytes()).parseClaimsJws(nonExpiringMockToken.getAccessToken());
+        //when
+        Date now = new Date();
+        MockToken assertionToken;
+        if (nonExpiringClaims.getBody().getExpiration().getTime() < now.getTime() + 86400000) {
+            assertionToken = mockJwtCreator.createToken(mockAuthorizer);
+        } else {
+            assertionToken = nonExpiringMockToken;
+        }
+        Jws<Claims> assertionClaims = Jwts.parser().setSigningKey(nonExpiringSecretKey.getBytes()).parseClaimsJws(assertionToken.getAccessToken());
+        //then
+        Assertions.assertAll(
+                ()-> assertThat(assertionClaims.getBody().getExpiration().getTime()).isEqualTo(nonExpiringClaims.getBody().getExpiration().getTime())
+        );
     }
 
     @Test
