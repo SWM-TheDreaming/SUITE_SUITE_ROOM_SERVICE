@@ -6,14 +6,20 @@ import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
 import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
+import com.suite.suite_suite_room_service.suiteRoom.kafka.producer.SuiteParticipantProducer;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONObject;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,6 +27,7 @@ import java.util.stream.Collectors;
 public class ParticipantServiceImpl implements ParticipantService{
     private final SuiteRoomRepository suiteRoomRepository;
     private final ParticipantRepository participantRepository;
+    private final SuiteParticipantProducer suiteParticipantProducer;
 
 
     @Override
@@ -104,7 +111,19 @@ public class ParticipantServiceImpl implements ParticipantService{
                             return participant.toResPaymentParticipantDto();
                         }
                 ).collect(Collectors.toList());
-        System.out.println("kafka 프로듀싱 to 블록체인 서비스");
+
+        Map<String, Object> map = new HashMap<>();
+
+        map.put("testKey", "testValue");
+        suiteParticipantProducer.suiteRoomContractCreationProducer(generateJSONData(map));
+
         return resPaymentParticipantDtos;
+    }
+
+    private String generateJSONData(Object data) {
+        JSONObject obj = new JSONObject();
+        obj.put("uuid", "UserRegistrationProducer/" + Instant.now().toEpochMilli());
+        obj.put("data", data);
+        return obj.toJSONString();
     }
 }

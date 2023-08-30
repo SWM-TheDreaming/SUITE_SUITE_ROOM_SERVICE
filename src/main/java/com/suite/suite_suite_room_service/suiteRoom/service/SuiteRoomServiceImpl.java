@@ -13,9 +13,11 @@ import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 
 import lombok.RequiredArgsConstructor;
 
+import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -109,5 +111,11 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     }
 
 
+    private String generateJSONData(Object data) {
+        JSONObject obj = new JSONObject();
+        obj.put("uuid", "UserRegistrationProducer/" + Instant.now().toEpochMilli());
+        obj.put("data", data);
+        return obj.toJSONString();
+    }
 
 }
