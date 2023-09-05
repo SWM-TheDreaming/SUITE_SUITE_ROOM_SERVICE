@@ -1,12 +1,14 @@
 package com.suite.suite_suite_room_service.suiteRoom.kafka.config;
 
-<<<<<<< HEAD
 
 import com.suite.suite_suite_room_service.suiteRoom.slack.SlackMessage;
-=======
+
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
 import com.suite.suite_suite_room_service.suiteRoom.service.AnpService;
->>>>>>> 889e6ea070f57be7c521b81430d272bc6c141595
+
+import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
+import com.suite.suite_suite_room_service.suiteRoom.service.AnpService;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -25,26 +27,17 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.Map;
 
-<<<<<<< HEAD
-@EnableKafka
-@Configuration
-@Slf4j
-=======
 @Slf4j
 @EnableKafka
 @Configuration
->>>>>>> 889e6ea070f57be7c521b81430d272bc6c141595
 public class KafkaConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
-<<<<<<< HEAD
     @Value("${slack.webhook-url}")
     private String slackWebhookUrl;
 
-=======
->>>>>>> 889e6ea070f57be7c521b81430d272bc6c141595
     @Bean
     public ProducerFactory<String, String> producerFactory() {
         Map<String,Object> configs = new HashMap<>();
@@ -63,10 +56,6 @@ public class KafkaConfig {
     public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> configs = new HashMap<>();
         configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-<<<<<<< HEAD
-//        configs.put(ConsumerConfig.GROUP_ID_CONFIG, "suite");
-=======
->>>>>>> 889e6ea070f57be7c521b81430d272bc6c141595
         configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         // auto.commit 설정을 수동으로 변경
@@ -82,12 +71,12 @@ public class KafkaConfig {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         //factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
         factory.setConsumerFactory(consumerFactory());
-<<<<<<< HEAD
         factory.setCommonErrorHandler(slackErrorHandler());
         return factory;
     }
 
-    private DefaultErrorHandler slackErrorHandler() {
+    @Bean
+    public DefaultErrorHandler slackErrorHandler() {
         DefaultErrorHandler errorHandler = new DefaultErrorHandler((consumerRecord, exception) -> {
             log.error("[Error] topic = {}, key = {}, value = {}, error message = {}", consumerRecord.topic(),
                     consumerRecord.key(), consumerRecord.value(), exception.getMessage());
@@ -97,9 +86,8 @@ public class KafkaConfig {
             slackMessage().sendNotification(fullErrorMessage);
         }, new FixedBackOff(1000L, 3)); // 1초 간격으로 최대 3번
         errorHandler.addNotRetryableExceptions(IllegalArgumentException.class);
-=======
-        factory.setCommonErrorHandler(errorHandler());
-        return factory;
+
+        return errorHandler;
     }
 
     @Bean
@@ -110,7 +98,6 @@ public class KafkaConfig {
 
         }, new FixedBackOff(1000L, 3)); // 1초 간격으로 최대 3번
         errorHandler.addNotRetryableExceptions(CustomException.class);
->>>>>>> 889e6ea070f57be7c521b81430d272bc6c141595
 
         return errorHandler;
     }
@@ -121,13 +108,12 @@ public class KafkaConfig {
     }
 
     @Bean
-<<<<<<< HEAD
     public SlackMessage slackMessage() {
         return new SlackMessage(restTemplate(), slackWebhookUrl);
-=======
+    }
+    @Bean
     public AnpService anpService(RestTemplate restTemplate) {
         String GET_POINT_URI = "http://localhost:8088/anp/point/";
         return new AnpService(GET_POINT_URI, restTemplate);
->>>>>>> 889e6ea070f57be7c521b81430d272bc6c141595
     }
 }

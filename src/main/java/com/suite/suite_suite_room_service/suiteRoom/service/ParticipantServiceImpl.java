@@ -9,11 +9,8 @@ import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
 import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
-<<<<<<< HEAD
 import com.suite.suite_suite_room_service.suiteRoom.kafka.producer.SuiteParticipantProducer;
-=======
 import com.suite.suite_suite_room_service.suiteRoom.kafka.producer.SuiteRoomProducer;
->>>>>>> 889e6ea070f57be7c521b81430d272bc6c141595
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
@@ -39,13 +36,10 @@ import java.util.stream.Collectors;
 public class ParticipantServiceImpl implements ParticipantService{
     private final SuiteRoomRepository suiteRoomRepository;
     private final ParticipantRepository participantRepository;
-<<<<<<< HEAD
+    private final SuiteRoomProducer suiteRoomProducer;
     private final SuiteParticipantProducer suiteParticipantProducer;
     private final ObjectMapper objectMapper;
-=======
-    private final SuiteRoomProducer suiteRoomProducer;
     private final AnpService anpService;
->>>>>>> 889e6ea070f57be7c521b81430d272bc6c141595
 
     @Override
     @Transactional
@@ -163,7 +157,6 @@ public class ParticipantServiceImpl implements ParticipantService{
         return resPaymentParticipantDtos;
     }
 
-<<<<<<< HEAD
     private String generateJSONData(Object data) {
         JSONObject obj = new JSONObject();
         obj.put("uuid", "UserRegistrationProducer/" + Instant.now().toEpochMilli());
@@ -186,7 +179,5 @@ public class ParticipantServiceImpl implements ParticipantService{
 
         return jsonArray.toJSONString();
     }
-=======
 
->>>>>>> 889e6ea070f57be7c521b81430d272bc6c141595
 }
