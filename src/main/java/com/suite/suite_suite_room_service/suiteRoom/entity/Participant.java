@@ -64,6 +64,7 @@ public class Participant {
     public ResPaymentParticipantDto toResPaymentParticipantDto() {
         return ResPaymentParticipantDto.builder()
                 .nickName(this.nickname)
+                .email(this.email)
                 .status(this.status)
                 .isHost(this.isHost)
                 .build();

@@ -6,9 +6,9 @@ import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
 import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
 
+import com.suite.suite_suite_room_service.suiteRoom.kafka.producer.SuiteRoomProducer;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
-import com.suite.suite_suite_room_service.suiteRoom.security.AuthorizationJwtCreator;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 
 import lombok.RequiredArgsConstructor;
@@ -18,16 +18,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+<<<<<<< HEAD
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+=======
+import java.util.*;
+>>>>>>> 889e6ea070f57be7c521b81430d272bc6c141595
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class SuiteRoomServiceImpl implements SuiteRoomService{
+
     private final SuiteRoomRepository suiteRoomRepository;
     private final ParticipantRepository participantRepository;
+    private final SuiteRoomProducer suiteRoomProducer;
+    private final AnpService anpService;
 
 
     @Override
@@ -70,19 +77,20 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     }
 
     @Override
+    @Transactional
     public void createSuiteRoom(ReqSuiteRoomDto reqSuiteRoomDto, AuthorizerDto authorizerDto) {
         suiteRoomRepository.findByTitle(reqSuiteRoomDto.getTitle()).ifPresent(
                 suiteRoom ->  { throw new CustomException(StatusCode.ALREADY_EXISTS_SUITEROOM); }
         );
         SuiteRoom suiteRoom = reqSuiteRoomDto.toSuiteRoomEntity();
-        Participant participant = Participant.builder()
-                                        .authorizerDto(authorizerDto)
-                                        .status(SuiteStatus.PLAIN)
-                                        .isHost(true).build();
-        suiteRoom.addParticipant(participant);
+
+        if(anpService.getPoint(authorizerDto.getMemberId()) < suiteRoom.getDepositAmount())
+            throw new CustomException(StatusCode.FAILED_PAY);
 
         suiteRoomRepository.save(suiteRoom);
-        participantRepository.save(participant);
+        suiteRoomProducer.sendPaymentMessage(suiteRoom, authorizerDto, true);
+
+
     }
 
 
@@ -110,10 +118,16 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
         suiteRoom.updateSuiteRoom(reqUpdateSuiteRoomDto);
     }
 
+<<<<<<< HEAD
 
     private String generateJSONData(Object data) {
         JSONObject obj = new JSONObject();
         obj.put("uuid", "UserRegistrationProducer/" + Instant.now().toEpochMilli());
+=======
+    private String generateJSONData(Object data) {
+        JSONObject obj = new JSONObject();
+        obj.put("uuid", "SuiteRoomProducer/" + Instant.now().toEpochMilli());
+>>>>>>> 889e6ea070f57be7c521b81430d272bc6c141595
         obj.put("data", data);
         return obj.toJSONString();
     }
