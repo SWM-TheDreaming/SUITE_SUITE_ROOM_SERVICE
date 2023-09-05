@@ -10,6 +10,7 @@ import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
 import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
 import com.suite.suite_suite_room_service.suiteRoom.kafka.producer.SuiteParticipantProducer;
+import com.suite.suite_suite_room_service.suiteRoom.kafka.producer.SuiteRoomProducer;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
@@ -35,6 +36,8 @@ import java.util.stream.Collectors;
 public class ParticipantServiceImpl implements ParticipantService{
     private final SuiteRoomRepository suiteRoomRepository;
     private final ParticipantRepository participantRepository;
+    private final SuiteRoomProducer suiteRoomProducer;
+    private final AnpService anpService;
     private final SuiteParticipantProducer suiteParticipantProducer;
     private final ObjectMapper objectMapper;
 
@@ -47,12 +50,10 @@ public class ParticipantServiceImpl implements ParticipantService{
         participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, authorizerDto.getMemberId()).ifPresent(
                 member -> { throw new CustomException(StatusCode.ALREADY_EXISTS_PARTICIPANT); });
 
-        Participant participant = Participant.builder()
-                                        .authorizerDto(authorizerDto)
-                                        .status(SuiteStatus.PLAIN)
-                                        .isHost(false).build();
-        suiteRoom.addParticipant(participant);
-        participantRepository.save(participant);
+        if(anpService.getPoint(authorizerDto.getMemberId()) < suiteRoom.getDepositAmount())
+            throw new CustomException(StatusCode.FAILED_PAY);
+
+        suiteRoomProducer.sendPaymentMessage(suiteRoom, authorizerDto, false);
     }
 
     @Override

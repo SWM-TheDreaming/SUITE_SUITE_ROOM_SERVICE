@@ -1,5 +1,8 @@
 package com.suite.suite_suite_room_service.suiteRoom.security.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class AuthorizerDto {
+
     private Long memberId;
     private String email;
     private String name;
@@ -35,5 +39,10 @@ public class AuthorizerDto {
         ACCOUNTSTATUS("ACCOUNTSTATUS"),
         ROLE("ROLE");
         private final String value;
+    }
+
+    public String toJSONString() throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(this);
     }
 }

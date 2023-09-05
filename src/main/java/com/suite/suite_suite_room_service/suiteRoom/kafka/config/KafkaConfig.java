@@ -1,6 +1,7 @@
 package com.suite.suite_suite_room_service.suiteRoom.kafka.config;
 
-
+import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
+import com.suite.suite_suite_room_service.suiteRoom.service.AnpService;
 import com.suite.suite_suite_room_service.suiteRoom.slack.SlackMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -20,9 +21,9 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @EnableKafka
 @Configuration
-@Slf4j
 public class KafkaConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
@@ -92,4 +93,11 @@ public class KafkaConfig {
     public SlackMessage slackMessage() {
         return new SlackMessage(restTemplate(), slackWebhookUrl);
     }
+
+    @Bean
+    public AnpService anpService(RestTemplate restTemplate) {
+        String GET_POINT_URI = "http://localhost:8088/anp/point/";
+        return new AnpService(GET_POINT_URI, restTemplate);
+    }
 }
+
