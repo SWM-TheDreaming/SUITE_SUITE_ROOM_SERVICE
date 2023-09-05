@@ -82,7 +82,8 @@ public class SuiteRoomController {
     private Token renewalTokenValidator(String token, AuthorizerDto authorizerDto) {
         Claims claims = Jwts.parser().setSigningKey(accessKey.getBytes()).parseClaimsJws(token).getBody();
         Token renewalToken = null;
-        if (claims.getExpiration().getTime() < (new Date()).getTime() + 86400000) {
+
+        if (claims.getExpiration() == null || claims.getExpiration().getTime() < (new Date()).getTime() + 86400000) {
             renewalToken = authorizationJwtCreator.createToken(authorizerDto);
         }
         return renewalToken;

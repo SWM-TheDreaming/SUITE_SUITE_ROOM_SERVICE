@@ -37,9 +37,9 @@ public class ParticipantServiceImpl implements ParticipantService{
     private final SuiteRoomRepository suiteRoomRepository;
     private final ParticipantRepository participantRepository;
     private final SuiteRoomProducer suiteRoomProducer;
-    private final AnpService anpService;
     private final SuiteParticipantProducer suiteParticipantProducer;
     private final ObjectMapper objectMapper;
+    private final AnpService anpService;
 
     @Override
     @Transactional

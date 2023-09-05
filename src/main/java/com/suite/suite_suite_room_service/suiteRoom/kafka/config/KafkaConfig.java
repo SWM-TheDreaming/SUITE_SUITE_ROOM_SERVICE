@@ -1,8 +1,13 @@
 package com.suite.suite_suite_room_service.suiteRoom.kafka.config;
 
+
+import com.suite.suite_suite_room_service.suiteRoom.slack.SlackMessage;
+
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
 import com.suite.suite_suite_room_service.suiteRoom.service.AnpService;
-import com.suite.suite_suite_room_service.suiteRoom.slack.SlackMessage;
+
+
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -50,7 +55,6 @@ public class KafkaConfig {
     public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> configs = new HashMap<>();
         configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-//        configs.put(ConsumerConfig.GROUP_ID_CONFIG, "suite");
         configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         // auto.commit 설정을 수동으로 변경
@@ -70,7 +74,8 @@ public class KafkaConfig {
         return factory;
     }
 
-    private DefaultErrorHandler slackErrorHandler() {
+    @Bean
+    public DefaultErrorHandler slackErrorHandler() {
         DefaultErrorHandler errorHandler = new DefaultErrorHandler((consumerRecord, exception) -> {
             log.error("[Error] topic = {}, key = {}, value = {}, error message = {}", consumerRecord.topic(),
                     consumerRecord.key(), consumerRecord.value(), exception.getMessage());
@@ -85,6 +90,18 @@ public class KafkaConfig {
     }
 
     @Bean
+    public DefaultErrorHandler errorHandler() {
+        DefaultErrorHandler errorHandler = new DefaultErrorHandler((consumerRecord, exception) -> {
+            log.error("[Error] topic = {}, key = {}, value = {}, offset = {}, error message = {}", consumerRecord.topic(),
+                    consumerRecord.key(), consumerRecord.value(), consumerRecord.offset(), exception.getMessage());
+
+        }, new FixedBackOff(1000L, 3)); // 1초 간격으로 최대 3번
+        errorHandler.addNotRetryableExceptions(CustomException.class);
+
+        return errorHandler;
+    }
+
+    @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
@@ -93,11 +110,9 @@ public class KafkaConfig {
     public SlackMessage slackMessage() {
         return new SlackMessage(restTemplate(), slackWebhookUrl);
     }
-
     @Bean
     public AnpService anpService(RestTemplate restTemplate) {
         String GET_POINT_URI = "http://localhost:8088/anp/point/";
         return new AnpService(GET_POINT_URI, restTemplate);
     }
 }
-
