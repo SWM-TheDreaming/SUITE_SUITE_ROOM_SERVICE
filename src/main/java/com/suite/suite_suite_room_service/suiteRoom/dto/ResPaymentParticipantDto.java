@@ -17,6 +17,5 @@ public class ResPaymentParticipantDto {
         this.email = email;
         this.status = status;
         this.isHost = isHost;
-
     }
 }
