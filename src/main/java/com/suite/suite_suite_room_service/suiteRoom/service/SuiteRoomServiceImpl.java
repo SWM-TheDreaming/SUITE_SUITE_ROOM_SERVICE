@@ -18,7 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -110,13 +111,6 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
                 .orElseThrow( () -> new CustomException(StatusCode.FORBIDDEN));
 
         suiteRoom.updateSuiteRoom(reqUpdateSuiteRoomDto);
-    }
-
-    private String generateJSONData(Object data) {
-        JSONObject obj = new JSONObject();
-        obj.put("uuid", "SuiteRoomProducer/" + Instant.now().toEpochMilli());
-        obj.put("data", data);
-        return obj.toJSONString();
     }
 
 }

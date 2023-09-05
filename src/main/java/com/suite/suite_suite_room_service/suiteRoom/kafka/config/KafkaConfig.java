@@ -1,7 +1,13 @@
 package com.suite.suite_suite_room_service.suiteRoom.kafka.config;
 
+
+import com.suite.suite_suite_room_service.suiteRoom.slack.SlackMessage;
+
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
 import com.suite.suite_suite_room_service.suiteRoom.service.AnpService;
+
+
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -27,6 +33,9 @@ public class KafkaConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
+
+    @Value("${slack.webhook-url}")
+    private String slackWebhookUrl;
 
     @Bean
     public ProducerFactory<String, String> producerFactory() {
@@ -61,8 +70,23 @@ public class KafkaConfig {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         //factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
         factory.setConsumerFactory(consumerFactory());
-        factory.setCommonErrorHandler(errorHandler());
+        factory.setCommonErrorHandler(slackErrorHandler());
         return factory;
+    }
+
+    @Bean
+    public DefaultErrorHandler slackErrorHandler() {
+        DefaultErrorHandler errorHandler = new DefaultErrorHandler((consumerRecord, exception) -> {
+            log.error("[Error] topic = {}, key = {}, value = {}, error message = {}", consumerRecord.topic(),
+                    consumerRecord.key(), consumerRecord.value(), exception.getMessage());
+
+            String errorMessage = "*에러 발생*: _<!channel> " + consumerRecord.topic() + " 메시지 처리 중 예외 발생_\n" + exception.getMessage();
+            String fullErrorMessage = errorMessage + "\n\n```\n" + exception + "\n```"; // 코드 블럭으로 감싸기
+            slackMessage().sendNotification(fullErrorMessage);
+        }, new FixedBackOff(1000L, 3)); // 1초 간격으로 최대 3번
+        errorHandler.addNotRetryableExceptions(IllegalArgumentException.class);
+
+        return errorHandler;
     }
 
     @Bean
@@ -82,6 +106,10 @@ public class KafkaConfig {
         return new RestTemplate();
     }
 
+    @Bean
+    public SlackMessage slackMessage() {
+        return new SlackMessage(restTemplate(), slackWebhookUrl);
+    }
     @Bean
     public AnpService anpService(RestTemplate restTemplate) {
         String GET_POINT_URI = "http://localhost:8088/anp/point/";
