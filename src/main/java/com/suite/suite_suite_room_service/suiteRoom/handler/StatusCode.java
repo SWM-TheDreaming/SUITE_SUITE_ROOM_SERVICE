@@ -19,6 +19,7 @@ public enum StatusCode {
     PLAIN_USER_EXIST(405, "포인트 결제중인 유저가 있습니다. 잠시 후 다시 시도하세요.", HttpStatus.METHOD_NOT_ALLOWED),
     IS_NOT_OPEN(400, "방장이 체크인을 완료하지 않은 스위트룸입니다.", HttpStatus.FORBIDDEN),
     UNAUTHORIZED (400, "로그인 후 이용가능합니다.", HttpStatus.UNAUTHORIZED),
+    FAILED_PAY(400, "포인트가 부족합니다.", HttpStatus.BAD_REQUEST),
     EXPIRED_JWT(400, "기존 토큰이 만료되었습니다. 해당 토큰을 가지고 /token/refresh 링크로 이동 후 토큰을 재발급 받으세요.", HttpStatus.UNAUTHORIZED),
     RE_LOGIN(400, "모든 토큰이 만료되었습니다. 다시 로그인해주세요.", HttpStatus.UNAUTHORIZED),
     FAILED_SIGNUP(400, "회원가입에 실패하였습니다.", HttpStatus.BAD_REQUEST),
