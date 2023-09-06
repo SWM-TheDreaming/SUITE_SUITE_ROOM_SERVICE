@@ -83,7 +83,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
             throw new CustomException(StatusCode.FAILED_PAY);
 
         suiteRoomRepository.save(suiteRoom);
-        suiteRoomProducer.sendPaymentMessage(suiteRoom, authorizerDto, true);
+        suiteRoomProducer.sendPaymentMessage(suiteRoom, authorizerDto, true, true);
 
 
     }

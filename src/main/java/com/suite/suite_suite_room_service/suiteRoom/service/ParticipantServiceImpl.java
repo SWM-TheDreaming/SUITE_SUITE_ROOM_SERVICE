@@ -6,7 +6,6 @@ import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
 import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
-import com.suite.suite_suite_room_service.suiteRoom.kafka.producer.SuiteParticipantProducer;
 import com.suite.suite_suite_room_service.suiteRoom.kafka.producer.SuiteRoomProducer;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
@@ -24,7 +23,6 @@ public class ParticipantServiceImpl implements ParticipantService{
     private final SuiteRoomRepository suiteRoomRepository;
     private final ParticipantRepository participantRepository;
     private final SuiteRoomProducer suiteRoomProducer;
-    private final SuiteParticipantProducer suiteParticipantProducer;
     private final AnpService anpService;
 
     @Override
@@ -39,17 +37,20 @@ public class ParticipantServiceImpl implements ParticipantService{
         if(anpService.getPoint(authorizerDto.getMemberId()) < suiteRoom.getDepositAmount())
             throw new CustomException(StatusCode.FAILED_PAY);
 
-        suiteRoomProducer.sendPaymentMessage(suiteRoom, authorizerDto, false);
+        suiteRoomProducer.sendPaymentMessage(suiteRoom, authorizerDto, false, true);
     }
 
     @Override
     @Transactional
     public void removeParticipant(Long suiteRoomId, AuthorizerDto authorizerDto) {
-        Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, authorizerDto.getMemberId()).orElseThrow(
+        Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoomId, authorizerDto.getMemberId(), false).orElseThrow(
                 () -> new CustomException(StatusCode.FAILED_REQUEST));
 
-        if(participant.getStatus().equals(SuiteStatus.READY)) {
+        SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId).orElseThrow(
+                () -> new CustomException(StatusCode.NOT_FOUND));
 
+        if(participant.getStatus().equals(SuiteStatus.READY)) {
+            suiteRoomProducer.sendPaymentMessage(suiteRoom, authorizerDto, false, false);
         }
 
         if(participant.getIsHost())
@@ -99,7 +100,7 @@ public class ParticipantServiceImpl implements ParticipantService{
         List<Participant> participants = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(suiteRoomId, SuiteStatus.READY);
         SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId)
                 .orElseThrow(() -> { throw new CustomException(StatusCode.NOT_FOUND); });
-        suiteParticipantProducer.suiteRoomContractCreationProducer(suiteRoomId, participants, suiteRoom);
+        suiteRoomProducer.suiteRoomContractCreationProducer(suiteRoomId, participants, suiteRoom);
 
         return participants.stream().map(
                 p -> {

@@ -30,8 +30,8 @@ public class SuiteRoomConsumer {
     private final ParticipantRepository participantRepository;
 
     @Transactional
-    @KafkaListener(topics = "${topic.SUITEROOM_JOIN}", groupId = "suite", containerFactory = "kafkaListenerContainerFactory")
-    public void userRegistrationFCMConsume(ConsumerRecord<String, String> record) throws IOException, ParseException {
+    @KafkaListener(topics = { "${topic.SUITEROOM_JOIN}", "${topic.SUITEROOM_CANCELJOIN_ERROR}" }, groupId = "suite", containerFactory = "kafkaListenerContainerFactory")
+    public void suiteRoomJoinConsume(ConsumerRecord<String, String> record) throws IOException, ParseException {
         JSONParser parser = new JSONParser();
         ObjectMapper objectMapper = new ObjectMapper();
         JSONObject jsonObject = (JSONObject) parser.parse(record.value());
@@ -43,8 +43,6 @@ public class SuiteRoomConsumer {
 
         addParticipant(suiteRoomId, isHost, authorizerDto);
     }
-
-
 
     private void addParticipant(Long suiteRoomId, boolean isHost, AuthorizerDto authorizerDto) {
         SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId).get();
