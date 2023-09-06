@@ -41,7 +41,8 @@ public class SuiteRoomConsumer {
         JSONObject authorizerDtoObject = ((JSONObject) data.get("authorizerDto"));
         AuthorizerDto authorizerDto = objectMapper.readValue(authorizerDtoObject.toString(), AuthorizerDto.class);
 
-        addParticipant(suiteRoomId, isHost, authorizerDto);
+        if(isHost) updateHostStatus(suiteRoomId, authorizerDto.getMemberId());
+        else addParticipant(suiteRoomId, isHost, authorizerDto);
     }
 
     private void addParticipant(Long suiteRoomId, boolean isHost, AuthorizerDto authorizerDto) {
@@ -54,5 +55,11 @@ public class SuiteRoomConsumer {
         suiteRoom.addParticipant(participant);
 
         participantRepository.save(participant);
+    }
+
+
+    private void updateHostStatus(Long suiteRoomId, Long memberId) {
+        Participant host = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoomId, memberId, true).get();
+        host.updateStatus(SuiteStatus.READY);
     }
 }

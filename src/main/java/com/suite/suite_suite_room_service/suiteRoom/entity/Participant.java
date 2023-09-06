@@ -44,8 +44,7 @@ public class Participant {
 
 
     @Builder
-    public Participant(Long participantId, AuthorizerDto authorizerDto, SuiteStatus status, Boolean isHost) {
-        this.participantId = participantId;
+    public Participant(AuthorizerDto authorizerDto, SuiteStatus status, Boolean isHost) {
         this.memberId = authorizerDto.getMemberId();
         this.email = authorizerDto.getEmail();
         this.name = authorizerDto.getName();

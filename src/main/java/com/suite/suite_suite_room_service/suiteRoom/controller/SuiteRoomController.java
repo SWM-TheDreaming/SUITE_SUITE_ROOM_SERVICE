@@ -30,11 +30,6 @@ public class SuiteRoomController {
     @Value("${jwt.access.key}")
     private String accessKey;
 
-    @GetMapping("/test")
-    public AuthorizerDto test() {
-        return getSuiteAuthorizer();
-    }
-
     @GetMapping("/suiteroom")
     public ResponseEntity<Message> listUpSuiteRooms(@RequestHeader("Authorization") String authorizationHeader, AuthorizerDto authorizerDto) {
         // 토큰 재발급 부분 여기서 처리

@@ -28,9 +28,6 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
 
     private final SuiteRoomRepository suiteRoomRepository;
     private final ParticipantRepository participantRepository;
-    private final SuiteRoomProducer suiteRoomProducer;
-    private final AnpService anpService;
-
 
     @Override
     public List<ResSuiteRoomDto> getAllSuiteRooms(AuthorizerDto authorizerDto) {
@@ -77,15 +74,16 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
         suiteRoomRepository.findByTitle(reqSuiteRoomDto.getTitle()).ifPresent(
                 suiteRoom ->  { throw new CustomException(StatusCode.ALREADY_EXISTS_SUITEROOM); }
         );
+
         SuiteRoom suiteRoom = reqSuiteRoomDto.toSuiteRoomEntity();
 
-        if(anpService.getPoint(authorizerDto.getMemberId()) < suiteRoom.getDepositAmount())
-            throw new CustomException(StatusCode.FAILED_PAY);
-
+        Participant participant = Participant.builder()
+                .authorizerDto(authorizerDto)
+                .status(SuiteStatus.PLAIN)
+                .isHost(true).build();
+        suiteRoom.addParticipant(participant);
         suiteRoomRepository.save(suiteRoom);
-        suiteRoomProducer.sendPaymentMessage(suiteRoom, authorizerDto, true, true);
-
-
+        participantRepository.save(participant);
     }
 
 
