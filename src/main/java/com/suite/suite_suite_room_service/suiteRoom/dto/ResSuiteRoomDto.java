@@ -26,8 +26,9 @@ public class ResSuiteRoomDto {
     private String contractAddress;
     private Long participantCount;
     private boolean isHost;
+    private Long markCount;
     @Builder
-    public ResSuiteRoomDto(String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Boolean isOpen ,String channelLink, StudyType studyMethod, String contractAddress, Long participantCount, boolean isHost) {
+    public ResSuiteRoomDto(String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Boolean isOpen ,String channelLink, StudyType studyMethod, String contractAddress, Long participantCount, boolean isHost, Long markCount) {
         this.title = title;
         this.content = content;
         this.subject = subject;
@@ -44,5 +45,6 @@ public class ResSuiteRoomDto {
         this.contractAddress = contractAddress;
         this.participantCount = participantCount;
         this.isHost = isHost;
+        this.markCount = markCount;
     }
 }

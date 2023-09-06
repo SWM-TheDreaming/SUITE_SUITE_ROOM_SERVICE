@@ -6,6 +6,7 @@ import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
 import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
 
+import com.suite.suite_suite_room_service.suiteRoom.repository.MarkRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
@@ -27,6 +28,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
 
     private final SuiteRoomRepository suiteRoomRepository;
     private final ParticipantRepository participantRepository;
+    private final MarkRepository markRepository;
 
     @Override
     public List<ResSuiteRoomListDto> getSuiteRooms(AuthorizerDto authorizerDto, List<StudyCategory> subjects, Pageable pageable) {
@@ -39,23 +41,25 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
         return suiteRooms.stream().map(
                 suiteRoom -> suiteRoom.toResSuiteRoomListDto(
                         participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId()),
-                        participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), authorizerDto.getMemberId(), true)
+                        participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), authorizerDto.getMemberId(), true),
+                        markRepository.countBySuiteRoomId(suiteRoom.getSuiteRoomId())
                 )
         ).collect(Collectors.toList());
     }
 
     @Override
-    public ResSuiteRoomListDto getSuiteRoom(Long suiteRoomId, AuthorizerDto authorizerDto) {
+    public ResSuiteRoomDto getSuiteRoom(Long suiteRoomId, AuthorizerDto authorizerDto) {
         Optional<SuiteRoom> findSuiteRoomBySuiteRoomIdResult = suiteRoomRepository.findById(suiteRoomId);
         findSuiteRoomBySuiteRoomIdResult.orElseThrow(
                 () -> {throw new CustomException(StatusCode.SUITE_ROOM_NOT_FOUND);}
         );
-        ResSuiteRoomListDto resSuiteRoomListDto = findSuiteRoomBySuiteRoomIdResult.get().toResSuiteRoomListDto(
+        ResSuiteRoomDto resSuiteRoomDto = findSuiteRoomBySuiteRoomIdResult.get().toResSuiteRoomDto(
                 participantRepository.countBySuiteRoom_SuiteRoomId(findSuiteRoomBySuiteRoomIdResult.get().getSuiteRoomId()),
-                participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(findSuiteRoomBySuiteRoomIdResult.get().getSuiteRoomId(), authorizerDto.getMemberId(), true)
+                participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(findSuiteRoomBySuiteRoomIdResult.get().getSuiteRoomId(), authorizerDto.getMemberId(), true),
+                markRepository.countBySuiteRoomId(suiteRoomId)
         );
 
-        return resSuiteRoomListDto;
+        return resSuiteRoomDto;
     }
 
     @Override

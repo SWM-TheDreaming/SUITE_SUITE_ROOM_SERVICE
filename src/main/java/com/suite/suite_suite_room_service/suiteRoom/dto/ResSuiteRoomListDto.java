@@ -19,9 +19,10 @@ public class ResSuiteRoomListDto {
     private Boolean isOpen;
     private Long participantCount;
     private boolean isHost;
+    private Long markCount;
 
     @Builder
-    public ResSuiteRoomListDto(String title, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Boolean isPublic, Boolean isOpen, Long participantCount, boolean isHost) {
+    public ResSuiteRoomListDto(String title, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Boolean isPublic, Boolean isOpen, Long participantCount, boolean isHost, Long markCount) {
         this.title = title;
         this.subject = subject;
         this.recruitmentDeadline = recruitmentDeadline;
@@ -32,5 +33,6 @@ public class ResSuiteRoomListDto {
         this.isOpen = isOpen;
         this.participantCount = participantCount;
         this.isHost = isHost;
+        this.markCount = markCount;
     }
 }

@@ -9,6 +9,7 @@ import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
 import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.*;
+import com.suite.suite_suite_room_service.suiteRoom.repository.MarkRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
@@ -37,7 +38,7 @@ class SuiteRoomServiceTest {
 
     @Autowired private SuiteRoomRepository suiteRoomRepository;
     @Autowired private ParticipantRepository participantRepository;
-
+    @Autowired private MarkRepository markRepository;
 
 
     private final SuiteRoom  suiteRoom = MockSuiteRoom.getMockSuiteRoom("test", true).toSuiteRoomEntity();
@@ -125,7 +126,8 @@ class SuiteRoomServiceTest {
         List<ResSuiteRoomListDto> assertionSuiteRooms = suiteRooms.stream().map(
                 suiteRoom -> suiteRoom.toResSuiteRoomListDto(
                         participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId()),
-                        participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), MockAuthorizer.YH().getMemberId(), true)
+                        participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), MockAuthorizer.YH().getMemberId(), true),
+                        markRepository.countBySuiteRoomId(suiteRoom.getSuiteRoomId())
                 )
         ).collect(Collectors.toList());
 
@@ -158,7 +160,8 @@ class SuiteRoomServiceTest {
         );
         ResSuiteRoomListDto resSuiteRoomListDto = findSuiteRoomBySuiteRoomIdResult.get().toResSuiteRoomListDto(
                 participantRepository.countBySuiteRoom_SuiteRoomId(targetSuiteRoomId),
-                participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(targetSuiteRoomId,DH.getMemberId(), true)
+                participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(targetSuiteRoomId,DH.getMemberId(), true),
+                markRepository.countBySuiteRoomId(suiteRoom.getSuiteRoomId())
         );
         //then
         assertAll(

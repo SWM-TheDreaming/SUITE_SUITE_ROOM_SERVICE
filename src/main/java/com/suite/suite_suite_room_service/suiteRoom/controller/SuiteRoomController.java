@@ -36,7 +36,7 @@ public class SuiteRoomController {
     }
     @GetMapping("/suiteroom/detail/{suiteRoomId}")
     public ResponseEntity<Message> listUpSuiteRoom(@PathVariable Long suiteRoomId) {
-        ResSuiteRoomListDto getSuiteRoom = suiteRoomService.getSuiteRoom(suiteRoomId, getSuiteAuthorizer());
+        ResSuiteRoomDto getSuiteRoom = suiteRoomService.getSuiteRoom(suiteRoomId, getSuiteAuthorizer());
         return ResponseEntity.ok(new Message(StatusCode.OK, getSuiteRoom));
     }
     @GetMapping("/progression")

@@ -110,7 +110,7 @@ public class SuiteRoom extends BaseTimeEntity {
         this.isOpen = true;
     }
 
-    public ResSuiteRoomListDto toResSuiteRoomListDto(Long participantCount, boolean isHost) {
+    public ResSuiteRoomListDto toResSuiteRoomListDto(Long participantCount, boolean isHost, Long markCount) {
         return ResSuiteRoomListDto.builder()
                 .title(this.title)
                 .subject(this.subject)
@@ -122,6 +122,29 @@ public class SuiteRoom extends BaseTimeEntity {
                 .isOpen(this.isOpen)
                 .participantCount(participantCount)
                 .isHost(isHost)
+                .markCount(markCount)
+                .build();
+    }
+
+    public ResSuiteRoomDto toResSuiteRoomDto(Long participantCount, boolean isHost, Long markCount) {
+        return ResSuiteRoomDto.builder()
+                .title(this.title)
+                .content(this.content)
+                .subject(this.subject)
+                .recruitmentDeadline(this.recruitmentDeadline)
+                .studyDeadline(this.studyDeadline)
+                .recruitmentLimit(this.recruitmentLimit)
+                .depositAmount(this.depositAmount)
+                .minAttendanceRate(this.minAttendanceRate)
+                .minMissionCompleteRate(this.minMissionCompleteRate)
+                .isPublic(this.isPublic)
+                .isOpen(this.isOpen)
+                .channelLink(this.channelLink)
+                .studyMethod(this.studyMethod)
+                .contractAddress(this.contractAddress)
+                .participantCount(participantCount)
+                .isHost(isHost)
+                .markCount(markCount)
                 .build();
     }
 
