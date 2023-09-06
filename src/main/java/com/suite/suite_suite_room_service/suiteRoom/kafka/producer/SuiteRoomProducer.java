@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ResPaymentParticipantDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomDto;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomListDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
@@ -76,17 +77,17 @@ public class SuiteRoomProducer {
 
             Long participantCount = convertparticipantsToDto(participants, participantsIds, signatures, map).stream().count();
 
-            ResSuiteRoomDto resSuiteRoomDto = suiteRoom.toResSuiteRoomDto(participantCount, false);
+            ResSuiteRoomDto resSuiteRoomListDto = suiteRoom.toResSuiteRoomDto(participantCount, false);
             map.put("participant_ids", objectMapper.writeValueAsString(participantsIds));
             map.put("signatures", objectMapper.writeValueAsString(signatures));
             map.put("suite_room_id", suiteRoomId);
-            map.put("title", resSuiteRoomDto.getTitle());
+            map.put("title", resSuiteRoomListDto.getTitle());
             map.put("group_capacity", participantCount);
-            map.put("group_deposit_per_person", resSuiteRoomDto.getDepositAmount());
-            map.put("group_period", daysDiffCalculator(resSuiteRoomDto.getStudyDeadline()));
-            map.put("recruitment_period", daysDiffCalculator(resSuiteRoomDto.getRecruitmentDeadline()));
-            map.put("minimum_attendance", resSuiteRoomDto.getMinAttendanceRate());
-            map.put("minimum_mission_completion",resSuiteRoomDto.getMinMissionCompleteRate());
+            map.put("group_deposit_per_person", resSuiteRoomListDto.getDepositAmount());
+            map.put("group_period", daysDiffCalculator(resSuiteRoomListDto.getStudyDeadline()));
+            map.put("recruitment_period", daysDiffCalculator(resSuiteRoomListDto.getRecruitmentDeadline()));
+            map.put("minimum_attendance", resSuiteRoomListDto.getMinAttendanceRate());
+            map.put("minimum_mission_completion", resSuiteRoomListDto.getMinMissionCompleteRate());
             return map;
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

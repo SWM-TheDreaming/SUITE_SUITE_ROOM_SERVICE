@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.suite.suite_suite_room_service.suiteRoom.dto.Message;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ReqUpdateSuiteRoomDto;
-import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomDto;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomListDto;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.*;
@@ -131,9 +131,9 @@ class SuiteRoomControllerTest {
 
         //when
         String responseBody = getRequest(url, YH_JWT);
-        Message message = mapper.readValue(responseBody, new TypeReference<Message<List<ResSuiteRoomDto>>>() {
+        Message message = mapper.readValue(responseBody, new TypeReference<Message<List<ResSuiteRoomListDto>>>() {
         });
-        List<ResSuiteRoomDto> result = (List<ResSuiteRoomDto>) message.getData();
+        List<ResSuiteRoomListDto> result = (List<ResSuiteRoomListDto>) message.getData();
 
         //then
         Assertions.assertAll(
@@ -198,13 +198,13 @@ class SuiteRoomControllerTest {
 
         //when
         String responseBody = getRequest(url, YH_JWT);
-        Message message = mapper.readValue(responseBody, new TypeReference<Message<ResSuiteRoomDto>>() {
+        Message message = mapper.readValue(responseBody, new TypeReference<Message<ResSuiteRoomListDto>>() {
         });
-        ResSuiteRoomDto result = (ResSuiteRoomDto) message.getData();
+        ResSuiteRoomListDto result = (ResSuiteRoomListDto) message.getData();
 
         //then
         Assertions.assertAll(
-                () -> assertThat(result.getContent()).isEqualTo(suiteRoom.getContent()),
+                () -> assertThat(result.getRecruitmentLimit()).isEqualTo(suiteRoom.getRecruitmentLimit()),
                 () -> assertThat(result.getTitle()).isEqualTo(suiteRoom.getTitle()),
                 () -> assertThat(message.getStatusCode()).isEqualTo(200)
         );
