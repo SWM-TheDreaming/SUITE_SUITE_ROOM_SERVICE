@@ -32,13 +32,16 @@ public class ParticipantServiceImpl implements ParticipantService{
         SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId).orElseThrow(
                 () -> new CustomException(StatusCode.NOT_FOUND));
 
+        Participant hostInfo = participantRepository.findBySuiteRoom_SuiteRoomIdAndIsHost(suiteRoomId, true).orElseThrow(
+                () -> new CustomException(StatusCode.NOT_FOUND));
+
         participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, authorizerDto.getMemberId()).ifPresent(
                 member -> { throw new CustomException(StatusCode.ALREADY_EXISTS_PARTICIPANT); });
 
         if(anpService.getPoint(authorizerDto.getMemberId()) < suiteRoom.getDepositAmount())
             throw new CustomException(StatusCode.FAILED_PAY);
 
-        suiteRoomProducer.sendPaymentMessage(suiteRoom, authorizerDto, false, true);
+        suiteRoomProducer.sendPaymentMessage(suiteRoom, hostInfo.getMemberId(), authorizerDto, false, true);
     }
 
     @Override
@@ -47,11 +50,14 @@ public class ParticipantServiceImpl implements ParticipantService{
         Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoomId, authorizerDto.getMemberId(), false).orElseThrow(
                 () -> new CustomException(StatusCode.FAILED_REQUEST));
 
+        Participant hostInfo = participantRepository.findBySuiteRoom_SuiteRoomIdAndIsHost(suiteRoomId, true).orElseThrow(
+                () -> new CustomException(StatusCode.NOT_FOUND));
+
         SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId).orElseThrow(
                 () -> new CustomException(StatusCode.NOT_FOUND));
 
         if(participant.getStatus().equals(SuiteStatus.READY)) {
-            suiteRoomProducer.sendPaymentMessage(suiteRoom, authorizerDto, false, false);
+            suiteRoomProducer.sendPaymentMessage(suiteRoom, hostInfo.getMemberId(), authorizerDto, false, false);
         }
 
         if(participant.getIsHost())
@@ -65,6 +71,9 @@ public class ParticipantServiceImpl implements ParticipantService{
         Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, authorizerDto.getMemberId())
                 .orElseThrow(() -> { throw new CustomException(StatusCode.NOT_FOUND); });
 
+        Participant hostInfo = participantRepository.findBySuiteRoom_SuiteRoomIdAndIsHost(suiteRoomId, true).orElseThrow(
+                () -> new CustomException(StatusCode.NOT_FOUND));
+
         if(participant.getStatus().equals(SuiteStatus.READY))
             throw new CustomException(StatusCode.ALREADY_EXISTS_PARTICIPANT);
 
@@ -77,10 +86,9 @@ public class ParticipantServiceImpl implements ParticipantService{
         if (participant.getIsHost())
             suiteRoom.openSuiteRoom();
 
-
         participant.updateStatus(SuiteStatus.READY);
 
-        suiteRoomProducer.sendPaymentMessage(suiteRoom, authorizerDto, true, true);
+        suiteRoomProducer.sendPaymentMessage(suiteRoom, hostInfo.getMemberId(), authorizerDto, true, true);
     }
 
     @Override

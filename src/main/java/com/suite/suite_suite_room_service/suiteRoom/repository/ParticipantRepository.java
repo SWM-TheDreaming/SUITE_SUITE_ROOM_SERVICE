@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface ParticipantRepository extends JpaRepository<Participant, Long> {
     Optional<Participant> findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(Long suiteRoomId, Long memberId, boolean isHost);
     Optional<Participant> findBySuiteRoom_SuiteRoomIdAndMemberId(Long suiteRoomId, Long memberId);
-
+    Optional<Participant>  findBySuiteRoom_SuiteRoomIdAndIsHost(Long suiteRoomId, boolean isHost);
     List<Participant> findAllBySuiteRoom_SuiteRoomIdAndStatusNot(Long suiteRoomId, SuiteStatus suiteStatus);
 
     List<Participant> findAllBySuiteRoom_SuiteRoomIdAndStatus(Long suiteRoomId, SuiteStatus suiteStatus);

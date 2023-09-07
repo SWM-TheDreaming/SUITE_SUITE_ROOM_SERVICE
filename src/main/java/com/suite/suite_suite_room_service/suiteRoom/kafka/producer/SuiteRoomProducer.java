@@ -41,8 +41,8 @@ public class SuiteRoomProducer {
     private final KafkaTemplate<String, String> kafkaTemplate;
 
 
-    public void sendPaymentMessage(SuiteRoom suiteRoom, AuthorizerDto authorizerDto, boolean isHost, boolean isPay) {
-        Map<String, Object> data = payDepositAmount(suiteRoom, authorizerDto, isHost);
+    public void sendPaymentMessage(SuiteRoom suiteRoom, Long hostMemberId, AuthorizerDto authorizerDto, boolean isHost, boolean isPay) {
+        Map<String, Object> data = payDepositAmount(suiteRoom, hostMemberId, authorizerDto, isHost);
         log.info("SuiteRoom-Join message : {}", data);
         this.kafkaTemplate.send(isPay ? DEPOSIT_PAYMENT : SUITEROOM_CANCELJOIN, makeMessage(data));
     }
@@ -54,11 +54,13 @@ public class SuiteRoomProducer {
     }
 
 
-    private Map<String, Object> payDepositAmount(SuiteRoom suiteRoom, AuthorizerDto authorizerDto, boolean isHost) {
+    private Map<String, Object> payDepositAmount(SuiteRoom suiteRoom, Long hostMemberId, AuthorizerDto authorizerDto, boolean isHost) {
         try {
             Map<String, Object> map = new HashMap<>();
             JSONObject parsedObject = (JSONObject) JSONValue.parse(authorizerDto.toJSONString());
             map.put("suiteRoomId", suiteRoom.getSuiteRoomId());
+            map.put("hostMemberId", hostMemberId);
+            map.put("suiteRoomTitle", suiteRoom.getTitle());
             map.put("authorizerDto", parsedObject);
             map.put("depositAmount", suiteRoom.getDepositAmount());
             map.put("isHost", isHost);
