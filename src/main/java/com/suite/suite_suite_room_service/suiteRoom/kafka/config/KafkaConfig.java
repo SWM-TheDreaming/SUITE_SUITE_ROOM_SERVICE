@@ -112,7 +112,7 @@ public class KafkaConfig {
     }
     @Bean
     public AnpService anpService(RestTemplate restTemplate) {
-        String GET_POINT_URI = "http://localhost:8088/anp/point/";
+        String GET_POINT_URI = "http://semtle.catholic.ac.kr:8088/anp/point/";
         return new AnpService(GET_POINT_URI, restTemplate);
     }
 }
