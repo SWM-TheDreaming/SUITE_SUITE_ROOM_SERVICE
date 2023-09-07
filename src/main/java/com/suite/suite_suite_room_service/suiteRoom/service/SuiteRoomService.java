@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface SuiteRoomService {
     List<ResSuiteRoomListDto> getSuiteRooms(AuthorizerDto authorizerDto, List<StudyCategory> subjects, Pageable pageable);
     ResSuiteRoomDto getSuiteRoom(Long suiteRoomId, AuthorizerDto authorizerDto);
+    void validateTitle(String title);
+    void validatePassword(Long suiteRoomId, int password);
     Optional<List<SuiteRoom>> getAllProgressRooms();
     Optional<List<SuiteRoom>> getAllCompletionRooms();
     void createSuiteRoom(ReqSuiteRoomDto reqSuiteRoomDto, AuthorizerDto authorizerDto);
