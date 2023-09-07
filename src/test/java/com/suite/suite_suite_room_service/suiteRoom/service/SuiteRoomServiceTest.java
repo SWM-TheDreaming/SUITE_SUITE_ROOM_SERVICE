@@ -2,42 +2,31 @@ package com.suite.suite_suite_room_service.suiteRoom.service;
 
 
 import com.suite.suite_suite_room_service.suiteRoom.dto.ReqUpdateSuiteRoomDto;
-import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomDto;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomListDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
 import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.*;
+import com.suite.suite_suite_room_service.suiteRoom.repository.MarkRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.Assertions;
 
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
-import java.lang.reflect.Member;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -49,7 +38,7 @@ class SuiteRoomServiceTest {
 
     @Autowired private SuiteRoomRepository suiteRoomRepository;
     @Autowired private ParticipantRepository participantRepository;
-
+    @Autowired private MarkRepository markRepository;
 
 
     private final SuiteRoom  suiteRoom = MockSuiteRoom.getMockSuiteRoom("test", true).toSuiteRoomEntity();
@@ -134,17 +123,18 @@ class SuiteRoomServiceTest {
 
 
         List<SuiteRoom> suiteRooms = suiteRoomRepository.findAll();
-        List<ResSuiteRoomDto> assertionSuiteRooms = suiteRooms.stream().map(
-                suiteRoom -> suiteRoom.toResSuiteRoomDto(
+        List<ResSuiteRoomListDto> assertionSuiteRooms = suiteRooms.stream().map(
+                suiteRoom -> suiteRoom.toResSuiteRoomListDto(
                         participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId()),
-                        participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), MockAuthorizer.YH().getMemberId(), true)
+                        participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), MockAuthorizer.YH().getMemberId(), true),
+                        markRepository.countBySuiteRoomId(suiteRoom.getSuiteRoomId())
                 )
         ).collect(Collectors.toList());
 
 
         //then
         Assertions.assertAll(
-                ()-> assertThat(assertionSuiteRooms.get(0).getClass()).isEqualTo(ResSuiteRoomDto.class),
+                ()-> assertThat(assertionSuiteRooms.get(0).getClass()).isEqualTo(ResSuiteRoomListDto.class),
                 ()-> assertThat(assertionSuiteRooms.size()).isGreaterThanOrEqualTo(2)
         );
 
@@ -168,14 +158,15 @@ class SuiteRoomServiceTest {
                     });
                 }
         );
-        ResSuiteRoomDto resSuiteRoomDto = findSuiteRoomBySuiteRoomIdResult.get().toResSuiteRoomDto(
+        ResSuiteRoomListDto resSuiteRoomListDto = findSuiteRoomBySuiteRoomIdResult.get().toResSuiteRoomListDto(
                 participantRepository.countBySuiteRoom_SuiteRoomId(targetSuiteRoomId),
-                participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(targetSuiteRoomId,DH.getMemberId(), true)
+                participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(targetSuiteRoomId,DH.getMemberId(), true),
+                markRepository.countBySuiteRoomId(suiteRoom.getSuiteRoomId())
         );
         //then
         assertAll(
-                () -> assertThat(resSuiteRoomDto.getContent()).isEqualTo(suiteRoom.getContent()),
-                () -> assertThat(resSuiteRoomDto.getDepositAmount()).isEqualTo(suiteRoom.getDepositAmount())
+                () -> assertThat(resSuiteRoomListDto.getRecruitmentLimit()).isEqualTo(suiteRoom.getRecruitmentLimit()),
+                () -> assertThat(resSuiteRoomListDto.getDepositAmount()).isEqualTo(suiteRoom.getDepositAmount())
         );
 
     }

@@ -15,7 +15,7 @@ import java.util.Date;
 
 @RequiredArgsConstructor
 @Component
-public class AuthorizationJwtCreator {
+public class JwtCreator {
     @Value("${jwt.access.key}")
     private String accessSecretKey;
     @Value("${jwt.refresh.key")

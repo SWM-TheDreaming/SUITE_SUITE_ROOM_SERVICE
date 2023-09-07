@@ -1,6 +1,7 @@
 package com.suite.suite_suite_room_service.suiteRoom.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.suite.suite_suite_room_service.baseTime.BaseTimeEntity;
 import com.suite.suite_suite_room_service.suiteRoom.dto.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @DynamicUpdate
 @Table(name = "suite_room")
-public class SuiteRoom {
+public class SuiteRoom extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,6 +31,7 @@ public class SuiteRoom {
     @Column(name = "content", columnDefinition= "TEXT")
     private String content;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "subject")
     private StudyCategory subject;
 
@@ -108,6 +110,44 @@ public class SuiteRoom {
         this.isOpen = true;
     }
 
+    public ResSuiteRoomListDto toResSuiteRoomListDto(Long participantCount, boolean isHost, Long markCount) {
+        return ResSuiteRoomListDto.builder()
+                .title(this.title)
+                .subject(this.subject)
+                .recruitmentDeadline(this.recruitmentDeadline)
+                .studyDeadline(this.studyDeadline)
+                .recruitmentLimit(this.recruitmentLimit)
+                .depositAmount(this.depositAmount)
+                .isPublic(this.isPublic)
+                .isOpen(this.isOpen)
+                .participantCount(participantCount)
+                .isHost(isHost)
+                .markCount(markCount)
+                .build();
+    }
+
+    public ResSuiteRoomDto toResSuiteRoomDto(Long participantCount, boolean isHost, Long markCount) {
+        return ResSuiteRoomDto.builder()
+                .title(this.title)
+                .content(this.content)
+                .subject(this.subject)
+                .recruitmentDeadline(this.recruitmentDeadline)
+                .studyDeadline(this.studyDeadline)
+                .recruitmentLimit(this.recruitmentLimit)
+                .depositAmount(this.depositAmount)
+                .minAttendanceRate(this.minAttendanceRate)
+                .minMissionCompleteRate(this.minMissionCompleteRate)
+                .isPublic(this.isPublic)
+                .isOpen(this.isOpen)
+                .channelLink(this.channelLink)
+                .studyMethod(this.studyMethod)
+                .contractAddress(this.contractAddress)
+                .participantCount(participantCount)
+                .isHost(isHost)
+                .markCount(markCount)
+                .build();
+    }
+
     public ResSuiteRoomDto toResSuiteRoomDto(Long participantCount, boolean isHost) {
         return ResSuiteRoomDto.builder()
                 .title(this.title)
@@ -128,6 +168,8 @@ public class SuiteRoom {
                 .isHost(isHost)
                 .build();
     }
+
+
 
 
 }

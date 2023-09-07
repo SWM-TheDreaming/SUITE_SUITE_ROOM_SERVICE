@@ -2,21 +2,19 @@ package com.suite.suite_suite_room_service.suiteRoom.controller;
 
 import com.suite.suite_suite_room_service.suiteRoom.dto.*;
 import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
-import com.suite.suite_suite_room_service.suiteRoom.security.AuthorizationJwtCreator;
-import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
+import com.suite.suite_suite_room_service.suiteRoom.security.JwtCreator;
 import com.suite.suite_suite_room_service.suiteRoom.service.SuiteRoomService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import static com.suite.suite_suite_room_service.suiteRoom.security.JwtInfoExtractor.getSuiteAuthorizer;
+import static com.suite.suite_suite_room_service.suiteRoom.security.JwtInfoExtractor.renewalTokenValidator;
 
 
 @RequiredArgsConstructor
@@ -25,30 +23,20 @@ import static com.suite.suite_suite_room_service.suiteRoom.security.JwtInfoExtra
 public class SuiteRoomController {
 
     private final SuiteRoomService suiteRoomService;
-    private final AuthorizationJwtCreator authorizationJwtCreator;
-
-    @Value("${jwt.access.key}")
-    private String accessKey;
-
-    @GetMapping("/test")
-    public AuthorizerDto test() {
-        return getSuiteAuthorizer();
-    }
+    private final JwtCreator jwtCreator;
 
     @GetMapping("/suiteroom")
-    public ResponseEntity<Message> listUpSuiteRooms(@RequestHeader("Authorization") String authorizationHeader, AuthorizerDto authorizerDto) {
-        // 토큰 재발급 부분 여기서 처리
-        String token = authorizationHeader.substring("Bearer ".length());
-        Token renewalToken = renewalTokenValidator(token, authorizerDto);
-
-        List<ResSuiteRoomDto> getAllSuiteRooms = suiteRoomService.getAllSuiteRooms(getSuiteAuthorizer());
+    public ResponseEntity<Message> listUpSuiteRooms(@RequestBody List<StudyCategory> subjects, Pageable pageable) {
+        Token renewalToken = renewalTokenValidator() ? jwtCreator.createToken(Objects.requireNonNull(getSuiteAuthorizer())) : null;
+        List<ResSuiteRoomListDto> suiteRooms = suiteRoomService.getSuiteRooms(getSuiteAuthorizer(), subjects, pageable);
 
         Message.MessageAppender message = new Message.MessageAppender();
-        return ResponseEntity.ok(message.messageAppenderCaller("token", renewalToken,StatusCode.OK,getAllSuiteRooms));
+
+        return ResponseEntity.ok(message.messageAppenderCaller("token", renewalToken,StatusCode.OK, suiteRooms));
     }
     @GetMapping("/suiteroom/detail/{suiteRoomId}")
-    public ResponseEntity<Message> listUpSuiteRoom(@PathVariable Long suiteRoomId, AuthorizerDto authorizerDto) {
-        ResSuiteRoomDto getSuiteRoom = suiteRoomService.getSuiteRoom(suiteRoomId, authorizerDto);
+    public ResponseEntity<Message> listUpSuiteRoom(@PathVariable Long suiteRoomId) {
+        ResSuiteRoomDto getSuiteRoom = suiteRoomService.getSuiteRoom(suiteRoomId, getSuiteAuthorizer());
         return ResponseEntity.ok(new Message(StatusCode.OK, getSuiteRoom));
     }
     @GetMapping("/progression")
@@ -78,18 +66,5 @@ public class SuiteRoomController {
         suiteRoomService.updateSuiteRoom(reqUpdateSuiteRoomDto, getSuiteAuthorizer());
         return ResponseEntity.ok(new Message(StatusCode.OK));
     }
-
-    private Token renewalTokenValidator(String token, AuthorizerDto authorizerDto) {
-        Claims claims = Jwts.parser().setSigningKey(accessKey.getBytes()).parseClaimsJws(token).getBody();
-        Token renewalToken = null;
-
-        if (claims.getExpiration() == null || claims.getExpiration().getTime() < (new Date()).getTime() + 86400000) {
-            renewalToken = authorizationJwtCreator.createToken(authorizerDto);
-        }
-        return renewalToken;
-    }
-
-
-
 
 }

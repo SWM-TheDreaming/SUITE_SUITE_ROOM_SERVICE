@@ -10,7 +10,7 @@ public interface ParticipantService {
 
     void addParticipant(Long suiteRoomId, AuthorizerDto authorizerDto);
     void removeParticipant(Long suiteRoomId, AuthorizerDto authorizerDto);
-    void updatePaymentParticipant(Long suiteRoomId, Long memberId);
+    public void updatePaymentParticipant(Long suiteRoomId, AuthorizerDto authorizerDto);
 
     List<ResPaymentParticipantDto> listUpPaymentParticipants(Long suiteRoomId);
 

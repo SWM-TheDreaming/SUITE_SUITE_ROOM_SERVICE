@@ -6,18 +6,18 @@ import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
 import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
 
-import com.suite.suite_suite_room_service.suiteRoom.kafka.producer.SuiteRoomProducer;
+import com.suite.suite_suite_room_service.suiteRoom.repository.MarkRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 
 import lombok.RequiredArgsConstructor;
 
-import org.json.simple.JSONObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,23 +28,23 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
 
     private final SuiteRoomRepository suiteRoomRepository;
     private final ParticipantRepository participantRepository;
-    private final SuiteRoomProducer suiteRoomProducer;
-    private final AnpService anpService;
-
+    private final MarkRepository markRepository;
 
     @Override
-    public List<ResSuiteRoomDto> getAllSuiteRooms(AuthorizerDto authorizerDto) {
+    public List<ResSuiteRoomListDto> getSuiteRooms(AuthorizerDto authorizerDto, List<StudyCategory> subjects, Pageable pageable) {
 
-        List<SuiteRoom> suiteRooms = suiteRoomRepository.findAll();
+        Page<SuiteRoom> suiteRooms = subjects.size() != 0 ?
+                suiteRoomRepository.findByIsOpenAndSubjectInOrderByCreatedDateDesc(true, subjects, pageable)
+                : suiteRoomRepository.findByIsOpenOrderByCreatedDateDesc(true, pageable);
+
 
         return suiteRooms.stream().map(
-                suiteRoom -> suiteRoom.toResSuiteRoomDto(
+                suiteRoom -> suiteRoom.toResSuiteRoomListDto(
                         participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId()),
-                        participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), authorizerDto.getMemberId(), true)
+                        participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), authorizerDto.getMemberId(), true),
+                        markRepository.countBySuiteRoomId(suiteRoom.getSuiteRoomId())
                 )
         ).collect(Collectors.toList());
-
-
     }
 
     @Override
@@ -55,7 +55,8 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
         );
         ResSuiteRoomDto resSuiteRoomDto = findSuiteRoomBySuiteRoomIdResult.get().toResSuiteRoomDto(
                 participantRepository.countBySuiteRoom_SuiteRoomId(findSuiteRoomBySuiteRoomIdResult.get().getSuiteRoomId()),
-                participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(findSuiteRoomBySuiteRoomIdResult.get().getSuiteRoomId(), authorizerDto.getMemberId(), true)
+                participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(findSuiteRoomBySuiteRoomIdResult.get().getSuiteRoomId(), authorizerDto.getMemberId(), true),
+                markRepository.countBySuiteRoomId(suiteRoomId)
         );
 
         return resSuiteRoomDto;
@@ -77,15 +78,16 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
         suiteRoomRepository.findByTitle(reqSuiteRoomDto.getTitle()).ifPresent(
                 suiteRoom ->  { throw new CustomException(StatusCode.ALREADY_EXISTS_SUITEROOM); }
         );
+
         SuiteRoom suiteRoom = reqSuiteRoomDto.toSuiteRoomEntity();
 
-        if(anpService.getPoint(authorizerDto.getMemberId()) < suiteRoom.getDepositAmount())
-            throw new CustomException(StatusCode.FAILED_PAY);
-
+        Participant participant = Participant.builder()
+                .authorizerDto(authorizerDto)
+                .status(SuiteStatus.PLAIN)
+                .isHost(true).build();
+        suiteRoom.addParticipant(participant);
         suiteRoomRepository.save(suiteRoom);
-        suiteRoomProducer.sendPaymentMessage(suiteRoom, authorizerDto, true);
-
-
+        participantRepository.save(participant);
     }
 
 

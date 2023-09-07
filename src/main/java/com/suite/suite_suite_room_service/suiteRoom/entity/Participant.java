@@ -1,6 +1,7 @@
 package com.suite.suite_suite_room_service.suiteRoom.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.suite.suite_suite_room_service.baseTime.BaseTimeEntity;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ResPaymentParticipantDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
@@ -14,7 +15,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @Table(name = "participant")
-public class Participant {
+public class Participant extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "participant_id", unique = true, nullable = false)
@@ -44,8 +45,7 @@ public class Participant {
 
 
     @Builder
-    public Participant(Long participantId, AuthorizerDto authorizerDto, SuiteStatus status, Boolean isHost) {
-        this.participantId = participantId;
+    public Participant(AuthorizerDto authorizerDto, SuiteStatus status, Boolean isHost) {
         this.memberId = authorizerDto.getMemberId();
         this.email = authorizerDto.getEmail();
         this.name = authorizerDto.getName();
