@@ -27,7 +27,7 @@ public class SuiteRoomController {
     private final SuiteRoomService suiteRoomService;
     private final JwtCreator jwtCreator;
 
-    @GetMapping("/suiteroom")
+    @PostMapping("/suiteroom")
     public ResponseEntity<Message> listUpSuiteRooms(@RequestBody List<StudyCategory> subjects, Pageable pageable) {
         Token renewalToken = renewalTokenValidator() ? jwtCreator.createToken(Objects.requireNonNull(getSuiteAuthorizer())) : null;
         List<ResSuiteRoomListDto> suiteRooms = suiteRoomService.getSuiteRooms(getSuiteAuthorizer(), subjects, pageable);
