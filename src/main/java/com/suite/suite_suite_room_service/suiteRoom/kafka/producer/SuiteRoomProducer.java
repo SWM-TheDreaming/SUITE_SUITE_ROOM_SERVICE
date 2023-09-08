@@ -14,6 +14,7 @@ import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,7 +65,7 @@ public class SuiteRoomProducer {
         try {
             Map<String, Object> map = new HashMap<>();
             ObjectMapper objectMapper = new ObjectMapper();
-            JSONObject parsedObject = (JSONObject) JSONValue.parse(objectMapper.writeValueAsString(resPaymentParticipantDtos));
+            JSONArray parsedObject = (JSONArray) JSONValue.parse(objectMapper.writeValueAsString(resPaymentParticipantDtos));
             map.put("suiteRoomId", suiteRoom.getSuiteRoomId());
             map.put("depositAmount", suiteRoom.getDepositAmount());
             map.put("minAttendanceRate", suiteRoom.getMinAttendanceRate());
