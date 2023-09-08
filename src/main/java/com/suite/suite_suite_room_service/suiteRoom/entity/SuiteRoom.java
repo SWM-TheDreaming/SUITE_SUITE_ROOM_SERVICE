@@ -116,24 +116,27 @@ public class SuiteRoom extends BaseTimeEntity {
 
     public void startSuiteRoom() { this.isStart = true; }
 
-    public ResSuiteRoomListDto toResSuiteRoomListDto(Long participantCount, boolean isHost, Long markCount) {
+    public ResSuiteRoomListDto toResSuiteRoomListDto(Long participantCount, boolean isHost, Participant participant, Long markCount) {
         return ResSuiteRoomListDto.builder()
+                .suiteRoomId(suiteRoomId)
                 .title(this.title)
                 .subject(this.subject)
                 .recruitmentDeadline(this.recruitmentDeadline)
-                .studyDeadline(this.studyDeadline)
+                .createdDate(this.getCreatedDate())
                 .recruitmentLimit(this.recruitmentLimit)
                 .depositAmount(this.depositAmount)
                 .isPublic(this.isPublic)
                 .isOpen(this.isOpen)
                 .participantCount(participantCount)
                 .isHost(isHost)
+                .hostNickName(participant.getNickname())
                 .markCount(markCount)
                 .build();
     }
 
     public ResSuiteRoomDto toResSuiteRoomDto(Long participantCount, boolean isHost, Long markCount) {
         return ResSuiteRoomDto.builder()
+                .suiteRoomId(suiteRoomId)
                 .title(this.title)
                 .content(this.content)
                 .subject(this.subject)
@@ -174,8 +177,5 @@ public class SuiteRoom extends BaseTimeEntity {
                 .isHost(isHost)
                 .build();
     }
-
-
-
 
 }

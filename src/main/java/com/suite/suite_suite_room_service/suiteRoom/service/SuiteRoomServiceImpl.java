@@ -42,6 +42,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
                 suiteRoom -> suiteRoom.toResSuiteRoomListDto(
                         participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId()),
                         participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), authorizerDto.getMemberId(), true),
+                        participantRepository.findBySuiteRoom_SuiteRoomIdAndIsHost(suiteRoom.getSuiteRoomId(), true).get(),
                         markRepository.countBySuiteRoomId(suiteRoom.getSuiteRoomId())
                 )
         ).collect(Collectors.toList());

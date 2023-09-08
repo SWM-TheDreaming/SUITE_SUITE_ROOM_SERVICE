@@ -127,6 +127,7 @@ class SuiteRoomServiceTest {
                 suiteRoom -> suiteRoom.toResSuiteRoomListDto(
                         participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId()),
                         participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), MockAuthorizer.YH().getMemberId(), true),
+                        participantRepository.findBySuiteRoom_SuiteRoomIdAndIsHost(suiteRoom.getSuiteRoomId(), true).get(),
                         markRepository.countBySuiteRoomId(suiteRoom.getSuiteRoomId())
                 )
         ).collect(Collectors.toList());
@@ -161,6 +162,7 @@ class SuiteRoomServiceTest {
         ResSuiteRoomListDto resSuiteRoomListDto = findSuiteRoomBySuiteRoomIdResult.get().toResSuiteRoomListDto(
                 participantRepository.countBySuiteRoom_SuiteRoomId(targetSuiteRoomId),
                 participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(targetSuiteRoomId,DH.getMemberId(), true),
+                participantRepository.findBySuiteRoom_SuiteRoomIdAndIsHost(suiteRoom.getSuiteRoomId(), true).get(),
                 markRepository.countBySuiteRoomId(suiteRoom.getSuiteRoomId())
         );
         //then

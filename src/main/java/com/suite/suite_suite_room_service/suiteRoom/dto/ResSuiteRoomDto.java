@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 @Getter
 @NoArgsConstructor
 public class ResSuiteRoomDto {
+    private Long suiteRoomId;
     private String title;
     private String content;
     private StudyCategory subject;
@@ -28,7 +29,8 @@ public class ResSuiteRoomDto {
     private boolean isHost;
     private Long markCount;
     @Builder
-    public ResSuiteRoomDto(String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Boolean isOpen ,String channelLink, StudyType studyMethod, String contractAddress, Long participantCount, boolean isHost, Long markCount) {
+    public ResSuiteRoomDto(Long suiteRoomId, String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Boolean isOpen ,String channelLink, StudyType studyMethod, String contractAddress, Long participantCount, boolean isHost, Long markCount) {
+        this.suiteRoomId = suiteRoomId;
         this.title = title;
         this.content = content;
         this.subject = subject;
