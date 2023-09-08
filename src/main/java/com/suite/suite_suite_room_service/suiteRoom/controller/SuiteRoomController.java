@@ -5,12 +5,14 @@ import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
 import com.suite.suite_suite_room_service.suiteRoom.security.JwtCreator;
 import com.suite.suite_suite_room_service.suiteRoom.service.SuiteRoomService;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.suite.suite_suite_room_service.suiteRoom.security.JwtInfoExtractor.getSuiteAuthorizer;
@@ -39,6 +41,7 @@ public class SuiteRoomController {
         ResSuiteRoomDto getSuiteRoom = suiteRoomService.getSuiteRoom(suiteRoomId, getSuiteAuthorizer());
         return ResponseEntity.ok(new Message(StatusCode.OK, getSuiteRoom));
     }
+
     @GetMapping("/progression")
     public ResponseEntity<Message> listUpProgressionRooms() {
         return null;
@@ -47,11 +50,25 @@ public class SuiteRoomController {
     public ResponseEntity<Message> listUpCompletionRooms() {
         return null;
     }
+
     @PostMapping("/suiteroom/registration")
     public ResponseEntity<Message> createRoom(@RequestBody ReqSuiteRoomDto reqSuiteRoomDto) {
         suiteRoomService.createSuiteRoom(reqSuiteRoomDto, getSuiteAuthorizer());
         return ResponseEntity.ok(new Message(StatusCode.OK));
     }
+
+    @PostMapping("/suiteroom/validate/password")
+    public ResponseEntity<Message> validateSuiteRoomPassword(@RequestBody Map<String, Object> suiteRoomPassword) {
+        suiteRoomService.validatePassword(Long.parseLong(suiteRoomPassword.get("suiteRoomId").toString()), (int) suiteRoomPassword.get("password"));
+        return ResponseEntity.ok(new Message(StatusCode.OK));
+    }
+
+    @PostMapping("/suiteroom/validate/title")
+    public ResponseEntity<Message> validateSuiteRoomTitle(@RequestBody Map<String, String> suiteRoomTitle) {
+        suiteRoomService.validateTitle(suiteRoomTitle.get("title"));
+        return ResponseEntity.ok(new Message(StatusCode.OK));
+    }
+
     @PostMapping("/suiteroom/attendance")
     public ResponseEntity<Message> attendanceRoom() {
         return null;

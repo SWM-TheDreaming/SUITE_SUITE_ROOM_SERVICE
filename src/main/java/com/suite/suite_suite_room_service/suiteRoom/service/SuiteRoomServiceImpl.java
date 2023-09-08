@@ -49,17 +49,30 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
 
     @Override
     public ResSuiteRoomDto getSuiteRoom(Long suiteRoomId, AuthorizerDto authorizerDto) {
-        Optional<SuiteRoom> findSuiteRoomBySuiteRoomIdResult = suiteRoomRepository.findById(suiteRoomId);
-        findSuiteRoomBySuiteRoomIdResult.orElseThrow(
-                () -> {throw new CustomException(StatusCode.SUITE_ROOM_NOT_FOUND);}
-        );
-        ResSuiteRoomDto resSuiteRoomDto = findSuiteRoomBySuiteRoomIdResult.get().toResSuiteRoomDto(
-                participantRepository.countBySuiteRoom_SuiteRoomId(findSuiteRoomBySuiteRoomIdResult.get().getSuiteRoomId()),
-                participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(findSuiteRoomBySuiteRoomIdResult.get().getSuiteRoomId(), authorizerDto.getMemberId(), true),
+
+        SuiteRoom suiteRoom = suiteRoomRepository.findById(suiteRoomId).orElseThrow(
+                () -> new CustomException(StatusCode.SUITE_ROOM_NOT_FOUND));
+
+        return suiteRoom.toResSuiteRoomDto(
+                participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId()),
+                participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), authorizerDto.getMemberId(), true),
                 markRepository.countBySuiteRoomId(suiteRoomId)
         );
 
-        return resSuiteRoomDto;
+    }
+
+    @Override
+    public void validatePassword(Long suiteRoomId, int password) {
+        SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId).orElseThrow(
+                () -> new CustomException(StatusCode.NOT_FOUND));
+        if(suiteRoom.getPassword() != password) throw new CustomException(StatusCode.PASSWORD_NOT_FOUND);
+    }
+
+    @Override
+    public void validateTitle(String title) {
+        suiteRoomRepository.findByTitle(title).ifPresent(
+                suiteRoom ->  { throw new CustomException(StatusCode.ALREADY_EXISTS_SUITEROOM); }
+        );
     }
 
     @Override
@@ -75,9 +88,9 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     @Override
     @Transactional
     public void createSuiteRoom(ReqSuiteRoomDto reqSuiteRoomDto, AuthorizerDto authorizerDto) {
-        suiteRoomRepository.findByTitle(reqSuiteRoomDto.getTitle()).ifPresent(
-                suiteRoom ->  { throw new CustomException(StatusCode.ALREADY_EXISTS_SUITEROOM); }
-        );
+        if(!reqSuiteRoomDto.getIsPublic() && reqSuiteRoomDto.getPassword() == null) {
+            throw new CustomException(StatusCode.INVALID_DATA_FORMAT);
+        }
 
         SuiteRoom suiteRoom = reqSuiteRoomDto.toSuiteRoomEntity();
 
