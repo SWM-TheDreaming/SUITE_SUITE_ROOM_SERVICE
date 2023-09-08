@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 public class ResSuiteRoomListDto {
+    private Long suiteRoomId;
     private String title;
     private StudyCategory subject;
     private Timestamp recruitmentDeadline;
@@ -19,11 +20,13 @@ public class ResSuiteRoomListDto {
     private Boolean isPublic;
     private Boolean isOpen;
     private Long participantCount;
+    private String hostNickName;
     private boolean isHost;
     private Long markCount;
 
     @Builder
-    public ResSuiteRoomListDto(String title, StudyCategory subject, Timestamp recruitmentDeadline, LocalDateTime createdDate, Integer recruitmentLimit, Integer depositAmount, Boolean isPublic, Boolean isOpen, Long participantCount, boolean isHost, Long markCount) {
+    public ResSuiteRoomListDto(Long suiteRoomId, String title, StudyCategory subject, Timestamp recruitmentDeadline, LocalDateTime createdDate, Integer recruitmentLimit, Integer depositAmount, Boolean isPublic, Boolean isOpen, Long participantCount, String hostNickName, boolean isHost, Long markCount) {
+        this.suiteRoomId = suiteRoomId;
         this.title = title;
         this.subject = subject;
         this.recruitmentDeadline = recruitmentDeadline;
@@ -33,6 +36,7 @@ public class ResSuiteRoomListDto {
         this.isPublic = isPublic;
         this.isOpen = isOpen;
         this.participantCount = participantCount;
+        this.hostNickName = hostNickName;
         this.isHost = isHost;
         this.markCount = markCount;
     }
