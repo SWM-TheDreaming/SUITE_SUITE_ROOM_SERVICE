@@ -63,6 +63,7 @@ public class Participant extends BaseTimeEntity {
 
     public ResPaymentParticipantDto toResPaymentParticipantDto() {
         return ResPaymentParticipantDto.builder()
+                .memberId(this.memberId)
                 .nickName(this.nickname)
                 .email(this.email)
                 .status(this.status)

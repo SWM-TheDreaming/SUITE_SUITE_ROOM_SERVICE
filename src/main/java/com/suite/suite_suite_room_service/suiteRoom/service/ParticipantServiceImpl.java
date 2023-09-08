@@ -103,6 +103,10 @@ public class ParticipantServiceImpl implements ParticipantService{
 
     @Override
     public List<ResPaymentParticipantDto> listUpNotYetPaymentParticipants(Long suiteRoomId) {
+
+        SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId).orElseThrow(
+                () -> new CustomException(StatusCode.NOT_FOUND));
+
         List<ResPaymentParticipantDto> resPaymentParticipantDtos = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(suiteRoomId, SuiteStatus.PLAIN)
                 .stream().map(
                         participant -> participant.toResPaymentParticipantDto()
@@ -113,17 +117,23 @@ public class ParticipantServiceImpl implements ParticipantService{
 
     @Override
     @Transactional
-    public List<ResPaymentParticipantDto> updateParticipantsStatusReadyToStart(Long suiteRoomId) {
+    public void updateParticipantsStatusReadyToStart(Long suiteRoomId) {
         List<Participant> participants = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(suiteRoomId, SuiteStatus.READY);
-        SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId)
-                .orElseThrow(() -> { throw new CustomException(StatusCode.NOT_FOUND); });
-        suiteRoomProducer.suiteRoomContractCreationProducer(suiteRoomId, participants, suiteRoom);
 
-        return participants.stream().map(
+        SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId)
+                .orElseThrow(() ->  new CustomException(StatusCode.NOT_FOUND));
+
+        suiteRoom.startSuiteRoom();
+
+        List<ResPaymentParticipantDto> resPaymentParticipantDtos = participants.stream().map(
                 p -> {
                     p.updateStatus(SuiteStatus.START);
                     return p.toResPaymentParticipantDto();
                 }).collect(Collectors.toList());
+
+        //suiteRoomProducer.suiteRoomContractCreationProducer(suiteRoomId, participants, suiteRoom);
+
+        suiteRoomProducer.suiteRoomStartProducer(suiteRoom, resPaymentParticipantDtos);
     }
 
 }

@@ -62,6 +62,9 @@ public class SuiteRoom extends BaseTimeEntity {
     @Column(name = "is_open")
     private Boolean isOpen;
 
+    @Column(name = "is_start")
+    private Boolean isStart;
+
     @Column(name = "channel_link")
     private String channelLink;
 
@@ -77,7 +80,7 @@ public class SuiteRoom extends BaseTimeEntity {
     private List<Participant> participants = new ArrayList<>();
 
     @Builder
-    public SuiteRoom(Long suiteRoomId, String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, Boolean isOpen, String channelLink, StudyType studyMethod, String contractAddress, Long participantId) {
+    public SuiteRoom(Long suiteRoomId, String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, Boolean isOpen, Boolean isStart, String channelLink, StudyType studyMethod, String contractAddress, Long participantId) {
         this.suiteRoomId = suiteRoomId;
         this.title = title;
         this.content = content;
@@ -91,6 +94,7 @@ public class SuiteRoom extends BaseTimeEntity {
         this.isPublic = isPublic;
         this.password = password;
         this.isOpen = isOpen;
+        this.isStart = isStart;
         this.channelLink = channelLink;
         this.studyMethod = studyMethod;
         this.contractAddress = contractAddress;
@@ -109,6 +113,8 @@ public class SuiteRoom extends BaseTimeEntity {
     public void openSuiteRoom() {
         this.isOpen = true;
     }
+
+    public void startSuiteRoom() { this.isStart = true; }
 
     public ResSuiteRoomListDto toResSuiteRoomListDto(Long participantCount, boolean isHost, Long markCount) {
         return ResSuiteRoomListDto.builder()

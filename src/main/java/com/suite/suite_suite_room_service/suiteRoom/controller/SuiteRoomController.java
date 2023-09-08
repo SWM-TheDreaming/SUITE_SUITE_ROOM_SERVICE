@@ -42,6 +42,7 @@ public class SuiteRoomController {
         return ResponseEntity.ok(new Message(StatusCode.OK, getSuiteRoom));
     }
 
+
     @GetMapping("/progression")
     public ResponseEntity<Message> listUpProgressionRooms() {
         return null;
@@ -69,10 +70,7 @@ public class SuiteRoomController {
         return ResponseEntity.ok(new Message(StatusCode.OK));
     }
 
-    @PostMapping("/suiteroom/attendance")
-    public ResponseEntity<Message> attendanceRoom() {
-        return null;
-    }
+
     @DeleteMapping("/suiteroom/delete/{suiteRoomId}")
     public ResponseEntity<Message> deleteRoom(@PathVariable Long suiteRoomId) {
         suiteRoomService.deleteSuiteRoom(suiteRoomId, getSuiteAuthorizer());

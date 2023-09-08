@@ -38,6 +38,7 @@ public class SuiteRoomProducer {
     @Value("${topic.SUITEROOM_CONTRACT_CREATION}") private String SUITEROOM_CONTRACT_CREATION;
     @Value("${topic.SUITEROOM_CANCELJOIN}") private String SUITEROOM_CANCELJOIN;
     @Value("${topic.DEPOSIT_PAYMENT}") private String DEPOSIT_PAYMENT;
+    @Value("${topic.SUITEROOM_START}") private String SUITEROOM_START;
     private final KafkaTemplate<String, String> kafkaTemplate;
 
 
@@ -51,6 +52,28 @@ public class SuiteRoomProducer {
         Map<String, Object> data = updateStatusReadyToStart(suiteRoomId, participants, suiteRoom);
         log.info("SuiteRoom-Contract-Creation message : {}", data);
         this.kafkaTemplate.send(SUITEROOM_CONTRACT_CREATION, makeMessage(data));
+    }
+
+    public void suiteRoomStartProducer(SuiteRoom suiteRoom, List<ResPaymentParticipantDto> resPaymentParticipantDtos) {
+        Map<String, Object> data = startSuiteRoom(suiteRoom, resPaymentParticipantDtos);
+        log.info("SuiteRoom-Start message : {}", data);
+        this.kafkaTemplate.send(SUITEROOM_START, makeMessage(data));
+    }
+
+    private Map<String, Object> startSuiteRoom(SuiteRoom suiteRoom, List<ResPaymentParticipantDto> resPaymentParticipantDtos) {
+        try {
+            Map<String, Object> map = new HashMap<>();
+            ObjectMapper objectMapper = new ObjectMapper();
+            JSONObject parsedObject = (JSONObject) JSONValue.parse(objectMapper.writeValueAsString(resPaymentParticipantDtos));
+            map.put("suiteRoomId", suiteRoom.getSuiteRoomId());
+            map.put("depositAmount", suiteRoom.getDepositAmount());
+            map.put("minAttendanceRate", suiteRoom.getMinAttendanceRate());
+            map.put("minMissionCompleteRate", suiteRoom.getMinMissionCompleteRate());
+            map.put("participants", parsedObject);
+            return map;
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
