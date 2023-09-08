@@ -115,7 +115,7 @@ public class SuiteRoom extends BaseTimeEntity {
                 .title(this.title)
                 .subject(this.subject)
                 .recruitmentDeadline(this.recruitmentDeadline)
-                .studyDeadline(this.studyDeadline)
+                .createdDate(this.getCreatedDate())
                 .recruitmentLimit(this.recruitmentLimit)
                 .depositAmount(this.depositAmount)
                 .isPublic(this.isPublic)

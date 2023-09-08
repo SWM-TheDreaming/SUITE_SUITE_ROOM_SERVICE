@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
@@ -12,7 +13,7 @@ public class ResSuiteRoomListDto {
     private String title;
     private StudyCategory subject;
     private Timestamp recruitmentDeadline;
-    private Timestamp studyDeadline;
+    private LocalDateTime createdDate;
     private Integer recruitmentLimit;
     private Integer depositAmount;
     private Boolean isPublic;
@@ -22,11 +23,11 @@ public class ResSuiteRoomListDto {
     private Long markCount;
 
     @Builder
-    public ResSuiteRoomListDto(String title, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Boolean isPublic, Boolean isOpen, Long participantCount, boolean isHost, Long markCount) {
+    public ResSuiteRoomListDto(String title, StudyCategory subject, Timestamp recruitmentDeadline, LocalDateTime createdDate, Integer recruitmentLimit, Integer depositAmount, Boolean isPublic, Boolean isOpen, Long participantCount, boolean isHost, Long markCount) {
         this.title = title;
         this.subject = subject;
         this.recruitmentDeadline = recruitmentDeadline;
-        this.studyDeadline = studyDeadline;
+        this.createdDate = createdDate;
         this.recruitmentLimit = recruitmentLimit;
         this.depositAmount = depositAmount;
         this.isPublic = isPublic;
