@@ -130,6 +130,7 @@ public class SuiteRoom extends BaseTimeEntity {
 
     public ResSuiteRoomDto toResSuiteRoomDto(Long participantCount, boolean isHost, Long markCount) {
         return ResSuiteRoomDto.builder()
+                .suiteRoomId(suiteRoomId)
                 .title(this.title)
                 .content(this.content)
                 .subject(this.subject)
