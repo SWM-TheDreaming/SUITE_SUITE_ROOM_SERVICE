@@ -15,6 +15,8 @@ public interface SuiteRoomRepository extends JpaRepository<SuiteRoom, Long> {
     Page<SuiteRoom> findByIsOpenAndSubjectInOrderByCreatedDateDesc(boolean isOpen, List<StudyCategory> subject, Pageable pageable);
     Page<SuiteRoom> findByIsOpenOrderByCreatedDateDesc(boolean isOpen, Pageable pageable);
     Optional<SuiteRoom> findByTitle(String title);
+    Optional<SuiteRoom> findBySuiteRoomIdAndIsStart(Long suiteRoomId, boolean isStart);
+
     Optional<SuiteRoom> findBySuiteRoomId(Long suiteRoomId);
     void deleteBySuiteRoomId(Long suiteRoomId);
 

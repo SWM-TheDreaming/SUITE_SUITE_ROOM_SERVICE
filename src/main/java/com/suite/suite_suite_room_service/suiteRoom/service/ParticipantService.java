@@ -16,6 +16,6 @@ public interface ParticipantService {
 
     List<ResPaymentParticipantDto> listUpNotYetPaymentParticipants(Long suiteRoomId);
 
-    void updateParticipantsStatusReadyToStart(Long suiteRoomId);
+    void updateParticipantsStatusReadyToStart(Long suiteRoomId, Long memberId);
 
 }

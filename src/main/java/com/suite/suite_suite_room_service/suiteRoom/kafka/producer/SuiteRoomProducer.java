@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ResPaymentParticipantDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomDto;
-import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomListDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
@@ -65,8 +64,10 @@ public class SuiteRoomProducer {
         try {
             Map<String, Object> map = new HashMap<>();
             ObjectMapper objectMapper = new ObjectMapper();
+            System.out.println("@ : " + suiteRoom.getIsStart());
             JSONArray parsedObject = (JSONArray) JSONValue.parse(objectMapper.writeValueAsString(resPaymentParticipantDtos));
             map.put("suiteRoomId", suiteRoom.getSuiteRoomId());
+            map.put("suiteRoomTitle", suiteRoom.getTitle());
             map.put("depositAmount", suiteRoom.getDepositAmount());
             map.put("minAttendanceRate", suiteRoom.getMinAttendanceRate());
             map.put("minMissionCompleteRate", suiteRoom.getMinMissionCompleteRate());

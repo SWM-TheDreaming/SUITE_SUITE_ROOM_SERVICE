@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -114,7 +115,11 @@ public class SuiteRoom extends BaseTimeEntity {
         this.isOpen = true;
     }
 
-    public void startSuiteRoom() { this.isStart = true; }
+    public void startSuiteRoom() {
+        this.isStart = true;
+    }
+
+    public void startErrorSuiteRoom() { this.isStart = false; }
 
     public ResSuiteRoomListDto toResSuiteRoomListDto(Long participantCount, boolean isHost, Participant participant, Long markCount) {
         return ResSuiteRoomListDto.builder()
