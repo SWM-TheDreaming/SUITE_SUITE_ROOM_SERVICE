@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ResPaymentParticipantDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomDto;
-import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomListDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
@@ -14,6 +13,7 @@ import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +38,7 @@ public class SuiteRoomProducer {
     @Value("${topic.SUITEROOM_CONTRACT_CREATION}") private String SUITEROOM_CONTRACT_CREATION;
     @Value("${topic.SUITEROOM_CANCELJOIN}") private String SUITEROOM_CANCELJOIN;
     @Value("${topic.DEPOSIT_PAYMENT}") private String DEPOSIT_PAYMENT;
+    @Value("${topic.SUITEROOM_START}") private String SUITEROOM_START;
     private final KafkaTemplate<String, String> kafkaTemplate;
 
 
@@ -51,6 +52,30 @@ public class SuiteRoomProducer {
         Map<String, Object> data = updateStatusReadyToStart(suiteRoomId, participants, suiteRoom);
         log.info("SuiteRoom-Contract-Creation message : {}", data);
         this.kafkaTemplate.send(SUITEROOM_CONTRACT_CREATION, makeMessage(data));
+    }
+
+    public void suiteRoomStartProducer(SuiteRoom suiteRoom, List<ResPaymentParticipantDto> resPaymentParticipantDtos) {
+        Map<String, Object> data = startSuiteRoom(suiteRoom, resPaymentParticipantDtos);
+        log.info("SuiteRoom-Start message : {}", data);
+        this.kafkaTemplate.send(SUITEROOM_START, makeMessage(data));
+    }
+
+    private Map<String, Object> startSuiteRoom(SuiteRoom suiteRoom, List<ResPaymentParticipantDto> resPaymentParticipantDtos) {
+        try {
+            Map<String, Object> map = new HashMap<>();
+            ObjectMapper objectMapper = new ObjectMapper();
+            System.out.println("@ : " + suiteRoom.getIsStart());
+            JSONArray parsedObject = (JSONArray) JSONValue.parse(objectMapper.writeValueAsString(resPaymentParticipantDtos));
+            map.put("suiteRoomId", suiteRoom.getSuiteRoomId());
+            map.put("suiteRoomTitle", suiteRoom.getTitle());
+            map.put("depositAmount", suiteRoom.getDepositAmount());
+            map.put("minAttendanceRate", suiteRoom.getMinAttendanceRate());
+            map.put("minMissionCompleteRate", suiteRoom.getMinMissionCompleteRate());
+            map.put("participants", parsedObject);
+            return map;
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

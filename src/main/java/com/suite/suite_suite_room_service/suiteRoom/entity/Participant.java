@@ -8,12 +8,14 @@ import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
 @NoArgsConstructor
+@DynamicUpdate
 @Table(name = "participant")
 public class Participant extends BaseTimeEntity {
     @Id
@@ -63,6 +65,7 @@ public class Participant extends BaseTimeEntity {
 
     public ResPaymentParticipantDto toResPaymentParticipantDto() {
         return ResPaymentParticipantDto.builder()
+                .memberId(this.memberId)
                 .nickName(this.nickname)
                 .email(this.email)
                 .status(this.status)

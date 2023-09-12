@@ -30,7 +30,7 @@ public class ParticipantController {
 
     @PostMapping("/suiteroom/beginning")
     public ResponseEntity<Message> startSuiteRoom(@RequestBody Map<String, Long> suiteRoomId) {
-        participantService.updateParticipantsStatusReadyToStart(suiteRoomId.get("suiteRoomId"));
+        participantService.updateParticipantsStatusReadyToStart(suiteRoomId.get("suiteRoomId"), getSuiteAuthorizer().getMemberId());
         return ResponseEntity.ok(new Message(StatusCode.OK));
     }
 

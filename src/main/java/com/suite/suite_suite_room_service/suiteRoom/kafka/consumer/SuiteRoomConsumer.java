@@ -13,6 +13,7 @@ import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -43,6 +46,24 @@ public class SuiteRoomConsumer {
 
         if(isHost) updateHostStatus(suiteRoomId, authorizerDto.getMemberId());
         else addParticipant(suiteRoomId, isHost, authorizerDto);
+    }
+
+    @Transactional
+    @KafkaListener(topics = "${topic.SUITEROOM_START_ERROR}", groupId = "suite", containerFactory = "kafkaListenerDefaultContainerFactory")
+    public void suiteRoomStartErrorConsume(ConsumerRecord<String, String> record) throws IOException, ParseException {
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) parser.parse(record.value());
+        JSONObject data = ((JSONObject) jsonObject.get("data"));
+        Long suiteRoomId = Long.parseLong(data.get("suiteRoomId").toString());
+
+        SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId).orElseThrow(() -> new CustomException(StatusCode.NOT_FOUND));
+        suiteRoom.startErrorSuiteRoom();
+
+        participantRepository.findBySuiteRoom_SuiteRoomId(suiteRoomId).stream().map(
+                p -> {
+                    p.updateStatus(SuiteStatus.READY);
+                    return p;
+                });
     }
 
     private void addParticipant(Long suiteRoomId, boolean isHost, AuthorizerDto authorizerDto) {
