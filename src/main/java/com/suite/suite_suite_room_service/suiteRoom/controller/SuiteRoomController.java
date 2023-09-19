@@ -5,8 +5,6 @@ import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
 import com.suite.suite_suite_room_service.suiteRoom.security.JwtCreator;
 import com.suite.suite_suite_room_service.suiteRoom.service.SuiteRoomService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -53,9 +51,8 @@ public class SuiteRoomController {
     }
 
     @PostMapping("/suiteroom/registration")
-    public ResponseEntity<Message> createRoom(@RequestBody ReqSuiteRoomDto reqSuiteRoomDto) {
-        suiteRoomService.createSuiteRoom(reqSuiteRoomDto, getSuiteAuthorizer());
-        return ResponseEntity.ok(new Message(StatusCode.OK));
+    public ResponseEntity<Message> createRoom(@RequestBody ReqSuiteRoomCreationDto reqSuiteRoomCreationDto) {
+        return ResponseEntity.ok(new Message(StatusCode.OK, suiteRoomService.createSuiteRoom(reqSuiteRoomCreationDto, getSuiteAuthorizer())));
     }
 
     @PostMapping("/suiteroom/validate/password")

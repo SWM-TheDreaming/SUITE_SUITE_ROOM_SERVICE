@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 
 @Getter
 @NoArgsConstructor
-public class ReqSuiteRoomDto {
+public class ReqSuiteRoomCreationDto {
     private String title;
     private String content;
     private StudyCategory subject;
@@ -30,7 +30,7 @@ public class ReqSuiteRoomDto {
     private String contractAddress;
 
     @Builder
-    public ReqSuiteRoomDto(String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, Boolean isOpen, Boolean isStart, String channelLink, StudyType studyMethod, String contractAddress) {
+    public ReqSuiteRoomCreationDto(String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, Boolean isOpen, Boolean isStart, String channelLink, StudyType studyMethod, String contractAddress) {
         this.title = title;
         this.content = content;
         this.subject = subject;

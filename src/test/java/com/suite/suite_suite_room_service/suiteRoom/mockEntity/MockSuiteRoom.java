@@ -1,6 +1,6 @@
 package com.suite.suite_suite_room_service.suiteRoom.mockEntity;
 
-import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomCreationDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.StudyCategory;
 import com.suite.suite_suite_room_service.suiteRoom.dto.StudyType;
 
@@ -11,8 +11,8 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class MockSuiteRoom {
-    public static ReqSuiteRoomDto getMockSuiteRoom(String title, boolean isPublic) {
-        return ReqSuiteRoomDto.builder()
+    public static ReqSuiteRoomCreationDto getMockSuiteRoom(String title, boolean isPublic) {
+        return ReqSuiteRoomCreationDto.builder()
                 .title(title)
                 .content("Test Content")
                 .subject(StudyCategory.TOEIC)

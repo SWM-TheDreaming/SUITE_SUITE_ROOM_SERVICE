@@ -3,7 +3,7 @@ package com.suite.suite_suite_room_service.suiteRoom.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.suite.suite_suite_room_service.suiteRoom.dto.Message;
-import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomDto;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomCreationDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ReqUpdateSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomListDto;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
@@ -89,8 +89,8 @@ class SuiteRoomControllerTest {
     @DisplayName("스위트룸 생성")
     public void createSuiteRoom() throws Exception {
         //given
-        ReqSuiteRoomDto reqSuiteRoomDto = MockSuiteRoom.getMockSuiteRoom("title darren", true);
-        String body = mapper.writeValueAsString(reqSuiteRoomDto);
+        ReqSuiteRoomCreationDto reqSuiteRoomCreationDto = MockSuiteRoom.getMockSuiteRoom("title darren", true);
+        String body = mapper.writeValueAsString(reqSuiteRoomCreationDto);
         //when
         String responseBody = postRequest("/suite/suiteroom/registration", DR_JWT, body);
         Message message = mapper.readValue(responseBody, Message.class);

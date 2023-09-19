@@ -88,12 +88,12 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
 
     @Override
     @Transactional
-    public void createSuiteRoom(ReqSuiteRoomDto reqSuiteRoomDto, AuthorizerDto authorizerDto) {
-        if(!reqSuiteRoomDto.getIsPublic() && reqSuiteRoomDto.getPassword() == null) {
+    public ResSuiteRoomCreationDto createSuiteRoom(ReqSuiteRoomCreationDto reqSuiteRoomCreationDto, AuthorizerDto authorizerDto) {
+        if(!reqSuiteRoomCreationDto.getIsPublic() && reqSuiteRoomCreationDto.getPassword() == null) {
             throw new CustomException(StatusCode.INVALID_DATA_FORMAT);
         }
 
-        SuiteRoom suiteRoom = reqSuiteRoomDto.toSuiteRoomEntity();
+        SuiteRoom suiteRoom = reqSuiteRoomCreationDto.toSuiteRoomEntity();
 
         Participant participant = Participant.builder()
                 .authorizerDto(authorizerDto)
@@ -102,6 +102,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
         suiteRoom.addParticipant(participant);
         suiteRoomRepository.save(suiteRoom);
         participantRepository.save(participant);
+        return ResSuiteRoomCreationDto.builder().suiteRoomId(suiteRoom.getSuiteRoomId()).build();
     }
 
 

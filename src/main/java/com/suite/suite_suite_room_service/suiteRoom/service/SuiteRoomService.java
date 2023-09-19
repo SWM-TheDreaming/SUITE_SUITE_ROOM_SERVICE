@@ -15,7 +15,7 @@ public interface SuiteRoomService {
     void validatePassword(Long suiteRoomId, int password);
     Optional<List<SuiteRoom>> getAllProgressRooms();
     Optional<List<SuiteRoom>> getAllCompletionRooms();
-    void createSuiteRoom(ReqSuiteRoomDto reqSuiteRoomDto, AuthorizerDto authorizerDto);
+    ResSuiteRoomCreationDto createSuiteRoom(ReqSuiteRoomCreationDto reqSuiteRoomCreationDto, AuthorizerDto authorizerDto);
     void deleteSuiteRoom(Long suiteRoomId, AuthorizerDto authorizerDto);
     void updateSuiteRoom(ReqUpdateSuiteRoomDto reqUpdateSuiteRoomDto, AuthorizerDto authorizerDto);
 
