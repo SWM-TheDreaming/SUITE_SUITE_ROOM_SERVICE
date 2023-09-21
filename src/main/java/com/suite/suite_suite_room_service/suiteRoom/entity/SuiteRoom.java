@@ -76,12 +76,15 @@ public class SuiteRoom extends BaseTimeEntity {
     @Column(name = "contract_address")
     private String contractAddress;
 
+    @Column(name = "study_start_date")
+    private Timestamp studyStartDate;
+
     @OneToMany(mappedBy = "suiteRoom", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Participant> participants = new ArrayList<>();
 
     @Builder
-    public SuiteRoom(Long suiteRoomId, String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, Boolean isOpen, Boolean isStart, String channelLink, StudyType studyMethod, String contractAddress, Long participantId) {
+    public SuiteRoom(Long suiteRoomId, String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, Boolean isOpen, Boolean isStart, String channelLink, StudyType studyMethod, String contractAddress, Timestamp studyStartDate) {
         this.suiteRoomId = suiteRoomId;
         this.title = title;
         this.content = content;
@@ -99,6 +102,7 @@ public class SuiteRoom extends BaseTimeEntity {
         this.channelLink = channelLink;
         this.studyMethod = studyMethod;
         this.contractAddress = contractAddress;
+        this.studyStartDate = studyStartDate;
     }
 
     public void addParticipant(Participant participant) {
@@ -117,9 +121,11 @@ public class SuiteRoom extends BaseTimeEntity {
 
     public void startSuiteRoom() {
         this.isStart = true;
+        this.studyStartDate = new Timestamp(System.currentTimeMillis());
     }
 
     public void startErrorSuiteRoom() { this.isStart = false; }
+
 
     public ResSuiteRoomListDto toResSuiteRoomListDto(Long participantCount, boolean isHost, Participant participant, Long markCount) {
         return ResSuiteRoomListDto.builder()

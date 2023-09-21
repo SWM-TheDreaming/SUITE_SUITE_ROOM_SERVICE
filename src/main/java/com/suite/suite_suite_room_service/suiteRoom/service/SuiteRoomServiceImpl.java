@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -70,21 +69,30 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     }
 
     @Override
+    public List<ResConditionSuiteRoomDto> getProgressSuiteRoomList(Long memberId) {
+        List<Participant> participantList = participantRepository.findByMemberIdAndStatusNot(memberId, SuiteStatus.END);
+
+        return participantList.stream().map(
+                parti -> parti.toResCompletionSuiteRoomDto(parti, parti.getStatus(), participantRepository.countBySuiteRoom_SuiteRoomId(parti.getSuiteRoom().getSuiteRoomId()))
+        ).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ResConditionSuiteRoomDto> getCompletionSuiteRoomList(Long memberId) {
+        List<Participant> participantList = participantRepository.findByMemberIdAndStatus(memberId, SuiteStatus.END);
+
+        return participantList.stream().map(
+                parti -> parti.toResCompletionSuiteRoomDto(parti, parti.getStatus(), participantRepository.countBySuiteRoom_SuiteRoomId(parti.getSuiteRoom().getSuiteRoomId()))
+        ).collect(Collectors.toList());
+    }
+
+    @Override
     public void validateTitle(String title) {
         suiteRoomRepository.findByTitle(title).ifPresent(
                 suiteRoom ->  { throw new CustomException(StatusCode.ALREADY_EXISTS_SUITEROOM); }
         );
     }
 
-    @Override
-    public Optional<List<SuiteRoom>> getAllProgressRooms() {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<List<SuiteRoom>> getAllCompletionRooms() {
-        return Optional.empty();
-    }
 
     @Override
     @Transactional

@@ -43,11 +43,11 @@ public class SuiteRoomController {
 
     @GetMapping("/progression")
     public ResponseEntity<Message> listUpProgressionRooms() {
-        return null;
+        return ResponseEntity.ok(new Message(StatusCode.OK, suiteRoomService.getProgressSuiteRoomList(getSuiteAuthorizer().getMemberId())));
     }
     @GetMapping("/completion")
     public ResponseEntity<Message> listUpCompletionRooms() {
-        return null;
+        return ResponseEntity.ok(new Message(StatusCode.OK, suiteRoomService.getCompletionSuiteRoomList(getSuiteAuthorizer().getMemberId())));
     }
 
     @PostMapping("/suiteroom/registration")

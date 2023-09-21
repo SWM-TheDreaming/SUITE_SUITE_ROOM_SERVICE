@@ -2,6 +2,7 @@ package com.suite.suite_suite_room_service.suiteRoom.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.suite.suite_suite_room_service.baseTime.BaseTimeEntity;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ResConditionSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ResPaymentParticipantDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
@@ -71,5 +72,17 @@ public class Participant extends BaseTimeEntity {
                 .status(this.status)
                 .isHost(this.isHost)
                 .build();
+    }
+
+    public ResConditionSuiteRoomDto toResCompletionSuiteRoomDto(Participant participant, SuiteStatus suiteStatus, Long participantCount) {
+        return ResConditionSuiteRoomDto.builder()
+                .suiteRoomId(participant.getSuiteRoom().getSuiteRoomId())
+                .title(participant.getSuiteRoom().getTitle())
+                .subject(participant.getSuiteRoom().getSubject())
+                .suiteStatus(suiteStatus)
+                .studyStartDate(participant.getSuiteRoom().getStudyStartDate())
+                .studyDeadline(participant.getSuiteRoom().getStudyDeadline())
+                .depositAmount(participant.getSuiteRoom().getDepositAmount())
+                .participantCount(participantCount).build();
     }
 }

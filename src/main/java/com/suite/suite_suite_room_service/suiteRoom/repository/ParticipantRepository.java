@@ -21,4 +21,8 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
 
     void deleteBySuiteRoom_SuiteRoomIdAndMemberId(Long suiteRoomId, Long memberId);
     Boolean existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(Long suiteRoomId, Long memberId, boolean ishost);
+
+    List<Participant> findByMemberIdAndStatus(Long memberId, SuiteStatus suiteStatus);
+
+    List<Participant> findByMemberIdAndStatusNot(Long memberId, SuiteStatus suiteStatus);
 }
