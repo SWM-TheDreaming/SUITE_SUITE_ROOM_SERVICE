@@ -1,5 +1,7 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.suite.suite_suite_room_service.suiteRoom.dto.*;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
@@ -19,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,14 +33,18 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     private final ParticipantRepository participantRepository;
     private final MarkRepository markRepository;
     private final SuiteRoomProducer suiteRoomProducer;
+    private final EntityManager entityManager;
 
     @Override
-    public List<ResSuiteRoomListDto> getSuiteRooms(AuthorizerDto authorizerDto, List<StudyCategory> subjects, Pageable pageable) {
+    public List<ResSuiteRoomListDto> getSuiteRooms(AuthorizerDto authorizerDto, List<StudyCategory> subjects, String keyword, Pageable pageable) {
 
+        /*
+        * TO DO 성능 nGrinder로 성능 비교해보기!
         Page<SuiteRoom> suiteRooms = subjects.size() != 0 ?
                 suiteRoomRepository.findByIsOpenAndSubjectInOrderByCreatedDateDesc(true, subjects, pageable)
                 : suiteRoomRepository.findByIsOpenOrderByCreatedDateDesc(true, pageable);
-
+        */
+        List<SuiteRoom> suiteRooms = suiteRoomRepository.findOpenSuiteWithSearch(true, subjects, keyword, pageable);
 
         return suiteRooms.stream().map(
                 suiteRoom -> suiteRoom.toResSuiteRoomListDto(

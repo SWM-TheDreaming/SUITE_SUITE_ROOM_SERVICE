@@ -10,7 +10,7 @@ import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
-public interface SuiteRoomRepository extends JpaRepository<SuiteRoom, Long> {
+public interface SuiteRoomRepository extends JpaRepository<SuiteRoom, Long>, SuiteRoomDslRepository {
 
     Page<SuiteRoom> findByIsOpenAndSubjectInOrderByCreatedDateDesc(boolean isOpen, List<StudyCategory> subject, Pageable pageable);
     Page<SuiteRoom> findByIsOpenOrderByCreatedDateDesc(boolean isOpen, Pageable pageable);

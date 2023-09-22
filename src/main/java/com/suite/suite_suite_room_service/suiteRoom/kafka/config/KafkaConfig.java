@@ -122,4 +122,6 @@ public class KafkaConfig {
         String GET_POINT_URI = "http://semtle.catholic.ac.kr:8088/anp/point/";
         return new AnpService(GET_POINT_URI, restTemplate);
     }
+
+
 }

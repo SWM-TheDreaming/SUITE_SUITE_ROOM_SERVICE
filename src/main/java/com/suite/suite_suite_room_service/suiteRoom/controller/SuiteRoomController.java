@@ -25,10 +25,10 @@ public class SuiteRoomController {
     private final SuiteRoomService suiteRoomService;
     private final JwtCreator jwtCreator;
 
-    @PostMapping("/suiteroom")
-    public ResponseEntity<Message> listUpSuiteRooms(@RequestBody List<StudyCategory> subjects, Pageable pageable) {
+    @PostMapping("/suiteroom/{keyword}")
+    public ResponseEntity<Message> listUpSuiteRooms(@RequestBody List<StudyCategory> subjects, @PathVariable String keyword, Pageable pageable) {
         Token renewalToken = renewalTokenValidator() ? jwtCreator.createToken(Objects.requireNonNull(getSuiteAuthorizer())) : null;
-        List<ResSuiteRoomListDto> suiteRooms = suiteRoomService.getSuiteRooms(getSuiteAuthorizer(), subjects, pageable);
+        List<ResSuiteRoomListDto> suiteRooms = suiteRoomService.getSuiteRooms(getSuiteAuthorizer(), subjects, keyword, pageable);
 
         Message.MessageAppender message = new Message.MessageAppender();
 
@@ -39,7 +39,6 @@ public class SuiteRoomController {
         ResSuiteRoomDto getSuiteRoom = suiteRoomService.getSuiteRoom(suiteRoomId, getSuiteAuthorizer());
         return ResponseEntity.ok(new Message(StatusCode.OK, getSuiteRoom));
     }
-
 
     @GetMapping("/progression")
     public ResponseEntity<Message> listUpProgressionRooms() {
@@ -78,5 +77,6 @@ public class SuiteRoomController {
         suiteRoomService.updateSuiteRoom(reqUpdateSuiteRoomDto, getSuiteAuthorizer());
         return ResponseEntity.ok(new Message(StatusCode.OK));
     }
+
 
 }
