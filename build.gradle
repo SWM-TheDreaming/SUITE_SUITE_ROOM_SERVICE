@@ -57,7 +57,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.springframework.kafka/spring-kafka
     implementation 'org.springframework.kafka:spring-kafka:2.8.5'
 
-
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.5'
 }
 
 tasks.named('test') {

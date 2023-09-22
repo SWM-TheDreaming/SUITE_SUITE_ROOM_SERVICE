@@ -3,6 +3,7 @@ package com.suite.suite_suite_room_service.suiteRoom.kafka.producer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ResPaymentParticipantDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
@@ -39,6 +40,7 @@ public class SuiteRoomProducer {
     @Value("${topic.SUITEROOM_CANCELJOIN}") private String SUITEROOM_CANCELJOIN;
     @Value("${topic.DEPOSIT_PAYMENT}") private String DEPOSIT_PAYMENT;
     @Value("${topic.SUITEROOM_START}") private String SUITEROOM_START;
+    @Value("${topic.SUITEROOM_TERMINATE}") private String SUITEROOM_TERMINATE;
     private final KafkaTemplate<String, String> kafkaTemplate;
 
 
@@ -60,11 +62,31 @@ public class SuiteRoomProducer {
         this.kafkaTemplate.send(SUITEROOM_START, makeMessage(data));
     }
 
+    public void suiteRoomTerminateProducer(Long suiteRoomId, String title, int depositAmount, List<ResPaymentParticipantDto> resPaymentParticipantDtos) {
+        Map<String, Object> data = terminateSuiteRoom(suiteRoomId, title, depositAmount, resPaymentParticipantDtos);
+        log.info("SuiteRoom-Start message : {}", data);
+        this.kafkaTemplate.send(SUITEROOM_TERMINATE, makeMessage(data));
+    }
+
+    private Map<String, Object> terminateSuiteRoom(Long suiteRoomId, String title, int depositAmount, List<ResPaymentParticipantDto> resPaymentParticipantDtos) {
+        try {
+            Map<String, Object> map = new HashMap<>();
+            ObjectMapper objectMapper = new ObjectMapper();
+            JSONArray parsedArrayJson = (JSONArray) JSONValue.parse(objectMapper.writeValueAsString(resPaymentParticipantDtos));
+            map.put("suiteRoomId", suiteRoomId);
+            map.put("title", title);
+            map.put("depositAmount", depositAmount);
+            map.put("participants", parsedArrayJson);
+            return map;
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private Map<String, Object> startSuiteRoom(SuiteRoom suiteRoom, List<ResPaymentParticipantDto> resPaymentParticipantDtos) {
         try {
             Map<String, Object> map = new HashMap<>();
             ObjectMapper objectMapper = new ObjectMapper();
-            System.out.println("@ : " + suiteRoom.getIsStart());
             JSONArray parsedObject = (JSONArray) JSONValue.parse(objectMapper.writeValueAsString(resPaymentParticipantDtos));
             map.put("suiteRoomId", suiteRoom.getSuiteRoomId());
             map.put("suiteRoomTitle", suiteRoom.getTitle());

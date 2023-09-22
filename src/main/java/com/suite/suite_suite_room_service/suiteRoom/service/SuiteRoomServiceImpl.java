@@ -6,6 +6,7 @@ import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.handler.CustomException;
 import com.suite.suite_suite_room_service.suiteRoom.handler.StatusCode;
 
+import com.suite.suite_suite_room_service.suiteRoom.kafka.producer.SuiteRoomProducer;
 import com.suite.suite_suite_room_service.suiteRoom.repository.MarkRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
@@ -28,6 +29,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     private final SuiteRoomRepository suiteRoomRepository;
     private final ParticipantRepository participantRepository;
     private final MarkRepository markRepository;
+    private final SuiteRoomProducer suiteRoomProducer;
 
     @Override
     public List<ResSuiteRoomListDto> getSuiteRooms(AuthorizerDto authorizerDto, List<StudyCategory> subjects, Pageable pageable) {
@@ -89,8 +91,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     @Override
     public void validateTitle(String title) {
         suiteRoomRepository.findByTitle(title).ifPresent(
-                suiteRoom ->  { throw new CustomException(StatusCode.ALREADY_EXISTS_SUITEROOM); }
-        );
+                suiteRoom ->  { throw new CustomException(StatusCode.ALREADY_EXISTS_SUITEROOM); });
     }
 
 
@@ -100,7 +101,8 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
         if(!reqSuiteRoomCreationDto.getIsPublic() && reqSuiteRoomCreationDto.getPassword() == null) {
             throw new CustomException(StatusCode.INVALID_DATA_FORMAT);
         }
-
+        suiteRoomRepository.findByTitle(reqSuiteRoomCreationDto.getTitle()).ifPresent(
+                suiteRoom ->  { throw new CustomException(StatusCode.ALREADY_EXISTS_SUITEROOM); });
         SuiteRoom suiteRoom = reqSuiteRoomCreationDto.toSuiteRoomEntity();
 
         Participant participant = Participant.builder()
@@ -113,17 +115,23 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
         return ResSuiteRoomCreationDto.builder().suiteRoomId(suiteRoom.getSuiteRoomId()).build();
     }
 
-
-
     @Override
     @Transactional
     public void deleteSuiteRoom(Long suiteRoomId, AuthorizerDto authorizerDto) {
         Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoomId, authorizerDto.getMemberId(), true).orElseThrow(
-                () -> new CustomException(StatusCode.FORBIDDEN)
-        );
+                () -> new CustomException(StatusCode.FORBIDDEN));
+
         if(participant.getStatus().equals(SuiteStatus.START)) throw new CustomException(StatusCode.NOT_DELETE_SUITE_ROOM);
 
-        suiteRoomRepository.deleteBySuiteRoomId(suiteRoomId);
+        List<ResPaymentParticipantDto> participants = participantRepository.findBySuiteRoom_SuiteRoomId(suiteRoomId).stream().map(
+                p -> {
+                    return p.toResPaymentParticipantDto();
+                }).collect(Collectors.toList());
+        SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId).orElseThrow(() -> new CustomException(StatusCode.NOT_FOUND));
+
+
+        suiteRoomProducer.suiteRoomTerminateProducer(suiteRoomId, suiteRoom.getTitle(), suiteRoom.getDepositAmount(), participants);
+        //suiteRoomRepository.deleteBySuiteRoomId(suiteRoomId);
     }
 
     @Override

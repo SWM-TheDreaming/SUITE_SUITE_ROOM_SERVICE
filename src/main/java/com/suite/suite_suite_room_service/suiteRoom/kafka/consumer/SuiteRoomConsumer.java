@@ -66,6 +66,17 @@ public class SuiteRoomConsumer {
                 });
     }
 
+    @Transactional
+    @KafkaListener(topics = "${topic.SUITEROOM_TERMINATE_COMPLETE}", groupId = "suite", containerFactory = "kafkaListenerDefaultContainerFactory")
+    public void terminateSuiteRoomCompleteConsume(ConsumerRecord<String, String> record) throws IOException, ParseException {
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) parser.parse(record.value());
+        JSONObject data = ((JSONObject) jsonObject.get("data"));
+        Long suiteRoomId = Long.parseLong(data.get("suiteRoomId").toString());
+
+        suiteRoomRepository.deleteBySuiteRoomId(suiteRoomId);
+    }
+
     private void addParticipant(Long suiteRoomId, boolean isHost, AuthorizerDto authorizerDto) {
         SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId).get();
 
