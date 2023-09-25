@@ -11,7 +11,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class MockSuiteRoom {
-    public static ReqSuiteRoomCreationDto getMockSuiteRoom(String title, boolean isPublic) {
+    public static ReqSuiteRoomCreationDto getMockSuiteRoom(String title, boolean isPublic, boolean isOpen) {
         return ReqSuiteRoomCreationDto.builder()
                 .title(title)
                 .content("Test Content")
@@ -23,7 +23,7 @@ public class MockSuiteRoom {
                 .minMissionCompleteRate(80)
                 .isPublic(isPublic)
                 .password(isPublic ? null : 3249)
-                .isOpen(false)
+                .isOpen(isOpen)
                 .channelLink("https://open.kakao.com/o/gshpRksf")
                 .studyMethod(StudyType.ONLINE).build();
     }

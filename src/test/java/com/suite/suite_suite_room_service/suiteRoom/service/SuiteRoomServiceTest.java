@@ -1,8 +1,10 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ReqUpdateSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomListDto;
+import com.suite.suite_suite_room_service.suiteRoom.dto.StudyCategory;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
@@ -21,8 +23,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,8 +45,7 @@ class SuiteRoomServiceTest {
     @Autowired private ParticipantRepository participantRepository;
     @Autowired private MarkRepository markRepository;
 
-
-    private final SuiteRoom  suiteRoom = MockSuiteRoom.getMockSuiteRoom("test", true).toSuiteRoomEntity();
+    private final SuiteRoom  suiteRoom = MockSuiteRoom.getMockSuiteRoom("test", true, false).toSuiteRoomEntity();
     private final Participant participantHost = MockParticipant.getMockParticipant(true, MockAuthorizer.YH());
 
 
@@ -56,7 +60,7 @@ class SuiteRoomServiceTest {
     @DisplayName("스위트룸 생성")
     public void createSuiteRoom() {
         //given
-        SuiteRoom createSuiteRoom = MockSuiteRoom.getMockSuiteRoom("test 2",true).toSuiteRoomEntity();
+        SuiteRoom createSuiteRoom = MockSuiteRoom.getMockSuiteRoom("test 2",true, false).toSuiteRoomEntity();
         Participant createdHost = MockParticipant.getMockParticipant(true, MockAuthorizer.YH());
         //when
         createSuiteRoom.addParticipant(createdHost);
@@ -73,7 +77,7 @@ class SuiteRoomServiceTest {
     @DisplayName("스위트룸 비공개생성")
     public void createSecretSuiteRoom() {
         //given
-        SuiteRoom createSuiteRoom = MockSuiteRoom.getMockSuiteRoom("test security",false).toSuiteRoomEntity();
+        SuiteRoom createSuiteRoom = MockSuiteRoom.getMockSuiteRoom("test security",false, false).toSuiteRoomEntity();
         Participant createdHost = MockParticipant.getMockParticipant(true, MockAuthorizer.YH());
         //when
         createSuiteRoom.addParticipant(createdHost);
@@ -117,12 +121,15 @@ class SuiteRoomServiceTest {
     @DisplayName("스위트룸 그룹 목록 확인")
     void getAllSuiteRooms() {
         //given
-        SuiteRoom createSuiteRoom = MockSuiteRoom.getMockSuiteRoom("test test",true).toSuiteRoomEntity();
+        SuiteRoom createSuiteRoom = MockSuiteRoom.getMockSuiteRoom("test test",true, true).toSuiteRoomEntity();
         createSuiteRoom.addParticipant(participantHost);
         suiteRoomRepository.save(createSuiteRoom);
+        Pageable pageable = PageRequest.of(0, 5);
+        String keyword = "empty";
+        List<StudyCategory> subjects = Arrays.asList(StudyCategory.TOEIC);
 
-
-        List<SuiteRoom> suiteRooms = suiteRoomRepository.findAll();
+        //when
+        List<SuiteRoom> suiteRooms = suiteRoomRepository.findOpenSuiteWithSearch(true, subjects, keyword, pageable);
         List<ResSuiteRoomListDto> assertionSuiteRooms = suiteRooms.stream().map(
                 suiteRoom -> suiteRoom.toResSuiteRoomListDto(
                         participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId()),
@@ -136,7 +143,7 @@ class SuiteRoomServiceTest {
         //then
         Assertions.assertAll(
                 ()-> assertThat(assertionSuiteRooms.get(0).getClass()).isEqualTo(ResSuiteRoomListDto.class),
-                ()-> assertThat(assertionSuiteRooms.size()).isGreaterThanOrEqualTo(2)
+                ()-> assertThat(assertionSuiteRooms.size()).isGreaterThanOrEqualTo(1)
         );
 
     }

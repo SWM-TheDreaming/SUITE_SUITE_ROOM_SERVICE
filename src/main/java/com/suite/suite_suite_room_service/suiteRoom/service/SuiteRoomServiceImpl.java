@@ -33,7 +33,6 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     private final ParticipantRepository participantRepository;
     private final MarkRepository markRepository;
     private final SuiteRoomProducer suiteRoomProducer;
-    private final EntityManager entityManager;
 
     @Override
     public List<ResSuiteRoomListDto> getSuiteRooms(AuthorizerDto authorizerDto, List<StudyCategory> subjects, String keyword, Pageable pageable) {

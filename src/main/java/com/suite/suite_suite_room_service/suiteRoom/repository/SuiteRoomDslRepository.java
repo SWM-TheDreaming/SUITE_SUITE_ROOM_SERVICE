@@ -5,6 +5,8 @@ import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 

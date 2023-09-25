@@ -2,10 +2,7 @@ package com.suite.suite_suite_room_service.suiteRoom.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.suite.suite_suite_room_service.suiteRoom.dto.Message;
-import com.suite.suite_suite_room_service.suiteRoom.dto.ReqSuiteRoomCreationDto;
-import com.suite.suite_suite_room_service.suiteRoom.dto.ReqUpdateSuiteRoomDto;
-import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomListDto;
+import com.suite.suite_suite_room_service.suiteRoom.dto.*;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.*;
@@ -29,6 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -69,7 +67,7 @@ class SuiteRoomControllerTest {
     @Value("${jwt.non-expiring.validtime}")
     private long nonExpiringTokenValidTime;
 
-    private final SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("test", true).toSuiteRoomEntity();
+    private final SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("test", true, false).toSuiteRoomEntity();
     private final Participant participantHost = MockParticipant.getMockParticipant(true, MockAuthorizer.YH());
     private MockJwtCreator mockJwtCreator;
     private MockJwtCreator mockExpiringJwtCreator;
@@ -89,7 +87,7 @@ class SuiteRoomControllerTest {
     @DisplayName("스위트룸 생성")
     public void createSuiteRoom() throws Exception {
         //given
-        ReqSuiteRoomCreationDto reqSuiteRoomCreationDto = MockSuiteRoom.getMockSuiteRoom("title darren", true);
+        ReqSuiteRoomCreationDto reqSuiteRoomCreationDto = MockSuiteRoom.getMockSuiteRoom("title darren", true, false);
         String body = mapper.writeValueAsString(reqSuiteRoomCreationDto);
         //when
         String responseBody = postRequest("/suite/suiteroom/registration", DR_JWT, body);
@@ -127,17 +125,22 @@ class SuiteRoomControllerTest {
     @DisplayName("스위트룸 그룹 목록 확인")
     public void listUpSuiteRooms() throws Exception {
         //given
-        final String url = "/suite/suiteroom/";
+        SuiteRoom createSuiteRoom = MockSuiteRoom.getMockSuiteRoom("test test",true, true).toSuiteRoomEntity();
+        createSuiteRoom.addParticipant(participantHost);
+        suiteRoomRepository.save(createSuiteRoom);
+        final String url = "/suite/suiteroom/empty?page=0&size=5";
+        String body = mapper.writeValueAsString(Arrays.asList(StudyCategory.TOEIC));
 
         //when
-        String responseBody = getRequest(url, YH_JWT);
+        String responseBody = postRequest(url, YH_JWT, body);
+
         Message message = mapper.readValue(responseBody, new TypeReference<Message<List<ResSuiteRoomListDto>>>() {
         });
         List<ResSuiteRoomListDto> result = (List<ResSuiteRoomListDto>) message.getData();
 
         //then
         Assertions.assertAll(
-                () -> assertThat(result.get(0).getTitle()).isEqualTo(suiteRoom.getTitle()),
+                () -> assertThat(result.get(0).getTitle()).isEqualTo(createSuiteRoom.getTitle()),
                 () -> assertThat(message.getStatusCode()).isEqualTo(200)
         );
 

@@ -6,19 +6,18 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.suite.suite_suite_room_service.suiteRoom.dto.StudyCategory;
 import com.suite.suite_suite_room_service.suiteRoom.entity.QSuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Repository
+@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class SuiteRoomDslRepositoryImpl implements SuiteRoomDslRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
-
-    public SuiteRoomDslRepositoryImpl(JPAQueryFactory jpaQueryFactory) {
-        this.jpaQueryFactory = jpaQueryFactory;
-    }
 
     @Override
     public List<SuiteRoom> findOpenSuiteWithSearch(boolean isOpen, List<StudyCategory> subjects, String keyword, Pageable pageable) {

@@ -33,7 +33,7 @@ class ParticipantServiceTest {
     @Autowired private ParticipantRepository participantRepository;
     @Autowired private SuiteRoomRepository suiteRoomRepository;
 
-    private final SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("test", true).toSuiteRoomEntity();
+    private final SuiteRoom suiteRoom = MockSuiteRoom.getMockSuiteRoom("test", true, false).toSuiteRoomEntity();
     private final Participant participantHost = MockParticipant.getMockParticipant(true, MockAuthorizer.YH());
 
     @BeforeEach
