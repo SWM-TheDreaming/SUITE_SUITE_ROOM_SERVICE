@@ -35,7 +35,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     private final SuiteRoomProducer suiteRoomProducer;
 
     @Override
-    public List<ResSuiteRoomListDto> getSuiteRooms(AuthorizerDto authorizerDto, List<StudyCategory> subjects, String keyword, Pageable pageable) {
+    public List<ResSuiteRoomListDto> getSuiteRooms(AuthorizerDto authorizerDto, ReqListUpSuiteRoomDto reqListUpSuiteRoomDto, Pageable pageable) {
 
         /*
         * TO DO 성능 nGrinder로 성능 비교해보기!
@@ -43,7 +43,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
                 suiteRoomRepository.findByIsOpenAndSubjectInOrderByCreatedDateDesc(true, subjects, pageable)
                 : suiteRoomRepository.findByIsOpenOrderByCreatedDateDesc(true, pageable);
         */
-        List<SuiteRoom> suiteRooms = suiteRoomRepository.findOpenSuiteWithSearch(true, subjects, keyword, pageable);
+        List<SuiteRoom> suiteRooms = suiteRoomRepository.findOpenSuiteWithSearch(true, reqListUpSuiteRoomDto.getSubjects(), reqListUpSuiteRoomDto.getKeyword(), pageable);
 
         return suiteRooms.stream().map(
                 suiteRoom -> suiteRoom.toResSuiteRoomListDto(

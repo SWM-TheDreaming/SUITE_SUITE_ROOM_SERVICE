@@ -29,7 +29,7 @@ public class SuiteRoomDslRepositoryImpl implements SuiteRoomDslRepository {
         if(subjects != null && !subjects.isEmpty())
             builder.and(suiteRoom.subject.in(subjects));
 
-        if(!keyword.equals("empty"))
+        if(keyword != null && !keyword.equals(""))
             builder.andAnyOf(
                     suiteRoom.title.contains(keyword),
                     suiteRoom.content.contains(keyword)
