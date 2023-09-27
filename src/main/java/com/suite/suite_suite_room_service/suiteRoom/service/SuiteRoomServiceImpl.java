@@ -1,7 +1,5 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
-import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.suite.suite_suite_room_service.suiteRoom.dto.*;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
@@ -16,12 +14,10 @@ import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,7 +46,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
                         participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId()),
                         participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), authorizerDto.getMemberId(), true),
                         participantRepository.findBySuiteRoom_SuiteRoomIdAndIsHost(suiteRoom.getSuiteRoomId(), true).get(),
-                        markRepository.countBySuiteRoomId(suiteRoom.getSuiteRoomId())
+                        markRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId())
                 )
         ).collect(Collectors.toList());
     }
@@ -62,9 +58,10 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
                 () -> new CustomException(StatusCode.SUITE_ROOM_NOT_FOUND));
 
         return suiteRoom.toResSuiteRoomDto(
-                participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId()),
-                participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), authorizerDto.getMemberId(), true),
-                markRepository.countBySuiteRoomId(suiteRoomId)
+                participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoomId),
+                participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoomId, authorizerDto.getMemberId(), true),
+                markRepository.countBySuiteRoom_SuiteRoomId(suiteRoomId),
+                markRepository.existsBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, authorizerDto.getMemberId())
         );
 
     }
@@ -77,23 +74,27 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     }
 
     @Override
-    public List<ResConditionSuiteRoomDto> getProgressSuiteRoomList(Long memberId) {
+    public List<ResSuiteRoomListDto> getProgressSuiteRoomList(Long memberId) {
         List<Participant> participantList = participantRepository.findByMemberIdAndStatusNot(memberId, SuiteStatus.END);
 
         return participantList.stream().map(
-                parti -> parti.toResCompletionSuiteRoomDto(parti, parti.getStatus(),
+                parti -> parti.toResSuiteRoomListDto(
                         participantRepository.countBySuiteRoom_SuiteRoomId(parti.getSuiteRoom().getSuiteRoomId()),
+                        parti.getStatus(),
+                        parti,
                         participantRepository.findBySuiteRoom_SuiteRoomIdAndIsHost(parti.getSuiteRoom().getSuiteRoomId(), true).get())
         ).collect(Collectors.toList());
     }
 
     @Override
-    public List<ResConditionSuiteRoomDto> getCompletionSuiteRoomList(Long memberId) {
+    public List<ResSuiteRoomListDto> getCompletionSuiteRoomList(Long memberId) {
         List<Participant> participantList = participantRepository.findByMemberIdAndStatus(memberId, SuiteStatus.END);
 
         return participantList.stream().map(
-                parti -> parti.toResCompletionSuiteRoomDto(parti, parti.getStatus(),
+                parti -> parti.toResSuiteRoomListDto(
                         participantRepository.countBySuiteRoom_SuiteRoomId(parti.getSuiteRoom().getSuiteRoomId()),
+                        parti.getStatus(),
+                        parti,
                         participantRepository.findBySuiteRoom_SuiteRoomIdAndIsHost(parti.getSuiteRoom().getSuiteRoomId(), true).get())
         ).collect(Collectors.toList());
     }

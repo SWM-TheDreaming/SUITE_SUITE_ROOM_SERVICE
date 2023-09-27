@@ -12,8 +12,8 @@ public interface SuiteRoomService {
     ResSuiteRoomDto getSuiteRoom(Long suiteRoomId, AuthorizerDto authorizerDto);
     void validateTitle(String title);
     void validatePassword(Long suiteRoomId, int password);
-    List<ResConditionSuiteRoomDto> getProgressSuiteRoomList(Long memberId);
-    List<ResConditionSuiteRoomDto> getCompletionSuiteRoomList(Long memberId);
+    List<ResSuiteRoomListDto> getProgressSuiteRoomList(Long memberId);
+    List<ResSuiteRoomListDto> getCompletionSuiteRoomList(Long memberId);
     ResSuiteRoomCreationDto createSuiteRoom(ReqSuiteRoomCreationDto reqSuiteRoomCreationDto, AuthorizerDto authorizerDto);
     void deleteSuiteRoom(Long suiteRoomId, AuthorizerDto authorizerDto);
     void updateSuiteRoom(ReqUpdateSuiteRoomDto reqUpdateSuiteRoomDto, AuthorizerDto authorizerDto);

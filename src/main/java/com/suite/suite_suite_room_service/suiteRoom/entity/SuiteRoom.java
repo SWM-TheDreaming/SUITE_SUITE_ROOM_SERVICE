@@ -83,6 +83,10 @@ public class SuiteRoom extends BaseTimeEntity {
     @JsonManagedReference
     private List<Participant> participants = new ArrayList<>();
 
+    @OneToMany(mappedBy = "suiteRoom", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Mark> marks = new ArrayList<>();
+
     @Builder
     public SuiteRoom(Long suiteRoomId, String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, Boolean isOpen, Boolean isStart, String channelLink, StudyType studyMethod, String contractAddress, Timestamp studyStartDate) {
         this.suiteRoomId = suiteRoomId;
@@ -108,6 +112,11 @@ public class SuiteRoom extends BaseTimeEntity {
     public void addParticipant(Participant participant) {
         this.participants.add(participant);
         participant.addSuiteRoom(this);
+    }
+
+    public void addMark(Mark mark) {
+        this.marks.add(mark);
+        mark.addSuiteRoom(this);
     }
 
     public void updateSuiteRoom(ReqUpdateSuiteRoomDto reqUpdateSuiteRoomDto) {
@@ -145,7 +154,7 @@ public class SuiteRoom extends BaseTimeEntity {
                 .build();
     }
 
-    public ResSuiteRoomDto toResSuiteRoomDto(Long participantCount, boolean isHost, Long markCount) {
+    public ResSuiteRoomDto toResSuiteRoomDto(Long participantCount, boolean isHost, Long markCount, boolean isMark) {
         return ResSuiteRoomDto.builder()
                 .suiteRoomId(suiteRoomId)
                 .title(this.title)
@@ -165,6 +174,7 @@ public class SuiteRoom extends BaseTimeEntity {
                 .participantCount(participantCount)
                 .isHost(isHost)
                 .markCount(markCount)
+                .isMark(isMark)
                 .build();
     }
 
