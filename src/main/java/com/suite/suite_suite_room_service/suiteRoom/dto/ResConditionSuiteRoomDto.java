@@ -17,9 +17,10 @@ public class ResConditionSuiteRoomDto {
     private Timestamp studyDeadline;
     private Integer depositAmount;
     private Long participantCount;
+    private String hostNickName;
 
     @Builder
-    public ResConditionSuiteRoomDto(Long suiteRoomId, String title, StudyCategory subject, SuiteStatus suiteStatus, Timestamp studyStartDate, Timestamp studyDeadline, Integer depositAmount, Long participantCount) {
+    public ResConditionSuiteRoomDto(Long suiteRoomId, String title, StudyCategory subject, SuiteStatus suiteStatus, Timestamp studyStartDate, Timestamp studyDeadline, Integer depositAmount, Long participantCount, String hostNickName) {
         this.suiteRoomId = suiteRoomId;
         this.title = title;
         this.subject = subject;
@@ -28,5 +29,6 @@ public class ResConditionSuiteRoomDto {
         this.studyDeadline = studyDeadline;
         this.depositAmount = depositAmount;
         this.participantCount = participantCount;
+        this.hostNickName = hostNickName;
     }
 }

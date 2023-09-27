@@ -125,7 +125,7 @@ class SuiteRoomServiceTest {
         createSuiteRoom.addParticipant(participantHost);
         suiteRoomRepository.save(createSuiteRoom);
         Pageable pageable = PageRequest.of(0, 5);
-        String keyword = "empty";
+        String keyword = "";
         List<StudyCategory> subjects = Arrays.asList(StudyCategory.TOEIC);
 
         //when

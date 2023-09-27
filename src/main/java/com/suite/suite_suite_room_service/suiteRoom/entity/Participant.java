@@ -74,7 +74,7 @@ public class Participant extends BaseTimeEntity {
                 .build();
     }
 
-    public ResConditionSuiteRoomDto toResCompletionSuiteRoomDto(Participant participant, SuiteStatus suiteStatus, Long participantCount) {
+    public ResConditionSuiteRoomDto toResCompletionSuiteRoomDto(Participant participant, SuiteStatus suiteStatus, Long participantCount, Participant host) {
         return ResConditionSuiteRoomDto.builder()
                 .suiteRoomId(participant.getSuiteRoom().getSuiteRoomId())
                 .title(participant.getSuiteRoom().getTitle())
@@ -83,6 +83,7 @@ public class Participant extends BaseTimeEntity {
                 .studyStartDate(participant.getSuiteRoom().getStudyStartDate())
                 .studyDeadline(participant.getSuiteRoom().getStudyDeadline())
                 .depositAmount(participant.getSuiteRoom().getDepositAmount())
-                .participantCount(participantCount).build();
+                .participantCount(participantCount)
+                .hostNickName(host.getNickname()).build();
     }
 }

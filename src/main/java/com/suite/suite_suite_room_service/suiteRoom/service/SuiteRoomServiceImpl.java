@@ -81,7 +81,9 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
         List<Participant> participantList = participantRepository.findByMemberIdAndStatusNot(memberId, SuiteStatus.END);
 
         return participantList.stream().map(
-                parti -> parti.toResCompletionSuiteRoomDto(parti, parti.getStatus(), participantRepository.countBySuiteRoom_SuiteRoomId(parti.getSuiteRoom().getSuiteRoomId()))
+                parti -> parti.toResCompletionSuiteRoomDto(parti, parti.getStatus(),
+                        participantRepository.countBySuiteRoom_SuiteRoomId(parti.getSuiteRoom().getSuiteRoomId()),
+                        participantRepository.findBySuiteRoom_SuiteRoomIdAndIsHost(parti.getSuiteRoom().getSuiteRoomId(), true).get())
         ).collect(Collectors.toList());
     }
 
@@ -90,7 +92,9 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
         List<Participant> participantList = participantRepository.findByMemberIdAndStatus(memberId, SuiteStatus.END);
 
         return participantList.stream().map(
-                parti -> parti.toResCompletionSuiteRoomDto(parti, parti.getStatus(), participantRepository.countBySuiteRoom_SuiteRoomId(parti.getSuiteRoom().getSuiteRoomId()))
+                parti -> parti.toResCompletionSuiteRoomDto(parti, parti.getStatus(),
+                        participantRepository.countBySuiteRoom_SuiteRoomId(parti.getSuiteRoom().getSuiteRoomId()),
+                        participantRepository.findBySuiteRoom_SuiteRoomIdAndIsHost(parti.getSuiteRoom().getSuiteRoomId(), true).get())
         ).collect(Collectors.toList());
     }
 
