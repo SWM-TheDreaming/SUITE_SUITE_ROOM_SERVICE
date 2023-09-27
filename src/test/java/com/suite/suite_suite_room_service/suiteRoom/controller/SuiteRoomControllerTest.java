@@ -128,8 +128,9 @@ class SuiteRoomControllerTest {
         SuiteRoom createSuiteRoom = MockSuiteRoom.getMockSuiteRoom("test test",true, true).toSuiteRoomEntity();
         createSuiteRoom.addParticipant(participantHost);
         suiteRoomRepository.save(createSuiteRoom);
-        final String url = "/suite/suiteroom/empty?page=0&size=5";
-        String body = mapper.writeValueAsString(Arrays.asList(StudyCategory.TOEIC));
+        final String url = "/suite/suiteroom?page=0&size=5";
+
+        String body = mapper.writeValueAsString(ReqListUpSuiteRoomDto.builder().subjects(Arrays.asList(StudyCategory.TOEIC)).build());
 
         //when
         String responseBody = postRequest(url, YH_JWT, body);
