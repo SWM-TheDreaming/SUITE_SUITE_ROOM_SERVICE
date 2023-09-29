@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class SuiteRoomServiceImpl implements SuiteRoomService{
+public class SuiteRoomServiceImpl implements SuiteRoomService {
 
     private final SuiteRoomRepository suiteRoomRepository;
     private final ParticipantRepository participantRepository;
@@ -142,7 +142,6 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
 
 
         suiteRoomProducer.suiteRoomTerminateProducer(suiteRoomId, suiteRoom.getTitle(), suiteRoom.getDepositAmount(), participants);
-        //suiteRoomRepository.deleteBySuiteRoomId(suiteRoomId);
     }
 
     @Override
@@ -155,6 +154,15 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
                 .orElseThrow( () -> new CustomException(StatusCode.FORBIDDEN));
 
         suiteRoom.updateSuiteRoom(reqUpdateSuiteRoomDto);
+    }
+
+    @Override
+    public ResSuiteRoomInfoDto getSuiteRoomInfo(Long suiteRoomId) {
+        SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId).orElseThrow(() -> new CustomException(StatusCode.NOT_FOUND));
+        return ResSuiteRoomInfoDto.builder()
+                .suiteRoomId(suiteRoomId)
+                .isStart(suiteRoom.getIsStart())
+                .studyDeadline(suiteRoom.getStudyDeadline()).build();
     }
 
 }

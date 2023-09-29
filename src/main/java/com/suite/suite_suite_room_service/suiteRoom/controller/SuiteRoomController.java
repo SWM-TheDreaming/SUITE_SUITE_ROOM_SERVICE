@@ -78,5 +78,8 @@ public class SuiteRoomController {
         return ResponseEntity.ok(new Message(StatusCode.OK));
     }
 
-
+    @GetMapping("/suiteroom/info/{suiteRoomId}")
+    public ResponseEntity<ResSuiteRoomInfoDto> getSuiteRoomInfo(@PathVariable Long suiteRoomId) {
+        return ResponseEntity.ok(suiteRoomService.getSuiteRoomInfo(suiteRoomId));
+    }
 }

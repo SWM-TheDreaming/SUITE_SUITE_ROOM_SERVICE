@@ -17,5 +17,5 @@ public interface SuiteRoomService {
     ResSuiteRoomCreationDto createSuiteRoom(ReqSuiteRoomCreationDto reqSuiteRoomCreationDto, AuthorizerDto authorizerDto);
     void deleteSuiteRoom(Long suiteRoomId, AuthorizerDto authorizerDto);
     void updateSuiteRoom(ReqUpdateSuiteRoomDto reqUpdateSuiteRoomDto, AuthorizerDto authorizerDto);
-
+    ResSuiteRoomInfoDto getSuiteRoomInfo(Long suiteRoomId);
 }
