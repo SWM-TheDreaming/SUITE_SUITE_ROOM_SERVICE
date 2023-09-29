@@ -54,7 +54,7 @@ public class WebSecurityConfig {
         http.httpBasic().disable()
                 .authorizeRequests()// 요청에 대한 사용권한 체크
                 .antMatchers("/suite/**").authenticated()
-                .antMatchers("/member/**").permitAll()
+                .antMatchers("/suiteroom/info/**").permitAll()
                 .and()
                 .cors()
                 .and()
