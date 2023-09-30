@@ -162,6 +162,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService {
         return ResSuiteRoomInfoDto.builder()
                 .suiteRoomId(suiteRoomId)
                 .isStart(suiteRoom.getIsStart())
+                .studyStartDate(suiteRoom.getStudyStartDate())
                 .studyDeadline(suiteRoom.getStudyDeadline()).build();
     }
 

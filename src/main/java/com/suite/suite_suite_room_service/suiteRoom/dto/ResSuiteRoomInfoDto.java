@@ -11,12 +11,14 @@ import java.sql.Timestamp;
 public class ResSuiteRoomInfoDto {
     private Long suiteRoomId;
     private Boolean isStart;
+    private Timestamp studyStartDate;
     private Timestamp studyDeadline;
 
     @Builder
-    public ResSuiteRoomInfoDto(Long suiteRoomId, Boolean isStart, Timestamp studyDeadline) {
+    public ResSuiteRoomInfoDto(Long suiteRoomId, Boolean isStart, Timestamp studyStartDate, Timestamp studyDeadline) {
         this.suiteRoomId = suiteRoomId;
         this.isStart = isStart;
+        this.studyStartDate = studyStartDate;
         this.studyDeadline = studyDeadline;
     }
 }
