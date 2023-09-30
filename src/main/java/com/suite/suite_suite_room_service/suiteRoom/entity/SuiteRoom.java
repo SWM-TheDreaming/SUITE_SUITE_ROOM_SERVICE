@@ -79,6 +79,9 @@ public class SuiteRoom extends BaseTimeEntity {
     @Column(name = "study_start_date")
     private Timestamp studyStartDate;
 
+    @Column(name = "honor_point")
+    private Double honorPoint;
+
     @OneToMany(mappedBy = "suiteRoom", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Participant> participants = new ArrayList<>();
@@ -88,7 +91,7 @@ public class SuiteRoom extends BaseTimeEntity {
     private List<Mark> marks = new ArrayList<>();
 
     @Builder
-    public SuiteRoom(Long suiteRoomId, String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, Boolean isOpen, Boolean isStart, String channelLink, StudyType studyMethod, String contractAddress, Timestamp studyStartDate) {
+    public SuiteRoom(Long suiteRoomId, String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Integer password, Boolean isOpen, Boolean isStart, String channelLink, StudyType studyMethod, String contractAddress, Timestamp studyStartDate, Double honorPoint) {
         this.suiteRoomId = suiteRoomId;
         this.title = title;
         this.content = content;
@@ -107,6 +110,7 @@ public class SuiteRoom extends BaseTimeEntity {
         this.studyMethod = studyMethod;
         this.contractAddress = contractAddress;
         this.studyStartDate = studyStartDate;
+        this.honorPoint = honorPoint;
     }
 
     public void addParticipant(Participant participant) {
