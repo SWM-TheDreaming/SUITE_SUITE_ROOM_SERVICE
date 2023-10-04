@@ -123,6 +123,10 @@ public class SuiteRoom extends BaseTimeEntity {
         mark.addSuiteRoom(this);
     }
 
+    public void setHonorPoint(Double honorPoint) {
+        this.honorPoint = honorPoint;
+    }
+
     public void updateSuiteRoom(ReqUpdateSuiteRoomDto reqUpdateSuiteRoomDto) {
         this.content = reqUpdateSuiteRoomDto.getContent();
         this.channelLink = reqUpdateSuiteRoomDto.getChannelLink();

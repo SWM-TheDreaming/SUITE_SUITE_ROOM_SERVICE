@@ -166,4 +166,17 @@ public class SuiteRoomServiceImpl implements SuiteRoomService {
                 .studyDeadline(suiteRoom.getStudyDeadline()).build();
     }
 
+    @Override
+    public List<ResSuiteRoomListDto> getHonorOfSuiteRooms(Long memberId) {
+        List<SuiteRoom> suiteRoomList = suiteRoomRepository.findTop50ByHonorPointIsNotNullOrderByHonorPointDesc();
+        return suiteRoomList.stream().map(
+                suiteRoom -> suiteRoom.toResSuiteRoomListDto(
+                        participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId()),
+                        participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), memberId, true),
+                        participantRepository.findBySuiteRoom_SuiteRoomIdAndIsHost(suiteRoom.getSuiteRoomId(), true).get(),
+                        markRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId())
+                )
+        ).collect(Collectors.toList());
+    }
+
 }

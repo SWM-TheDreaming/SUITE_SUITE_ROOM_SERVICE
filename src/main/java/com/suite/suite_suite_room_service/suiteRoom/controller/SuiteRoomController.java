@@ -77,4 +77,9 @@ public class SuiteRoomController {
         suiteRoomService.updateSuiteRoom(reqUpdateSuiteRoomDto, getSuiteAuthorizer());
         return ResponseEntity.ok(new Message(StatusCode.OK));
     }
+
+    @GetMapping("/suiteroom/honor")
+    public ResponseEntity<Message> listUpHonorOfSuiteRoom() {
+        return ResponseEntity.ok(new Message(StatusCode.OK, suiteRoomService.getHonorOfSuiteRooms(getSuiteAuthorizer().getMemberId())));
+    }
 }

@@ -22,4 +22,6 @@ public interface SuiteRoomRepository extends JpaRepository<SuiteRoom, Long>, Sui
     Optional<SuiteRoom> findBySuiteRoomId(Long suiteRoomId);
     void deleteBySuiteRoomId(Long suiteRoomId);
 
+    List<SuiteRoom> findTop50ByHonorPointIsNotNullOrderByHonorPointDesc();
+
 }

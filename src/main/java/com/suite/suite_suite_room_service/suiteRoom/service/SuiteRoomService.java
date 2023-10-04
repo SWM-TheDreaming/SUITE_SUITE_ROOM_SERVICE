@@ -18,4 +18,6 @@ public interface SuiteRoomService {
     void deleteSuiteRoom(Long suiteRoomId, AuthorizerDto authorizerDto);
     void updateSuiteRoom(ReqUpdateSuiteRoomDto reqUpdateSuiteRoomDto, AuthorizerDto authorizerDto);
     ResSuiteRoomInfoDto getSuiteRoomInfo(Long suiteRoomId);
+
+    List<ResSuiteRoomListDto> getHonorOfSuiteRooms(Long memberId);
 }
