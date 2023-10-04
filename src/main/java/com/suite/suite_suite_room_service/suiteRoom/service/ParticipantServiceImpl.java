@@ -130,7 +130,7 @@ public class ParticipantServiceImpl implements ParticipantService{
                     return p.toResPaymentParticipantDto();
                 }).collect(Collectors.toList());
 
-        //suiteRoomProducer.suiteRoomContractCreationProducer(suiteRoomId, participants, suiteRoom);
+        suiteRoomProducer.suiteRoomContractCreationProducer(suiteRoomId, participants, suiteRoom);
 
         suiteRoomProducer.suiteRoomStartProducer(suiteRoom, resPaymentParticipantDtos);
     }

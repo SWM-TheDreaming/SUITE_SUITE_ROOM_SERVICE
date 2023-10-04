@@ -186,6 +186,7 @@ public class SuiteRoom extends BaseTimeEntity {
                 .contractAddress(this.contractAddress)
                 .participantCount(participantCount)
                 .isHost(isHost)
+                .createdAt(this.getCreatedDate())
                 .build();
     }
 
