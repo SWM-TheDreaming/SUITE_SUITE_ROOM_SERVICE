@@ -9,11 +9,13 @@ import java.util.Optional;
 
 public interface MarkRepository extends JpaRepository<Mark, Long> {
 
-    Optional<Mark> findByMemberIdAndSuiteRoomId(Long memberId, Long suiteRoomId);
+    Optional<Mark> findByMemberIdAndSuiteRoom_SuiteRoomId(Long memberId, Long suiteRoomId);
 
     List<Mark> findByMemberId(Long memberId);
 
-    Long countBySuiteRoomId(Long suiteRoomId);
+    Long countBySuiteRoom_SuiteRoomId(Long suiteRoomId);
 
-    void deleteByMemberIdAndSuiteRoomId(Long memberId, Long suiteRoomId);
+    void deleteByMemberIdAndSuiteRoom_SuiteRoomId(Long memberId, Long suiteRoomId);
+
+    Boolean existsBySuiteRoom_SuiteRoomIdAndMemberId(Long suiteRoomId, Long memberId);
 }

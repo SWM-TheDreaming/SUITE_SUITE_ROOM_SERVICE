@@ -2,8 +2,8 @@ package com.suite.suite_suite_room_service.suiteRoom.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.suite.suite_suite_room_service.baseTime.BaseTimeEntity;
-import com.suite.suite_suite_room_service.suiteRoom.dto.ResConditionSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ResPaymentParticipantDto;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomListDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import lombok.Builder;
@@ -74,15 +74,22 @@ public class Participant extends BaseTimeEntity {
                 .build();
     }
 
-    public ResConditionSuiteRoomDto toResCompletionSuiteRoomDto(Participant participant, SuiteStatus suiteStatus, Long participantCount) {
-        return ResConditionSuiteRoomDto.builder()
+
+    public ResSuiteRoomListDto toResSuiteRoomListDto(Long participantCount, SuiteStatus suiteStatus, Participant participant, Participant host) {
+        return ResSuiteRoomListDto.builder()
                 .suiteRoomId(participant.getSuiteRoom().getSuiteRoomId())
                 .title(participant.getSuiteRoom().getTitle())
                 .subject(participant.getSuiteRoom().getSubject())
-                .suiteStatus(suiteStatus)
-                .studyStartDate(participant.getSuiteRoom().getStudyStartDate())
-                .studyDeadline(participant.getSuiteRoom().getStudyDeadline())
+                .recruitmentDeadline(participant.getSuiteRoom().getRecruitmentDeadline())
+                .createdDate(participant.getSuiteRoom().getCreatedDate())
+                .recruitmentLimit(participant.getSuiteRoom().getRecruitmentLimit())
                 .depositAmount(participant.getSuiteRoom().getDepositAmount())
-                .participantCount(participantCount).build();
+                .isPublic(participant.getSuiteRoom().getIsPublic())
+                .isOpen(participant.getSuiteRoom().getIsOpen())
+                .participantCount(participantCount)
+                .isHost(this.isHost)
+                .suiteStatus(suiteStatus)
+                .hostNickName(host.getNickname())
+                .build();
     }
 }

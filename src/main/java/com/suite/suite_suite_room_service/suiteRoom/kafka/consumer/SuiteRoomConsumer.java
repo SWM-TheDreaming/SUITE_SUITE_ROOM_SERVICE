@@ -77,6 +77,18 @@ public class SuiteRoomConsumer {
         suiteRoomRepository.deleteBySuiteRoomId(suiteRoomId);
     }
 
+    @Transactional
+    @KafkaListener(topics = "${topic.HALLOFFAME-SELECTION}", groupId = "suite", containerFactory = "kafkaListenerDefaultContainerFactory")
+    public void selectHallOfFame(ConsumerRecord<String, String> record) throws IOException, ParseException {
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) parser.parse(record.value());
+        JSONObject data = ((JSONObject) jsonObject.get("data"));
+        Long suiteRoomId = Long.parseLong(data.get("suiteRoomId").toString());
+        Double honorPoint = Double.valueOf(data.get("honorPoint").toString());
+        SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId).orElseThrow(() -> new CustomException(StatusCode.NOT_FOUND));
+        suiteRoom.setHonorPoint(honorPoint);
+    }
+
     private void addParticipant(Long suiteRoomId, boolean isHost, AuthorizerDto authorizerDto) {
         SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId).get();
 

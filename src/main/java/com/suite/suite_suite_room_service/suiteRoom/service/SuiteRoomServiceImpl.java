@@ -1,7 +1,5 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
-import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.suite.suite_suite_room_service.suiteRoom.dto.*;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
@@ -16,18 +14,16 @@ import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class SuiteRoomServiceImpl implements SuiteRoomService{
+public class SuiteRoomServiceImpl implements SuiteRoomService {
 
     private final SuiteRoomRepository suiteRoomRepository;
     private final ParticipantRepository participantRepository;
@@ -35,7 +31,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     private final SuiteRoomProducer suiteRoomProducer;
 
     @Override
-    public List<ResSuiteRoomListDto> getSuiteRooms(AuthorizerDto authorizerDto, List<StudyCategory> subjects, String keyword, Pageable pageable) {
+    public List<ResSuiteRoomListDto> getSuiteRooms(AuthorizerDto authorizerDto, ReqListUpSuiteRoomDto reqListUpSuiteRoomDto, Pageable pageable) {
 
         /*
         * TO DO 성능 nGrinder로 성능 비교해보기!
@@ -43,14 +39,14 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
                 suiteRoomRepository.findByIsOpenAndSubjectInOrderByCreatedDateDesc(true, subjects, pageable)
                 : suiteRoomRepository.findByIsOpenOrderByCreatedDateDesc(true, pageable);
         */
-        List<SuiteRoom> suiteRooms = suiteRoomRepository.findOpenSuiteWithSearch(true, subjects, keyword, pageable);
+        List<SuiteRoom> suiteRooms = suiteRoomRepository.findOpenSuiteWithSearch(true, reqListUpSuiteRoomDto.getSubjects(), reqListUpSuiteRoomDto.getKeyword(), pageable);
 
         return suiteRooms.stream().map(
                 suiteRoom -> suiteRoom.toResSuiteRoomListDto(
                         participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId()),
                         participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), authorizerDto.getMemberId(), true),
                         participantRepository.findBySuiteRoom_SuiteRoomIdAndIsHost(suiteRoom.getSuiteRoomId(), true).get(),
-                        markRepository.countBySuiteRoomId(suiteRoom.getSuiteRoomId())
+                        markRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId())
                 )
         ).collect(Collectors.toList());
     }
@@ -62,9 +58,10 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
                 () -> new CustomException(StatusCode.SUITE_ROOM_NOT_FOUND));
 
         return suiteRoom.toResSuiteRoomDto(
-                participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId()),
-                participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), authorizerDto.getMemberId(), true),
-                markRepository.countBySuiteRoomId(suiteRoomId)
+                participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoomId),
+                participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoomId, authorizerDto.getMemberId(), true),
+                markRepository.countBySuiteRoom_SuiteRoomId(suiteRoomId),
+                markRepository.existsBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, authorizerDto.getMemberId())
         );
 
     }
@@ -77,20 +74,28 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
     }
 
     @Override
-    public List<ResConditionSuiteRoomDto> getProgressSuiteRoomList(Long memberId) {
+    public List<ResSuiteRoomListDto> getProgressSuiteRoomList(Long memberId) {
         List<Participant> participantList = participantRepository.findByMemberIdAndStatusNot(memberId, SuiteStatus.END);
 
         return participantList.stream().map(
-                parti -> parti.toResCompletionSuiteRoomDto(parti, parti.getStatus(), participantRepository.countBySuiteRoom_SuiteRoomId(parti.getSuiteRoom().getSuiteRoomId()))
+                parti -> parti.toResSuiteRoomListDto(
+                        participantRepository.countBySuiteRoom_SuiteRoomId(parti.getSuiteRoom().getSuiteRoomId()),
+                        parti.getStatus(),
+                        parti,
+                        participantRepository.findBySuiteRoom_SuiteRoomIdAndIsHost(parti.getSuiteRoom().getSuiteRoomId(), true).get())
         ).collect(Collectors.toList());
     }
 
     @Override
-    public List<ResConditionSuiteRoomDto> getCompletionSuiteRoomList(Long memberId) {
+    public List<ResSuiteRoomListDto> getCompletionSuiteRoomList(Long memberId) {
         List<Participant> participantList = participantRepository.findByMemberIdAndStatus(memberId, SuiteStatus.END);
 
         return participantList.stream().map(
-                parti -> parti.toResCompletionSuiteRoomDto(parti, parti.getStatus(), participantRepository.countBySuiteRoom_SuiteRoomId(parti.getSuiteRoom().getSuiteRoomId()))
+                parti -> parti.toResSuiteRoomListDto(
+                        participantRepository.countBySuiteRoom_SuiteRoomId(parti.getSuiteRoom().getSuiteRoomId()),
+                        parti.getStatus(),
+                        parti,
+                        participantRepository.findBySuiteRoom_SuiteRoomIdAndIsHost(parti.getSuiteRoom().getSuiteRoomId(), true).get())
         ).collect(Collectors.toList());
     }
 
@@ -137,7 +142,6 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
 
 
         suiteRoomProducer.suiteRoomTerminateProducer(suiteRoomId, suiteRoom.getTitle(), suiteRoom.getDepositAmount(), participants);
-        //suiteRoomRepository.deleteBySuiteRoomId(suiteRoomId);
     }
 
     @Override
@@ -150,6 +154,29 @@ public class SuiteRoomServiceImpl implements SuiteRoomService{
                 .orElseThrow( () -> new CustomException(StatusCode.FORBIDDEN));
 
         suiteRoom.updateSuiteRoom(reqUpdateSuiteRoomDto);
+    }
+
+    @Override
+    public ResSuiteRoomInfoDto getSuiteRoomInfo(Long suiteRoomId) {
+        SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomId(suiteRoomId).orElseThrow(() -> new CustomException(StatusCode.NOT_FOUND));
+        return ResSuiteRoomInfoDto.builder()
+                .suiteRoomId(suiteRoomId)
+                .isStart(suiteRoom.getIsStart())
+                .studyStartDate(suiteRoom.getStudyStartDate())
+                .studyDeadline(suiteRoom.getStudyDeadline()).build();
+    }
+
+    @Override
+    public List<ResSuiteRoomListDto> getHonorOfSuiteRooms(Long memberId) {
+        List<SuiteRoom> suiteRoomList = suiteRoomRepository.findTop50ByHonorPointIsNotNullOrderByHonorPointDesc();
+        return suiteRoomList.stream().map(
+                suiteRoom -> suiteRoom.toResSuiteRoomListDto(
+                        participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId()),
+                        participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), memberId, true),
+                        participantRepository.findBySuiteRoom_SuiteRoomIdAndIsHost(suiteRoom.getSuiteRoomId(), true).get(),
+                        markRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId())
+                )
+        ).collect(Collectors.toList());
     }
 
 }

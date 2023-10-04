@@ -1,5 +1,6 @@
 package com.suite.suite_suite_room_service.suiteRoom.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomListDto;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,14 +20,19 @@ public class Mark {
     @Column(name = "member_id")
     private Long memberId;
 
-    @Column(name = "suite_room_id")
-    private Long suiteRoomId;
-
+    @ManyToOne
+    @JoinColumn(name = "suite_room_id")
+    @JsonBackReference
+    private SuiteRoom suiteRoom;
     @Builder
-    public Mark(Long markId, Long memberId, Long suiteRoomId) {
+    public Mark(Long markId, Long memberId, SuiteRoom suiteRoom) {
         this.markId = markId;
         this.memberId = memberId;
-        this.suiteRoomId = suiteRoomId;
+        this.suiteRoom = suiteRoom;
     }
 
+
+    public void addSuiteRoom(SuiteRoom suiteRoom) {
+        this.suiteRoom = suiteRoom;
+    }
 }

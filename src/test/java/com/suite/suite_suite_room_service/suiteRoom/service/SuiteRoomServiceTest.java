@@ -1,7 +1,6 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ReqUpdateSuiteRoomDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomListDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.StudyCategory;
@@ -27,7 +26,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -125,7 +123,7 @@ class SuiteRoomServiceTest {
         createSuiteRoom.addParticipant(participantHost);
         suiteRoomRepository.save(createSuiteRoom);
         Pageable pageable = PageRequest.of(0, 5);
-        String keyword = "empty";
+        String keyword = "";
         List<StudyCategory> subjects = Arrays.asList(StudyCategory.TOEIC);
 
         //when
@@ -135,7 +133,7 @@ class SuiteRoomServiceTest {
                         participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId()),
                         participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), MockAuthorizer.YH().getMemberId(), true),
                         participantRepository.findBySuiteRoom_SuiteRoomIdAndIsHost(suiteRoom.getSuiteRoomId(), true).get(),
-                        markRepository.countBySuiteRoomId(suiteRoom.getSuiteRoomId())
+                        markRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId())
                 )
         ).collect(Collectors.toList());
 
@@ -170,7 +168,7 @@ class SuiteRoomServiceTest {
                 participantRepository.countBySuiteRoom_SuiteRoomId(targetSuiteRoomId),
                 participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(targetSuiteRoomId,DH.getMemberId(), true),
                 participantRepository.findBySuiteRoom_SuiteRoomIdAndIsHost(suiteRoom.getSuiteRoomId(), true).get(),
-                markRepository.countBySuiteRoomId(suiteRoom.getSuiteRoomId())
+                markRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId())
         );
         //then
         assertAll(
