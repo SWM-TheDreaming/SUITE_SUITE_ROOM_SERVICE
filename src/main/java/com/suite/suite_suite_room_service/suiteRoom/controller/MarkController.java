@@ -26,7 +26,6 @@ public class MarkController {
 
     @GetMapping("/mark/suiteroom")
     public ResponseEntity<Message> listUpMarkOfSuiteRoom() {
-
-        return ResponseEntity.ok(new Message(StatusCode.OK));
+        return ResponseEntity.ok(new Message(StatusCode.OK, markService.getMarkOfSuiteRoom(getSuiteAuthorizer().getMemberId())));
     }
 }
