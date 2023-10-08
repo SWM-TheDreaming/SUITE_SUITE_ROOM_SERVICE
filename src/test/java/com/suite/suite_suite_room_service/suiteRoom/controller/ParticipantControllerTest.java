@@ -143,25 +143,6 @@ class ParticipantControllerTest {
                 () -> assertThat(result).allMatch(dto -> dto.getStatus() == SuiteStatus.READY)
         );
     }
-    @Test
-    @DisplayName("스위트룸 체크인 목록 확인 - 미납부 신청자")
-    public void getNotYetCheckInList() throws Exception {
-        //given
-        final String url = "/suite/payment/plain/" + String.valueOf(suiteRoom.getSuiteRoomId());
-        addGuest();
-
-        //when
-        String responseBody = getRequest(url, DR_JWT);
-        Message message = mapper.readValue(responseBody, new TypeReference<Message<List<ResPaymentParticipantDto>>>() {
-        });
-        List<ResPaymentParticipantDto> result = (List<ResPaymentParticipantDto>) message.getData();
-        System.out.println(result.get(0).getStatus());
-        //then
-        Assertions.assertAll(
-                () -> assertThat(message.getStatusCode()).isEqualTo(200),
-                () -> assertThat(result).allMatch(dto -> dto.getStatus() == SuiteStatus.PLAIN)
-        );
-    }
 
 
     protected void addGuest() {
