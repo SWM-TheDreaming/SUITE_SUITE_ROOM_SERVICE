@@ -1,7 +1,6 @@
 package com.suite.suite_suite_room_service.suiteRoom.service;
 
 import com.suite.suite_suite_room_service.suiteRoom.dto.*;
-import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import org.springframework.data.domain.Pageable;
 
@@ -18,6 +17,9 @@ public interface SuiteRoomService {
     void deleteSuiteRoom(Long suiteRoomId, AuthorizerDto authorizerDto);
     void updateSuiteRoom(ReqUpdateSuiteRoomDto reqUpdateSuiteRoomDto, AuthorizerDto authorizerDto);
     ResSuiteRoomInfoDto getSuiteRoomInfo(Long suiteRoomId);
-
     List<ResSuiteRoomListDto> getHonorOfSuiteRooms(Long memberId);
+
+    int getPoint(Long memberId);
+
+    ResBeforeStudyDashboard getBeforeStudyDashboard(Long suiteRoomId);
 }

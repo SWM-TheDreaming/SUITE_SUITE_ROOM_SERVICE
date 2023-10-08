@@ -82,4 +82,14 @@ public class SuiteRoomController {
     public ResponseEntity<Message> listUpHonorOfSuiteRoom() {
         return ResponseEntity.ok(new Message(StatusCode.OK, suiteRoomService.getHonorOfSuiteRooms(getSuiteAuthorizer().getMemberId())));
     }
+
+    @GetMapping("/suiteroom/point")
+    public ResponseEntity<Message> getMyPoint() {
+        return ResponseEntity.ok(new Message(StatusCode.OK, suiteRoomService.getPoint(getSuiteAuthorizer().getMemberId())));
+    }
+
+    @PostMapping("/suiteroom/before/dashboard")
+    public ResponseEntity<Message> listUpBeforeStudyDashboard(@RequestBody Map<String, Long> suiteRoom) {
+        return ResponseEntity.ok(new Message(StatusCode.OK, suiteRoomService.getBeforeStudyDashboard(suiteRoom.get("suiteRoomId"))));
+    }
 }

@@ -29,7 +29,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService {
     private final ParticipantRepository participantRepository;
     private final MarkRepository markRepository;
     private final SuiteRoomProducer suiteRoomProducer;
-
+    private final AnpService anpService;
     @Override
     public List<ResSuiteRoomListDto> getSuiteRooms(AuthorizerDto authorizerDto, ReqListUpSuiteRoomDto reqListUpSuiteRoomDto, Pageable pageable) {
 
@@ -178,6 +178,22 @@ public class SuiteRoomServiceImpl implements SuiteRoomService {
                         markRepository.countBySuiteRoom_SuiteRoomId(suiteRoom.getSuiteRoomId())
                 )
         ).collect(Collectors.toList());
+    }
+
+    @Override
+    public int getPoint(Long memberId) {
+        return anpService.getPoint(memberId);
+    }
+
+    @Override
+    public ResBeforeStudyDashboard getBeforeStudyDashboard(Long suiteRoomId) {
+        SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomIdAndIsStart(suiteRoomId, true).orElseThrow(() -> new CustomException(StatusCode.NOT_FOUND));
+
+        List<ParticipantDto> participantDtoList = participantRepository.findBySuiteRoom_SuiteRoomId(suiteRoomId).stream().map(
+                participant -> participant.toParticipantDto()).collect(Collectors.toList());
+
+        return suiteRoom.toResBeforeStudyDashboard(participantDtoList);
+
     }
 
 }
