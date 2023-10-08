@@ -233,9 +233,6 @@ class ParticipantServiceTest {
                 .stream()
                 .map(
                         participant -> {
-                            if(participant.getStatus() == SuiteStatus.PLAIN) Assertions.assertThrows(
-                                    CustomException.class, () -> { throw new CustomException(StatusCode.PLAIN_USER_EXIST);}
-                            );
                             participant.updateStatus(SuiteStatus.START);
                             return participant.toResPaymentParticipantDto();
                         }
