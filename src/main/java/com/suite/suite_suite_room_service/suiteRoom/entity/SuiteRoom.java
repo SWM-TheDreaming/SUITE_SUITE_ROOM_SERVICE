@@ -211,6 +211,7 @@ public class SuiteRoom extends BaseTimeEntity {
         return ResBeforeStudyDashboard.builder()
                 .suiteRoomId(suiteRoomId)
                 .depositAmount(depositAmount)
+                .channelLink(channelLink)
                 .isStart(isStart)
                 .studyStartDate(studyStartDate)
                 .studyDeadline(studyDeadline)
