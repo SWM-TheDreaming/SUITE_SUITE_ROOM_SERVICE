@@ -10,8 +10,9 @@ public class MockParticipant {
     public static Participant getMockParticipant(boolean ishost, AuthorizerDto authorizerDto) {
         return Participant.builder()
                 .authorizerDto(authorizerDto)
-                .status(SuiteStatus.PLAIN)
+                .status(SuiteStatus.READY)
                 .isHost(ishost).build();
+
     }
 
 

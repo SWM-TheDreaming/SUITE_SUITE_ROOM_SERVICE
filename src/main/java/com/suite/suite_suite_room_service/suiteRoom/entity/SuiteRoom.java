@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -206,6 +205,16 @@ public class SuiteRoom extends BaseTimeEntity {
                 .isHost(isHost)
                 .createdAt(this.getCreatedDate())
                 .build();
+    }
+
+    public ResBeforeStudyDashboard toResBeforeStudyDashboard(List<ParticipantDto> participantDtoList) {
+        return ResBeforeStudyDashboard.builder()
+                .suiteRoomId(suiteRoomId)
+                .isStart(isStart)
+                .studyStartDate(studyStartDate)
+                .studyDeadline(studyDeadline)
+                .title(title)
+                .participantDtoList(participantDtoList).build();
     }
 
 }

@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
@@ -29,10 +28,10 @@ public class ResSuiteRoomDto {
     private Long participantCount;
     private boolean isHost;
     private Long markCount;
-    private LocalDateTime createdAt;
+    private Timestamp createdAt;
     private boolean isMark;
     @Builder
-    public ResSuiteRoomDto(Long suiteRoomId, String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Boolean isOpen ,String channelLink, StudyType studyMethod, String contractAddress, Long participantCount, boolean isHost, Long markCount, LocalDateTime createdAt, boolean isMark) {
+    public ResSuiteRoomDto(Long suiteRoomId, String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Boolean isOpen , String channelLink, StudyType studyMethod, String contractAddress, Long participantCount, boolean isHost, Long markCount, Timestamp createdAt, boolean isMark) {
         this.suiteRoomId = suiteRoomId;
         this.title = title;
         this.content = content;

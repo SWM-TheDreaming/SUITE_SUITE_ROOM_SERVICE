@@ -2,6 +2,7 @@ package com.suite.suite_suite_room_service.suiteRoom.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.suite.suite_suite_room_service.baseTime.BaseTimeEntity;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ParticipantDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ResPaymentParticipantDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.ResSuiteRoomListDto;
 import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
@@ -91,5 +92,13 @@ public class Participant extends BaseTimeEntity {
                 .suiteStatus(suiteStatus)
                 .hostNickName(host.getNickname())
                 .build();
+    }
+
+    public ParticipantDto toParticipantDto() {
+        return ParticipantDto.builder()
+                .memberId(memberId)
+                .name(name)
+                .nickname(nickname)
+                .isHost(isHost).build();
     }
 }

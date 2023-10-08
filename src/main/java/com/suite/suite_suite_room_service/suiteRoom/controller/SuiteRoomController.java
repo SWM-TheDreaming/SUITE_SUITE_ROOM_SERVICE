@@ -67,9 +67,9 @@ public class SuiteRoomController {
     }
 
 
-    @DeleteMapping("/suiteroom/delete/{suiteRoomId}")
-    public ResponseEntity<Message> deleteRoom(@PathVariable Long suiteRoomId) {
-        suiteRoomService.deleteSuiteRoom(suiteRoomId, getSuiteAuthorizer());
+    @DeleteMapping("/suiteroom/delete")
+    public ResponseEntity<Message> deleteRoom(@RequestBody Map<String, Long> suiteRoom) {
+        suiteRoomService.deleteSuiteRoom(suiteRoom.get("suiteRoomId"), getSuiteAuthorizer());
         return ResponseEntity.ok(new Message(StatusCode.OK));
     }
     @PatchMapping("/suiteroom/update")
@@ -81,5 +81,15 @@ public class SuiteRoomController {
     @GetMapping("/suiteroom/honor")
     public ResponseEntity<Message> listUpHonorOfSuiteRoom() {
         return ResponseEntity.ok(new Message(StatusCode.OK, suiteRoomService.getHonorOfSuiteRooms(getSuiteAuthorizer().getMemberId())));
+    }
+
+    @GetMapping("/suiteroom/point")
+    public ResponseEntity<Message> getMyPoint() {
+        return ResponseEntity.ok(new Message(StatusCode.OK, suiteRoomService.getPoint(getSuiteAuthorizer().getMemberId())));
+    }
+
+    @PostMapping("/suiteroom/before/dashboard")
+    public ResponseEntity<Message> listUpBeforeStudyDashboard(@RequestBody Map<String, Long> suiteRoom) {
+        return ResponseEntity.ok(new Message(StatusCode.OK, suiteRoomService.getBeforeStudyDashboard(suiteRoom.get("suiteRoomId"))));
     }
 }
