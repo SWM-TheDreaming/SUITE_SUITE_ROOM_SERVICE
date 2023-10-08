@@ -49,7 +49,7 @@ public class Mark {
                 .isOpen(suiteRoom.getIsOpen())
                 .participantCount(participantCount)
                 .isHost(isHost)
-                .hostNickName(participant.getNickName())
+                .hostNickName(participant.getNickname())
                 .markCount(markCount)
                 .build();
     }

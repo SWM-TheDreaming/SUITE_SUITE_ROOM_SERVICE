@@ -33,7 +33,7 @@ public class Participant extends BaseTimeEntity {
 
     private String name;
 
-    private String nickName;
+    private String nickname;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
@@ -53,7 +53,7 @@ public class Participant extends BaseTimeEntity {
         this.memberId = authorizerDto.getMemberId();
         this.email = authorizerDto.getEmail();
         this.name = authorizerDto.getName();
-        this.nickName = authorizerDto.getNickName();
+        this.nickname = authorizerDto.getNickName();
         this.status = status;
         this.isHost = isHost;
     }
@@ -68,7 +68,7 @@ public class Participant extends BaseTimeEntity {
     public ResPaymentParticipantDto toResPaymentParticipantDto() {
         return ResPaymentParticipantDto.builder()
                 .memberId(this.memberId)
-                .nickName(this.nickName)
+                .nickName(this.nickname)
                 .email(this.email)
                 .name(this.name)
                 .status(this.status)
@@ -91,7 +91,7 @@ public class Participant extends BaseTimeEntity {
                 .participantCount(participantCount)
                 .isHost(this.isHost)
                 .suiteStatus(suiteStatus)
-                .hostNickName(host.getNickName())
+                .hostNickName(host.getNickname())
                 .build();
     }
 
@@ -99,7 +99,7 @@ public class Participant extends BaseTimeEntity {
         return ParticipantDto.builder()
                 .memberId(memberId)
                 .name(name)
-                .nickName(nickName)
+                .nickName(nickname)
                 .missionRate(0.0)
                 .attendanceRate(0.0)
                 .isHost(isHost).build();
