@@ -13,12 +13,14 @@ public class ResSuiteRoomInfoDto {
     private Boolean isStart;
     private Timestamp studyStartDate;
     private Timestamp studyDeadline;
+    private String title;
 
     @Builder
-    public ResSuiteRoomInfoDto(Long suiteRoomId, Boolean isStart, Timestamp studyStartDate, Timestamp studyDeadline) {
+    public ResSuiteRoomInfoDto(Long suiteRoomId, Boolean isStart, Timestamp studyStartDate, Timestamp studyDeadline, String title) {
         this.suiteRoomId = suiteRoomId;
         this.isStart = isStart;
         this.studyStartDate = studyStartDate;
         this.studyDeadline = studyDeadline;
+        this.title = title;
     }
 }
