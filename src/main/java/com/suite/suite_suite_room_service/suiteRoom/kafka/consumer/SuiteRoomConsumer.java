@@ -13,7 +13,6 @@ import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -22,8 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -33,7 +30,7 @@ public class SuiteRoomConsumer {
     private final ParticipantRepository participantRepository;
 
     @Transactional
-    @KafkaListener(topics = { "${topic.SUITEROOM_JOIN}", "${topic.SUITEROOM_CANCELJOIN_ERROR}" }, groupId = "suite", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = { "${topic.SUITEROOM_JOIN}", "${topic.SUITEROOM_CANCELJOIN_ERROR}" }, groupId = "suiteRoomJoinConsumers", containerFactory = "kafkaListenerContainerFactory")
     public void suiteRoomJoinConsume(ConsumerRecord<String, String> record) throws IOException, ParseException {
         JSONParser parser = new JSONParser();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -49,7 +46,7 @@ public class SuiteRoomConsumer {
     }
 
     @Transactional
-    @KafkaListener(topics = "${topic.SUITEROOM_START_ERROR}", groupId = "suite", containerFactory = "kafkaListenerDefaultContainerFactory")
+    @KafkaListener(topics = "${topic.SUITEROOM_START_ERROR}", groupId = "suiteRoomStartErrorConsumers", containerFactory = "kafkaListenerDefaultContainerFactory")
     public void suiteRoomStartErrorConsume(ConsumerRecord<String, String> record) throws IOException, ParseException {
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = (JSONObject) parser.parse(record.value());
@@ -67,7 +64,7 @@ public class SuiteRoomConsumer {
     }
 
     @Transactional
-    @KafkaListener(topics = "${topic.SUITEROOM_TERMINATE_COMPLETE}", groupId = "suite", containerFactory = "kafkaListenerDefaultContainerFactory")
+    @KafkaListener(topics = "${topic.SUITEROOM_TERMINATE_COMPLETE}", groupId = "suiteRoomTerminateCompleteConsumers", containerFactory = "kafkaListenerDefaultContainerFactory")
     public void terminateSuiteRoomCompleteConsume(ConsumerRecord<String, String> record) throws IOException, ParseException {
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = (JSONObject) parser.parse(record.value());
@@ -78,7 +75,7 @@ public class SuiteRoomConsumer {
     }
 
     @Transactional
-    @KafkaListener(topics = "${topic.HALLOFFAME-SELECTION}", groupId = "suite", containerFactory = "kafkaListenerDefaultContainerFactory")
+    @KafkaListener(topics = "${topic.HALLOFFAME-SELECTION}", groupId = "hallOfFameSelectionConsumers", containerFactory = "kafkaListenerDefaultContainerFactory")
     public void selectHallOfFame(ConsumerRecord<String, String> record) throws IOException, ParseException {
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = (JSONObject) parser.parse(record.value());
