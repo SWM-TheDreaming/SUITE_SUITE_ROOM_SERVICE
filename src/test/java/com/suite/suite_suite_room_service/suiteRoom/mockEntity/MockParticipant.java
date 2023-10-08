@@ -12,6 +12,7 @@ public class MockParticipant {
                 .authorizerDto(authorizerDto)
                 .status(SuiteStatus.READY)
                 .isHost(ishost).build();
+
     }
 
 
