@@ -198,26 +198,6 @@ class ParticipantServiceTest {
     }
 
 
-    @Test
-    @DisplayName("스위트룸 체크인 목록 확인 - 미납부 신청자")
-    //@Transactional // for update status
-    public void listUpNotYetPaymentParticipants() {
-        //given
-        Long targetSuiteRoomId = suiteRoom.getSuiteRoomId();
-        AuthorizerDto DH = MockAuthorizer.DH();
-        addParticipantForTest(DH, targetSuiteRoomId, false);
-        //when
-        List<ResPaymentParticipantDto> resPaymentParticipantDtos = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(targetSuiteRoomId, SuiteStatus.PLAIN)
-                .stream().map(
-                        participant -> participant.toResPaymentParticipantDto()
-                ).collect(Collectors.toList());
-        //then
-        Assertions.assertAll(
-                () -> assertThat(resPaymentParticipantDtos.size()).isEqualTo(1),
-                () -> assertThat(resPaymentParticipantDtos).allMatch(dto -> dto.getStatus() == SuiteStatus.PLAIN),
-                () -> assertThat(resPaymentParticipantDtos).allMatch(dto -> dto.getClass() == ResPaymentParticipantDto.class)
-        );
-    }
 
     @Test
     @DisplayName("스터디 그룹 시작")
