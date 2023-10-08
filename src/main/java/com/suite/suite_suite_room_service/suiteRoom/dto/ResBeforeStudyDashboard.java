@@ -11,6 +11,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ResBeforeStudyDashboard {
     private Long suiteRoomId;
+    private int depositAmount;
     private Boolean isStart;
     private Timestamp studyStartDate;
     private Timestamp studyDeadline;
@@ -18,8 +19,9 @@ public class ResBeforeStudyDashboard {
     private List<ParticipantDto> participantDtoList;
 
     @Builder
-    public ResBeforeStudyDashboard(Long suiteRoomId, Boolean isStart, Timestamp studyStartDate, Timestamp studyDeadline, String title, List<ParticipantDto> participantDtoList) {
+    public ResBeforeStudyDashboard(Long suiteRoomId, int depositAmount, Boolean isStart, Timestamp studyStartDate, Timestamp studyDeadline, String title, List<ParticipantDto> participantDtoList) {
         this.suiteRoomId = suiteRoomId;
+        this.depositAmount = depositAmount;
         this.isStart = isStart;
         this.studyStartDate = studyStartDate;
         this.studyDeadline = studyDeadline;
