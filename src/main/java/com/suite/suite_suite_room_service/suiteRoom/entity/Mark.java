@@ -35,4 +35,22 @@ public class Mark {
     public void addSuiteRoom(SuiteRoom suiteRoom) {
         this.suiteRoom = suiteRoom;
     }
+
+    public ResSuiteRoomListDto toResSuiteRoomListDto(Long participantCount, boolean isHost, Participant participant, Long markCount) {
+        return ResSuiteRoomListDto.builder()
+                .suiteRoomId(suiteRoom.getSuiteRoomId())
+                .title(suiteRoom.getTitle())
+                .subject(suiteRoom.getSubject())
+                .recruitmentDeadline(suiteRoom.getRecruitmentDeadline())
+                .createdDate(getSuiteRoom().getCreatedDate())
+                .recruitmentLimit(suiteRoom.getRecruitmentLimit())
+                .depositAmount(suiteRoom.getDepositAmount())
+                .isPublic(suiteRoom.getIsPublic())
+                .isOpen(suiteRoom.getIsOpen())
+                .participantCount(participantCount)
+                .isHost(isHost)
+                .hostNickName(participant.getNickname())
+                .markCount(markCount)
+                .build();
+    }
 }
