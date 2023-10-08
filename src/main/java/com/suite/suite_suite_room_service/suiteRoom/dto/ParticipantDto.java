@@ -21,7 +21,7 @@ public class ParticipantDto {
         this.name = name;
         this.nickName = nickName;
         this.isHost = isHost;
-        this.attendanceRate = 0.0;
-        this.missionRate = 0.0;
+        this.attendanceRate = attendanceRate;
+        this.missionRate = missionRate;
     }
 }

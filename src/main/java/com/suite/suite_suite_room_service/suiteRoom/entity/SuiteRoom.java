@@ -156,7 +156,7 @@ public class SuiteRoom extends BaseTimeEntity {
                 .isOpen(this.isOpen)
                 .participantCount(participantCount)
                 .isHost(isHost)
-                .hostNickName(participant.getNickname())
+                .hostNickName(participant.getNickName())
                 .markCount(markCount)
                 .build();
     }
