@@ -21,10 +21,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -136,7 +135,7 @@ public class SuiteRoomProducer {
         map.put("group_deposit_per_person", resSuiteRoomDto.getDepositAmount());
         map.put("group_period", daysDiffCalculatorTimeStamp(resSuiteRoomDto.getStudyDeadline()));
         map.put("recruitment_period", daysDiffCalculatorTimeStamp(resSuiteRoomDto.getCreatedAt()));
-        map.put("group_created_at", daysDiffCalculatorTimeStamp(resSuiteRoomDto.getCreatedAt()));
+        map.put("group_created_at", daysConvertToStringFormat(resSuiteRoomDto.getCreatedAt()));
         map.put("minimum_attendance", resSuiteRoomDto.getMinAttendanceRate());
         map.put("minimum_mission_completion", resSuiteRoomDto.getMinMissionCompleteRate());
         return map;
@@ -168,9 +167,9 @@ public class SuiteRoomProducer {
     }
 
 
-    private String daysConvertToStringFormat(LocalDateTime localDateTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy년 M월 d일");
-        return localDateTime.format(formatter);
+    private String daysConvertToStringFormat(Timestamp timestamp) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yy년 M월 d일");
+        return sdf.format(timestamp);
     }
 
     private String makeMessage(Map<String, Object> data) {
