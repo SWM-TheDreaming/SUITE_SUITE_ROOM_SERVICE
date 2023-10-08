@@ -119,32 +119,27 @@ public class SuiteRoomProducer {
     }
 
     private Map<String, Object> updateStatusReadyToStart(Long suiteRoomId, List<Participant> participants, SuiteRoom suiteRoom) {
-        try {
-            Map<String, Object> map = new HashMap<>();
-            List<String> participantsIds = new ArrayList<>();
-            List<String> participantsNames = new ArrayList<>();
-            List<String> signatures = new ArrayList<>();
-            ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> map = new HashMap<>();
+        List<String> participantsIds = new ArrayList<>();
+        List<String> participantsNames = new ArrayList<>();
+        List<String> signatures = new ArrayList<>();
 
-            Long participantCount = convertParticipantsToDto(participants, participantsIds, participantsNames, signatures, map).stream().count();
+        Long participantCount = convertParticipantsToDto(participants, participantsIds, participantsNames, signatures, map).stream().count();
 
-            ResSuiteRoomDto resSuiteRoomDto = suiteRoom.toResSuiteRoomDto(participantCount, false);
-            map.put("participant_ids", objectMapper.writeValueAsString(participantsIds));
-            map.put("signatures", objectMapper.writeValueAsString(signatures));
-            map.put("participant_names", objectMapper.writeValueAsString(participantsNames));
-            map.put("suite_room_id", suiteRoomId);
-            map.put("title", resSuiteRoomDto.getTitle());
-            map.put("group_capacity", participantCount);
-            map.put("group_deposit_per_person", resSuiteRoomDto.getDepositAmount());
-            map.put("group_period", daysDiffCalculatorTimeStamp(resSuiteRoomDto.getStudyDeadline()));
-            map.put("recruitment_period", daysDiffCalculatorLocalDateTime(resSuiteRoomDto.getCreatedAt()));
-            map.put("group_created_at", daysConvertToStringFormat(resSuiteRoomDto.getCreatedAt()));
-            map.put("minimum_attendance", resSuiteRoomDto.getMinAttendanceRate());
-            map.put("minimum_mission_completion", resSuiteRoomDto.getMinMissionCompleteRate());
-            return map;
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        ResSuiteRoomDto resSuiteRoomDto = suiteRoom.toResSuiteRoomDto(participantCount, false);
+        map.put("participant_ids", participantsIds);
+        map.put("signatures", signatures);
+        map.put("participant_names", participantsNames);
+        map.put("suite_room_id", suiteRoomId);
+        map.put("title", resSuiteRoomDto.getTitle());
+        map.put("group_capacity", participantCount);
+        map.put("group_deposit_per_person", resSuiteRoomDto.getDepositAmount());
+        map.put("group_period", daysDiffCalculatorTimeStamp(resSuiteRoomDto.getStudyDeadline()));
+        map.put("recruitment_period", daysDiffCalculatorLocalDateTime(resSuiteRoomDto.getCreatedAt()));
+        map.put("group_created_at", daysConvertToStringFormat(resSuiteRoomDto.getCreatedAt()));
+        map.put("minimum_attendance", resSuiteRoomDto.getMinAttendanceRate());
+        map.put("minimum_mission_completion", resSuiteRoomDto.getMinMissionCompleteRate());
+        return map;
     }
 
     private List<ResPaymentParticipantDto> convertParticipantsToDto(List<Participant> participants, List<String> participantsIds, List<String> participantsNames, List<String> signatures, Map<String, Object> map) {
