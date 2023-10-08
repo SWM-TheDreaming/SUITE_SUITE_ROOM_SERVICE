@@ -70,6 +70,7 @@ public class Participant extends BaseTimeEntity {
                 .memberId(this.memberId)
                 .nickName(this.nickname)
                 .email(this.email)
+                .name(this.name)
                 .status(this.status)
                 .isHost(this.isHost)
                 .build();
