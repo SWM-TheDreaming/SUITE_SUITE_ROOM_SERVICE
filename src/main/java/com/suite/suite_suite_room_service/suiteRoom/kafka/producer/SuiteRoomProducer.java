@@ -135,8 +135,8 @@ public class SuiteRoomProducer {
         map.put("group_capacity", participantCount);
         map.put("group_deposit_per_person", resSuiteRoomDto.getDepositAmount());
         map.put("group_period", daysDiffCalculatorTimeStamp(resSuiteRoomDto.getStudyDeadline()));
-        map.put("recruitment_period", daysDiffCalculatorLocalDateTime(resSuiteRoomDto.getCreatedAt()));
-        map.put("group_created_at", daysConvertToStringFormat(resSuiteRoomDto.getCreatedAt()));
+        map.put("recruitment_period", daysDiffCalculatorTimeStamp(resSuiteRoomDto.getCreatedAt()));
+        map.put("group_created_at", daysDiffCalculatorTimeStamp(resSuiteRoomDto.getCreatedAt()));
         map.put("minimum_attendance", resSuiteRoomDto.getMinAttendanceRate());
         map.put("minimum_mission_completion", resSuiteRoomDto.getMinMissionCompleteRate());
         return map;
@@ -167,14 +167,6 @@ public class SuiteRoomProducer {
         return ChronoUnit.DAYS.between(targetDate, nowDate);
     }
 
-    private long daysDiffCalculatorLocalDateTime(LocalDateTime targetTime) {
-        Timestamp nowTimestamp = new Timestamp(System.currentTimeMillis());
-
-        LocalDate nowDate = nowTimestamp.toLocalDateTime().toLocalDate();
-        LocalDate targetDate = targetTime.toLocalDate();
-
-        return ChronoUnit.DAYS.between(targetDate, nowDate);
-    }
 
     private String daysConvertToStringFormat(LocalDateTime localDateTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy년 M월 d일");
