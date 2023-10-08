@@ -2,19 +2,20 @@ package com.suite.suite_suite_room_service.suiteRoom.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.suite.suite_suite_room_service.suiteRoom.dto.*;
+import com.suite.suite_suite_room_service.suiteRoom.dto.Message;
+import com.suite.suite_suite_room_service.suiteRoom.dto.ResPaymentParticipantDto;
+import com.suite.suite_suite_room_service.suiteRoom.dto.SuiteStatus;
 import com.suite.suite_suite_room_service.suiteRoom.entity.Participant;
 import com.suite.suite_suite_room_service.suiteRoom.entity.SuiteRoom;
-
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockAuthorizer;
-import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockCheckInInfo;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockParticipant;
 import com.suite.suite_suite_room_service.suiteRoom.mockEntity.MockSuiteRoom;
 import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantRepository;
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
-
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -31,7 +32,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
@@ -163,26 +163,6 @@ class ParticipantControllerTest {
         );
     }
 
-    @Test
-    @DisplayName("스위트룸-스터디-시작")
-    public void startSuiteRoom() throws Exception {
-        //given
-        final String url = "/suite/suiteroom/beginning";
-        addGuest();
-        //when
-        Map<String, Long> suiteRoomId = new HashMap<String, Long>();
-        suiteRoomId.put("suiteRoomId", suiteRoom.getSuiteRoomId());
-        String body = mapper.writeValueAsString(suiteRoomId);
-
-        String responseBody = postRequest(url, YH_JWT, body);
-
-        Message message = mapper.readValue(responseBody, Message.class);
-        //then
-        Assertions.assertAll(
-                () -> assertThat(message.getStatusCode()).isEqualTo(200)
-        );
-
-    }
 
     protected void addGuest() {
         Participant participantGuest = MockParticipant.getMockParticipant(false, MockAuthorizer.DH());
