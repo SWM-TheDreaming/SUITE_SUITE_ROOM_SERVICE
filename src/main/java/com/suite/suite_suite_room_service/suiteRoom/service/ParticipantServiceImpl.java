@@ -119,10 +119,13 @@ public class ParticipantServiceImpl implements ParticipantService{
     @Transactional
     public void updateParticipantsStatusReadyToStart(Long suiteRoomId, Long memberId) {
         participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoomId, memberId, true).orElseThrow(() -> new CustomException(StatusCode.FORBIDDEN));
+
+        participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoomId, memberId, true).orElseThrow(() -> new CustomException(StatusCode.FORBIDDEN));
         List<Participant> participants = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(suiteRoomId, SuiteStatus.READY);
 
         SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomIdAndIsStart(suiteRoomId, false)
                 .orElseThrow(() ->  new CustomException(StatusCode.ALEADY_START_OR_NOT_FOUND));
+
         suiteRoom.startSuiteRoom();
         List<ResPaymentParticipantDto> resPaymentParticipantDtos = participants.stream().map(
                 p -> {
@@ -131,7 +134,6 @@ public class ParticipantServiceImpl implements ParticipantService{
                 }).collect(Collectors.toList());
 
         suiteRoomProducer.suiteRoomContractCreationProducer(suiteRoomId, participants, suiteRoom);
-
         suiteRoomProducer.suiteRoomStartProducer(suiteRoom, resPaymentParticipantDtos);
     }
 

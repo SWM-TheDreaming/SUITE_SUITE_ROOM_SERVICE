@@ -229,6 +229,8 @@ class ParticipantServiceTest {
         addParticipantForTest(DH, targetSuiteRoomId, true);
         addParticipantForTest(JH, targetSuiteRoomId, true);
         //when
+        Participant hostCandidate = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(1L, 1L, true).orElseThrow(() -> assertThrows(CustomException.class, () -> {throw new CustomException(StatusCode.FORBIDDEN);}));
+
         List<ResPaymentParticipantDto> resPaymentParticipantDtos = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(targetSuiteRoomId, SuiteStatus.READY)
                 .stream()
                 .map(
@@ -244,6 +246,7 @@ class ParticipantServiceTest {
         System.out.println("kafka 프로듀싱 to 블록체인 서비스");
         //then
         Assertions.assertAll(
+                () -> assertThat(hostCandidate.getIsHost()).isEqualTo(true),
                 () -> assertThat(resPaymentParticipantDtos.size()).isEqualTo(3),
                 () -> assertThat(resPaymentParticipantDtos).allMatch(dto -> dto.getStatus() == SuiteStatus.START),
                 () -> assertThat(resPaymentParticipantDtos).allMatch(dto -> dto.getClass() == ResPaymentParticipantDto.class)
