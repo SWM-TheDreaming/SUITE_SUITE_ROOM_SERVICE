@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -220,9 +221,10 @@ class SuiteRoomControllerTest {
     @DisplayName("스터디 파투")
     public void deleteSuiteRoom() throws Exception {
         //given
-        final String url = "/suite/suiteroom/delete/" + suiteRoom.getSuiteRoomId();
+        final String url = "/suite/suiteroom/delete";
+        String body = mapper.writeValueAsString(Map.of("suiteRoomId", suiteRoom.getSuiteRoomId()));
         //when
-        String responseBody = deleteRequest(url, YH_JWT);
+        String responseBody = deleteRequest(url, YH_JWT, body);
         Message message = mapper.readValue(responseBody, Message.class);
         //then
         Assertions.assertAll(
@@ -263,9 +265,10 @@ class SuiteRoomControllerTest {
         return result.getResponse().getContentAsString();
     }
 
-    private String deleteRequest(String url, String jwt) throws Exception {
+    private String deleteRequest(String url, String jwt, String body) throws Exception {
         MvcResult result = mockMvc.perform(delete(url)
                         .contentType(MediaType.APPLICATION_JSON)
+                        .content(body)
                         .header("Authorization", "Bearer " + jwt)
                 )
                 .andExpect(status().isOk()).andReturn();
