@@ -20,6 +20,6 @@ public interface SuiteRoomService {
     List<ResSuiteRoomListDto> getHonorOfSuiteRooms(Long memberId);
 
     int getPoint(Long memberId);
-
+    boolean getSuiteRoomStartStatus(Long suiteRoomId);
     ResBeforeStudyDashboard getBeforeStudyDashboard(Long suiteRoomId);
 }

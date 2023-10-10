@@ -92,4 +92,9 @@ public class SuiteRoomController {
     public ResponseEntity<Message> listUpBeforeStudyDashboard(@RequestBody Map<String, Long> suiteRoom) {
         return ResponseEntity.ok(new Message(StatusCode.OK, suiteRoomService.getBeforeStudyDashboard(suiteRoom.get("suiteRoomId"))));
     }
+
+    @PostMapping("/suiteroom/end")
+    public ResponseEntity<Message> isStudyEnd(@RequestBody Map<String, Long> suiteRoom) {
+        return ResponseEntity.ok(new Message(StatusCode.OK, suiteRoomService.getSuiteRoomStartStatus(suiteRoom.get("suiteRoomId"))));
+    }
 }

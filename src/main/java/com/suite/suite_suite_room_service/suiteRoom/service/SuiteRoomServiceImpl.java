@@ -186,6 +186,11 @@ public class SuiteRoomServiceImpl implements SuiteRoomService {
     }
 
     @Override
+    public boolean getSuiteRoomStartStatus(Long suiteRoomId) {
+        return suiteRoomRepository.existsBySuiteRoomIdAndIsStartAndHonorPointNotNull(suiteRoomId, true);
+    }
+
+    @Override
     public ResBeforeStudyDashboard getBeforeStudyDashboard(Long suiteRoomId) {
         SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomIdAndIsStart(suiteRoomId, false).orElseThrow(() -> new CustomException(StatusCode.NOT_FOUND));
 
