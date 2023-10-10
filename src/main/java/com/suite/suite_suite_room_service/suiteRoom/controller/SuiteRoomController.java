@@ -67,9 +67,9 @@ public class SuiteRoomController {
     }
 
 
-    @DeleteMapping("/suiteroom/delete")
-    public ResponseEntity<Message> deleteRoom(@RequestBody Map<String, Long> suiteRoom) {
-        suiteRoomService.deleteSuiteRoom(suiteRoom.get("suiteRoomId"), getSuiteAuthorizer());
+    @DeleteMapping("/suiteroom/delete/{suiteRoomId}")
+    public ResponseEntity<Message> deleteRoom(@PathVariable Long suiteRoomId) {
+        suiteRoomService.deleteSuiteRoom(suiteRoomId, getSuiteAuthorizer());
         return ResponseEntity.ok(new Message(StatusCode.OK));
     }
     @PatchMapping("/suiteroom/update")

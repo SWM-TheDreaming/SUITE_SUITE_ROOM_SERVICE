@@ -221,7 +221,7 @@ class SuiteRoomControllerTest {
     @DisplayName("스터디 파투")
     public void deleteSuiteRoom() throws Exception {
         //given
-        final String url = "/suite/suiteroom/delete";
+        final String url = "/suite/suiteroom/delete/" + suiteRoom.getSuiteRoomId();
         String body = mapper.writeValueAsString(Map.of("suiteRoomId", suiteRoom.getSuiteRoomId()));
         //when
         String responseBody = deleteRequest(url, YH_JWT, body);
