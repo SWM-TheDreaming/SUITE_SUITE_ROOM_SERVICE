@@ -147,7 +147,10 @@ public class SuiteRoomProducer {
                 .map(
                         p -> {
                             if(p.getStatus() == SuiteStatus.PLAIN) throw new CustomException(StatusCode.PLAIN_USER_EXIST);
-                            if(p.getIsHost()) map.put("leader_id", p.getEmail());
+                            if(p.getIsHost()) {
+                                map.put("leader_id", p.getEmail());
+                                map.put("leader_name", p.getName());
+                            }
                             participantsIds.add(p.getEmail());
                             participantsNames.add(p.getName());
                             signatures.add(p.getEmail().split("@")[0] +"는 계약서의 모든 조항에 대해 동의합니다.");
