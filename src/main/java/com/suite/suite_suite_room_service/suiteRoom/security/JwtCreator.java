@@ -18,17 +18,12 @@ import java.util.Date;
 public class JwtCreator {
     @Value("${jwt.access.key}")
     private String accessSecretKey;
-    @Value("${jwt.refresh.key")
-    private String refreshSecretKey;
     @Value("${jwt.access.validtime}")
     private long accessTokenValidTime;
-    @Value("${jwt.refresh.validtime}")
-    private long refreshTokenValidTime;
 
     @PostConstruct
     protected void init() {
         accessSecretKey = Base64.getEncoder().encodeToString(accessSecretKey.getBytes());
-        refreshSecretKey = Base64.getEncoder().encodeToString(refreshSecretKey.getBytes());
     }
 
     public Token createToken(AuthorizerDto authorizerDto) {  // userPK = email
@@ -37,11 +32,9 @@ public class JwtCreator {
 
 
         String accessToken = getMockToken(authorizerDto, claims, now, accessTokenValidTime, accessSecretKey);
-        String refreshToken = getMockToken(authorizerDto, claims, now, accessTokenValidTime, refreshSecretKey);
 
         return Token.builder()
                 .accessToken(accessToken)
-                .refreshToken(refreshToken)
                 .key(authorizerDto.getEmail())
                 .build();
 
