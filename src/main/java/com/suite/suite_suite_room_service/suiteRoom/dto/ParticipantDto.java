@@ -9,14 +9,19 @@ import lombok.RequiredArgsConstructor;
 public class ParticipantDto {
     private Long memberId;
     private String name;
-    private String nickname;
+    private String nickName;
     private Boolean isHost;
+    private Double attendanceRate;
+    private Double missionRate;
+
 
     @Builder
-    public ParticipantDto(Long memberId, String name, String nickname, Boolean isHost) {
+    public ParticipantDto(Long memberId, String name, String nickName, Boolean isHost, Double attendanceRate, Double missionRate) {
         this.memberId = memberId;
         this.name = name;
-        this.nickname = nickname;
+        this.nickName = nickName;
         this.isHost = isHost;
+        this.attendanceRate = attendanceRate;
+        this.missionRate = missionRate;
     }
 }

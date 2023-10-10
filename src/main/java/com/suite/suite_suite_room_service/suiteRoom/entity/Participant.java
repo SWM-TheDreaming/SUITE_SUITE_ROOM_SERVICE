@@ -99,7 +99,9 @@ public class Participant extends BaseTimeEntity {
         return ParticipantDto.builder()
                 .memberId(memberId)
                 .name(name)
-                .nickname(nickname)
+                .nickName(nickname)
+                .missionRate(0.0)
+                .attendanceRate(0.0)
                 .isHost(isHost).build();
     }
 }

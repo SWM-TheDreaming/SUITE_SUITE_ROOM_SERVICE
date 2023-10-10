@@ -187,7 +187,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService {
 
     @Override
     public ResBeforeStudyDashboard getBeforeStudyDashboard(Long suiteRoomId) {
-        SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomIdAndIsStart(suiteRoomId, true).orElseThrow(() -> new CustomException(StatusCode.NOT_FOUND));
+        SuiteRoom suiteRoom = suiteRoomRepository.findBySuiteRoomIdAndIsStart(suiteRoomId, false).orElseThrow(() -> new CustomException(StatusCode.NOT_FOUND));
 
         List<ParticipantDto> participantDtoList = participantRepository.findBySuiteRoom_SuiteRoomId(suiteRoomId).stream().map(
                 participant -> participant.toParticipantDto()).collect(Collectors.toList());
