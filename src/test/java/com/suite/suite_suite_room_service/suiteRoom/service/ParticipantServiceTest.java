@@ -78,28 +78,7 @@ class ParticipantServiceTest {
      * 결제 서비스와 붙일 카프카 추가 ( 포인트 환불 )
      * 방장은 그러면 스터디 파투를 할 때 포인트를 환급받을 백로그가 필요
      * */
-    @Test
-    @DisplayName("스위트룸 참가 취소")
-    public void removeParticipant() {
-        //given
-        Long targetSuiteRoomId = suiteRoom.getSuiteRoomId();
-        AuthorizerDto authorizerDto = MockAuthorizer.YH();
-        //when
-        Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(targetSuiteRoomId, authorizerDto.getMemberId()).orElseThrow(
-                () -> assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.FAILED_REQUEST); }));
 
-        if(participant.getIsHost())
-            assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.CAN_NOT_CALCEL_SUITEROOM); });
-
-        if(participant.getStatus().equals(SuiteStatus.READY))
-            System.out.println("kafka");
-        participantRepository.deleteBySuiteRoom_SuiteRoomIdAndMemberId(targetSuiteRoomId, authorizerDto.getMemberId());
-        List<Participant> result = participantRepository.findBySuiteRoom_SuiteRoomId(targetSuiteRoomId);
-        //then
-        Assertions.assertAll(
-                () -> assertThat(result.size()).isEqualTo(1)
-        );
-    }
 
     @Test
     @DisplayName("스위트룸 체크인 완료 - 방장")
@@ -209,7 +188,7 @@ class ParticipantServiceTest {
         addParticipantForTest(DH, targetSuiteRoomId, true);
         addParticipantForTest(JH, targetSuiteRoomId, true);
         //when
-        Participant hostCandidate = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(1L, 1L, true).orElseThrow(() -> assertThrows(CustomException.class, () -> {throw new CustomException(StatusCode.FORBIDDEN);}));
+        Participant hostCandidate = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoom.getSuiteRoomId(), participantHost.getMemberId(), true).orElseThrow(() -> assertThrows(CustomException.class, () -> {throw new CustomException(StatusCode.FORBIDDEN);}));
 
         List<ResPaymentParticipantDto> resPaymentParticipantDtos = participantRepository.findAllBySuiteRoom_SuiteRoomIdAndStatus(targetSuiteRoomId, SuiteStatus.READY)
                 .stream()
@@ -229,6 +208,29 @@ class ParticipantServiceTest {
                 () -> assertThat(resPaymentParticipantDtos).allMatch(dto -> dto.getClass() == ResPaymentParticipantDto.class)
         );
 
+    }
+
+    @Test
+    @DisplayName("스위트룸 참가 취소")
+    public void removeParticipant() {
+        //given
+        Long targetSuiteRoomId = suiteRoom.getSuiteRoomId();
+        AuthorizerDto authorizerDto = MockAuthorizer.YH();
+        //when
+        Participant participant = participantRepository.findBySuiteRoom_SuiteRoomIdAndMemberId(targetSuiteRoomId, authorizerDto.getMemberId()).orElseThrow(
+                () -> assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.FAILED_REQUEST); }));
+
+        if(participant.getIsHost())
+            assertThrows(CustomException.class, () -> { throw new CustomException(StatusCode.CAN_NOT_CALCEL_SUITEROOM); });
+
+        if(participant.getStatus().equals(SuiteStatus.READY))
+            System.out.println("kafka");
+        participantRepository.deleteBySuiteRoom_SuiteRoomIdAndMemberId(targetSuiteRoomId, authorizerDto.getMemberId());
+        List<Participant> result = participantRepository.findBySuiteRoom_SuiteRoomId(targetSuiteRoomId);
+        //then
+        Assertions.assertAll(
+                () -> assertThat(result.size()).isEqualTo(1)
+        );
     }
 
     private void addParticipantForTest(AuthorizerDto authorizerDto, Long suiteRoomId, Boolean updateStatus) {
