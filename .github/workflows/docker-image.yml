@@ -52,23 +52,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2 ## 자신의 리전
 
-      - name: Check if image with tag exists
-        id: check-image
-        run: |
-          if aws ecr describe-images --repository-name suite-ecr --image-ids imageTag=suite-suite-service-latest; then
-            echo "Image with tag $IMAGE_TAG exists in repository $REPOSITORY"
-            echo "::set-output name=image_exists::true"
-          else
-            echo "Image with tag $IMAGE_TAG does not exist in repository $REPOSITORY"
-            echo "::set-output name=image_exists::false"
-          fi
-
-      - name: Delete existing image with the same tag
-        if: steps.check-image.outputs.image_exists == 'true'
-        run: |
-          aws ecr batch-delete-image --repository suite-ecr --image-ids imageTag=suite-suite-service-latest
-      
-
       - name: Login to ECR
         uses: aws-actions/amazon-ecr-login@v1
 
@@ -76,6 +59,6 @@ jobs:
 
       - name: Build & Push to ECR
         run: |
-          docker build -t suite-ecr:suite-suite-service-latest .
-          docker tag suite-ecr:suite-suite-service-latest ${{ secrets.AWS_ACCOUNT_NUM }}.dkr.ecr.ap-northeast-2.amazonaws.com/suite-ecr:suite-suite-service-latest
-          docker push ${{ secrets.AWS_ACCOUNT_NUM }}.dkr.ecr.ap-northeast-2.amazonaws.com/suite-ecr:suite-suite-service-latest
+          docker build -t suite-room-service:$GITHUB_SHA .
+          docker tag suite-room-service:$GITHUB_SHA ${{ secrets.AWS_ACCOUNT_NUM }}.dkr.ecr.ap-northeast-2.amazonaws.com/suite-room-service:$GITHUB_SHA
+          docker push ${{ secrets.AWS_ACCOUNT_NUM }}.dkr.ecr.ap-northeast-2.amazonaws.com/suite-room-service:$GITHUB_SHA
