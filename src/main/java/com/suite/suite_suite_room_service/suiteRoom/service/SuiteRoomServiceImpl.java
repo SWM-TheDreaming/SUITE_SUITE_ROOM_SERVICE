@@ -75,7 +75,7 @@ public class SuiteRoomServiceImpl implements SuiteRoomService {
 
     @Override
     public List<ResSuiteRoomListDto> getProgressSuiteRoomList(Long memberId) {
-        List<Participant> participantList = participantRepository.findByMemberIdAndStatusNotOrOrderByCreatedDateDesc(memberId, SuiteStatus.END);
+        List<Participant> participantList = participantRepository.findByMemberIdAndStatusNotOrderByCreatedDateDesc(memberId, SuiteStatus.END);
 
         return participantList.stream().map(
                 parti -> parti.toResSuiteRoomListDto(

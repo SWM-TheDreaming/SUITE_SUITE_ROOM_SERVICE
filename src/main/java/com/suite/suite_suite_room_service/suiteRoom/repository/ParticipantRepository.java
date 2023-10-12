@@ -25,5 +25,5 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
 
     List<Participant> findByMemberIdAndStatus(Long memberId, SuiteStatus suiteStatus);
 
-    List<Participant> findByMemberIdAndStatusNotOrOrderByCreatedDateDesc(Long memberId, SuiteStatus suiteStatus);
+    List<Participant> findByMemberIdAndStatusNotOrderByCreatedDateDesc(Long memberId, SuiteStatus suiteStatus);
 }
