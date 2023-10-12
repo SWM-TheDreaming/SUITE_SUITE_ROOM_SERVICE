@@ -16,6 +16,7 @@ jobs:
         run: |
           mkdir -p ./src/main/resources
           touch ./src/main/resources/application.yml
+          echo ${{ secrets.APPLICATION_YML }} | base64 --decode >> ./src/main/resources/application.yml
 
       - name: production test application file setting
         run: |
