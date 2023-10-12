@@ -11,7 +11,6 @@ import com.suite.suite_suite_room_service.suiteRoom.repository.ParticipantReposi
 import com.suite.suite_suite_room_service.suiteRoom.repository.SuiteRoomRepository;
 import com.suite.suite_suite_room_service.suiteRoom.security.dto.AuthorizerDto;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.common.metrics.Stat;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

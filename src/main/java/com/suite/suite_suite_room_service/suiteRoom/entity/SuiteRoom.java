@@ -137,6 +137,7 @@ public class SuiteRoom extends BaseTimeEntity {
 
     public void startSuiteRoom() {
         this.isStart = true;
+        this.isOpen = false;
         this.studyStartDate = new Timestamp(System.currentTimeMillis());
     }
 
