@@ -23,4 +23,6 @@ public class SuiteRoomServiceApplication {
         return new JPAQueryFactory(entityManager);
     }
 
+
+
 }
