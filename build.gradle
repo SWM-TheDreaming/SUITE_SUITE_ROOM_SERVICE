@@ -55,6 +55,7 @@ dependencies {
 
     //actuator
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.5.0'
     //spring email
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.6.3'
