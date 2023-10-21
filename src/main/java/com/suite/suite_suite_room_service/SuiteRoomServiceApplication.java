@@ -12,7 +12,6 @@ import javax.persistence.PersistenceContext;
 
 @EnableJpaAuditing
 @SpringBootApplication
-@EntityScan("com.suite.suite_suite_room_service.suiteRoom.entity")
 public class SuiteRoomServiceApplication {
     @PersistenceContext
     private EntityManager entityManager;
