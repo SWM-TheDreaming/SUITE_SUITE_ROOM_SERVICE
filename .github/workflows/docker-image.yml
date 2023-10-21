@@ -16,7 +16,7 @@ jobs:
         run: |
           mkdir -p ./src/main/resources
           touch ./src/main/resources/application.yml
-          echo ${{ secrets.APPLICATION_YML }} | base64 --decode >> ./src/main/resources/application.yml
+          echo ${{ secrets.PRODUCTION_APPLICATION_YML }} | base64 --decode >> ./src/main/resources/application.yml
 
       - name: production test application file setting
         run: |
@@ -61,5 +61,5 @@ jobs:
       - name: Build & Push to ECR
         run: |
           docker build -t suite-room-service:$GITHUB_SHA .
-          docker tag suite-room-service:$GITHUB_SHA ${{ secrets.AWS_ACCOUNT_NUM }}.dkr.ecr.ap-northeast-2.amazonaws.com/suite-room-service:$GITHUB_SHA
-          docker push ${{ secrets.AWS_ACCOUNT_NUM }}.dkr.ecr.ap-northeast-2.amazonaws.com/suite-room-service:$GITHUB_SHA
+          docker tag suite-room-service:$GITHUB_SHA ${{ secrets.AWS_ACCOUNT_NUM }}.dkr.ecr.ap-northeast-2.amazonaws.com/prod-suite-suite-service:$GITHUB_SHA
+          docker push ${{ secrets.AWS_ACCOUNT_NUM }}.dkr.ecr.ap-northeast-2.amazonaws.com/prod-suite-suite-service:$GITHUB_SHA
