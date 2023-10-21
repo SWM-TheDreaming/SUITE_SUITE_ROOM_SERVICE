@@ -3,6 +3,7 @@ package com.suite.suite_suite_room_service;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
@@ -11,6 +12,7 @@ import javax.persistence.PersistenceContext;
 
 @EnableJpaAuditing
 @SpringBootApplication
+@EntityScan("com.suite.suite_suite_room_service.suiteRoom.entity")
 public class SuiteRoomServiceApplication {
     @PersistenceContext
     private EntityManager entityManager;
