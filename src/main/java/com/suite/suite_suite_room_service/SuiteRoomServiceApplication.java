@@ -19,7 +19,6 @@ public class SuiteRoomServiceApplication {
     public static void main(String[] args) {
         SpringApplication.run(SuiteRoomServiceApplication.class, args);
     }
-
     @Bean
     public JPAQueryFactory jpaQueryFactory() {
         return new JPAQueryFactory(entityManager);
