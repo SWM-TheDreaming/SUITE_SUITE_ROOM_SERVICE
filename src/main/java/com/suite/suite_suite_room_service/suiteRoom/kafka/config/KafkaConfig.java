@@ -119,7 +119,11 @@ public class KafkaConfig {
     }
     @Bean
     public AnpService anpService(RestTemplate restTemplate) {
+<<<<<<< HEAD
         String GET_POINT_URI = "http://api.suitestudy.com/anp/point/";
+=======
+        String GET_POINT_URI = "http://bongu.suitestudy.com/anp/point/";
+>>>>>>> main
         return new AnpService(GET_POINT_URI, restTemplate);
     }
 
