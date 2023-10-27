@@ -26,12 +26,13 @@ public class ResSuiteRoomDto {
     private StudyType studyMethod;
     private String contractAddress;
     private Long participantCount;
+    private boolean isParticipant;
     private boolean isHost;
     private Long markCount;
     private Timestamp createdAt;
     private boolean isMark;
     @Builder
-    public ResSuiteRoomDto(Long suiteRoomId, String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Boolean isOpen , String channelLink, StudyType studyMethod, String contractAddress, Long participantCount, boolean isHost, Long markCount, Timestamp createdAt, boolean isMark) {
+    public ResSuiteRoomDto(Long suiteRoomId, String title, String content, StudyCategory subject, Timestamp recruitmentDeadline, Timestamp studyDeadline, Integer recruitmentLimit, Integer depositAmount, Integer minAttendanceRate, Integer minMissionCompleteRate, Boolean isPublic, Boolean isOpen , String channelLink, StudyType studyMethod, String contractAddress, Long participantCount, boolean isParticipant, boolean isHost, Long markCount, Timestamp createdAt, boolean isMark) {
         this.suiteRoomId = suiteRoomId;
         this.title = title;
         this.content = content;
@@ -48,6 +49,7 @@ public class ResSuiteRoomDto {
         this.studyMethod = studyMethod;
         this.contractAddress = contractAddress;
         this.participantCount = participantCount;
+        this.isParticipant = isParticipant;
         this.isHost = isHost;
         this.markCount = markCount;
         this.isMark = isMark;
