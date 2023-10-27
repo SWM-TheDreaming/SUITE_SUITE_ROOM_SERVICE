@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SuiteRoomReadController {
 
     private final SuiteRoomService suiteRoomService;
-    @GetMapping("/suiteroom/info/{suiteRoomId}")
+    @GetMapping("/suite/suiteroom/info/{suiteRoomId}")
     public ResponseEntity<ResSuiteRoomInfoDto> getSuiteRoomInfo(@PathVariable Long suiteRoomId) {
         return ResponseEntity.ok(suiteRoomService.getSuiteRoomInfo(suiteRoomId));
     }

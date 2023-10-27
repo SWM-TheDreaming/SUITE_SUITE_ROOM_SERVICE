@@ -3,6 +3,7 @@ package com.suite.suite_suite_room_service;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
@@ -17,7 +18,6 @@ public class SuiteRoomServiceApplication {
     public static void main(String[] args) {
         SpringApplication.run(SuiteRoomServiceApplication.class, args);
     }
-
     @Bean
     public JPAQueryFactory jpaQueryFactory() {
         return new JPAQueryFactory(entityManager);

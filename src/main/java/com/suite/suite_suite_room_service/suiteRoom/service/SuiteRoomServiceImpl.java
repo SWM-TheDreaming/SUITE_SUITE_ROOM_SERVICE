@@ -32,13 +32,6 @@ public class SuiteRoomServiceImpl implements SuiteRoomService {
     private final AnpService anpService;
     @Override
     public List<ResSuiteRoomListDto> getSuiteRooms(AuthorizerDto authorizerDto, ReqListUpSuiteRoomDto reqListUpSuiteRoomDto, Pageable pageable) {
-
-        /*
-        * TO DO 성능 nGrinder로 성능 비교해보기!
-        Page<SuiteRoom> suiteRooms = subjects.size() != 0 ?
-                suiteRoomRepository.findByIsOpenAndSubjectInOrderByCreatedDateDesc(true, subjects, pageable)
-                : suiteRoomRepository.findByIsOpenOrderByCreatedDateDesc(true, pageable);
-        */
         List<SuiteRoom> suiteRooms = suiteRoomRepository.findOpenSuiteWithSearch(true, reqListUpSuiteRoomDto.getSubjects(), reqListUpSuiteRoomDto.getKeyword(), pageable);
 
         return suiteRooms.stream().map(
@@ -61,7 +54,8 @@ public class SuiteRoomServiceImpl implements SuiteRoomService {
                 participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoomId),
                 participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberIdAndIsHost(suiteRoomId, authorizerDto.getMemberId(), true),
                 markRepository.countBySuiteRoom_SuiteRoomId(suiteRoomId),
-                markRepository.existsBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, authorizerDto.getMemberId())
+                markRepository.existsBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, authorizerDto.getMemberId()),
+                participantRepository.existsBySuiteRoom_SuiteRoomIdAndMemberId(suiteRoomId, authorizerDto.getMemberId())
         );
 
     }

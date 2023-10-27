@@ -166,7 +166,7 @@ public class SuiteRoomProducer {
         LocalDate nowDate = nowTimestamp.toLocalDateTime().toLocalDate();
         LocalDate targetDate = targetTime.toLocalDateTime().toLocalDate();
 
-        return ChronoUnit.DAYS.between(targetDate, nowDate);
+        return Math.abs(ChronoUnit.DAYS.between(targetDate, nowDate));
     }
 
 

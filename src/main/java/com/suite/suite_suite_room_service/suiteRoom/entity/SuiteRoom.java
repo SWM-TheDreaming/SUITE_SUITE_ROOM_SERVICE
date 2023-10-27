@@ -162,7 +162,7 @@ public class SuiteRoom extends BaseTimeEntity {
                 .build();
     }
 
-    public ResSuiteRoomDto toResSuiteRoomDto(Long participantCount, boolean isHost, Long markCount, boolean isMark) {
+    public ResSuiteRoomDto toResSuiteRoomDto(Long participantCount, boolean isHost, Long markCount, boolean isMark, boolean isParticipant) {
         return ResSuiteRoomDto.builder()
                 .suiteRoomId(suiteRoomId)
                 .title(this.title)
@@ -180,6 +180,7 @@ public class SuiteRoom extends BaseTimeEntity {
                 .studyMethod(this.studyMethod)
                 .contractAddress(this.contractAddress)
                 .participantCount(participantCount)
+                .isParticipant(isParticipant)
                 .isHost(isHost)
                 .markCount(markCount)
                 .isMark(isMark)
