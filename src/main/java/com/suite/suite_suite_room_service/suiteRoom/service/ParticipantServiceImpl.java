@@ -39,6 +39,7 @@ public class ParticipantServiceImpl implements ParticipantService{
 
         if(anpService.getPoint(authorizerDto.getMemberId()) < suiteRoom.getDepositAmount())
             throw new CustomException(StatusCode.FAILED_PAY);
+
         if(isParticipantOver(suiteRoomId, participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoomId)))
             throw new CustomException(StatusCode.OVER_PARTICIPANT);
 
@@ -139,7 +140,7 @@ public class ParticipantServiceImpl implements ParticipantService{
     }
 
     private boolean isParticipantOver(Long suiteRoomId, Long recruitmentLimit) {
-        return participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoomId) >= recruitmentLimit;
+        return participantRepository.countBySuiteRoom_SuiteRoomId(suiteRoomId) > recruitmentLimit;
     }
 
 }
